@@ -1,0 +1,38 @@
+[
+{
+    "model": "blog.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$390000$N36RiAABAnrV2YHMZz1Gp7$ksZ9s8hD7D964+OczSjKMsI5yz59w8aj+dqPMfsHd14=",
+        "last_login": "2022-10-06T08:50:40.620Z",
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "",
+        "last_name": "",
+        "email": "admin@api.blogapp.com",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2021-10-08T18:53:24.216Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "blog.user",
+    "pk": 2,
+    "fields": {
+        "password": "asdf1234",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "test",
+        "first_name": "test",
+        "last_name": "test",
+        "email": "test@api.blogapp.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-10-06T06:22:48Z",
+        "groups": [],
+        "user_permissions": []
+    }
+}
+]

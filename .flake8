@@ -1,0 +1,18 @@
+[flake8]
+exclude =
+    .git,
+    .gitignore,
+    *.py[co],
+    __pycache__,
+    .docker,
+    static,
+    *migrations*,
+    manage.py,
+
+ignore =
+    F405,
+    ANN101,
+    ANN102,
+    ANN003,
+
+max-line-length = 120

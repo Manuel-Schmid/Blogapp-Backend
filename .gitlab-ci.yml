@@ -1,0 +1,49 @@
+stages:
+  - test
+
+image: alpine:3.7
+
+backend:flake8:
+  image:
+    python:3.9
+  script:
+    - pip install --upgrade pip && pip install -r requirements.txt
+    - flake8
+  stage: test
+  only:
+    - branches
+    - tags
+  dependencies: [] #prevent frontend artifacts from being downloaded
+  tags:
+    - docker
+    - swiss
+    - not-roadrunner
+
+backend:test:
+  image:
+    python:3.9
+  script:
+    - pip install --upgrade pip && pip install -r requirements.txt
+    - pytest
+  stage: test
+  only:
+    - branches
+    - tags
+  dependencies: [] #prevent frontend artifacts from being downloaded
+  tags:
+    - docker
+    - swiss
+    - not-roadrunner
+  services:
+    - name: mariadb:10.3.22
+      alias: test-db
+  variables:
+    MYSQL_DATABASE: "test"
+    MYSQL_USER: "test"
+    MYSQL_PASSWORD: "test"
+    MYSQL_ROOT_PASSWORD: "test"
+    DJANGO_DB_HOST: 'test-db'
+    DJANGO_DB_PORT: '3306'
+    DJANGO_DB_NAME: 'test'
+    DJANGO_DB_USER: 'root'
+    DJANGO_DB_PW: 'test'

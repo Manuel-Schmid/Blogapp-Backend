@@ -1,0 +1,5 @@
+fragment TokenAuthPayloadFragment on TokenPayloadType {
+    exp
+    origIat
+    username
+}

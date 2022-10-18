@@ -1,0 +1,10 @@
+../.idea
+.env
+.pytest_cache
+.pylint.d
+__pycache__
+.python-version
+static/*
+/static
+.DS_Store
+.vscode
