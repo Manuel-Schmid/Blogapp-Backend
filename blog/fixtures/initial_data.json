@@ -6,7 +6,7 @@
         "password": "pbkdf2_sha256$390000$FXnD60kZxbtF6HVfPY0mg0$Ol3rH5o19owlGi5vOV9LF12l/ZQvqYXlJ6jjSn5jSa8=",
         "last_login": "2022-08-08T15:02:49.654Z",
         "is_superuser": true,
-        "username": "Winston84",
+        "username": "admin",
         "first_name": "Winston",
         "last_name": "Smith",
         "email": "admin@example.lo",
