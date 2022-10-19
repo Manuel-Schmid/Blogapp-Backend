@@ -18,12 +18,16 @@ from django.contrib import admin
 from django.urls import path, include
 from blog import urls as api_urls
 from blog.views import set_csrf
+from django.contrib.staticfiles.urls import static, staticfiles_urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('graphql/', include(api_urls)),
     path('ping/', set_csrf),
 ]
+
+urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     import debug_toolbar
