@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'strawberry_django_plus',
     'blog.apps.AppConfig',
     'strawberry_django_jwt.refresh_token',
+    'taggit',
 ]
 
 MIDDLEWARE = [
@@ -57,6 +58,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'app.urls'
+
+FRONTEND_DOMAIN = os.getenv('FRONTEND_DOMAIN')
 
 TEMPLATES = [
     {
