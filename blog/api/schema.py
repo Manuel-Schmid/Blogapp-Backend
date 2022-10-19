@@ -4,11 +4,11 @@ from strawberry_django_plus.optimizer import DjangoOptimizerExtension
 from strawberry_django_jwt.middleware import JSONWebTokenMiddleware
 
 from .mutations import Mutation
-from .queries import UserQuery
+from .queries import Query
 
 
 @strawberry.type
-class RootQuery(UserQuery):
+class RootQuery(Query):
     pass
 
 
