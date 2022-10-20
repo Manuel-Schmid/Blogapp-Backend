@@ -1,5 +1,5 @@
 import typing
-from typing import Optional, Union, Type
+from typing import Optional
 
 import strawberry
 from django.core.paginator import Paginator
@@ -30,7 +30,7 @@ class UserQueries:
             return None
 
     @strawberry.field
-    def users(self, info) -> typing.List[UserType]:
+    def users(self) -> typing.List[UserType]:
         return User.objects.all()
 
     @strawberry.field
@@ -44,24 +44,23 @@ class UserQueries:
 @strawberry.type
 class CategoryQueries:
     @strawberry.field
-    def categories(self, info) -> typing.List[CategoryType]:
+    def categories(self) -> typing.List[CategoryType]:
         return Category.objects.all()
 
     @strawberry.field
-    def category_by_id(self, info, id: strawberry.ID) -> CategoryType:
+    def category_by_id(self, id: strawberry.ID) -> CategoryType:
         return Category.objects.get(pk=id)
 
 
 @strawberry.type
 class TagQueries:
     @strawberry.field
-    def tags(self, info) -> typing.List[TagType]:
+    def tags(self) -> typing.List[TagType]:
         return Tag.objects.all()
 
     @strawberry.field
     def used_tags(
         self,
-        info,
         category_slug: Optional[str] = None,
     ) -> typing.List[TagType]:
         tag_filter = Q()
@@ -86,7 +85,6 @@ class PostQueries:
     @strawberry.field
     def paginated_posts(
         self,
-        info,
         category_slug: Optional[str] = None,
         tag_slugs: Optional[str] = None,
         active_page: Optional[int] = 1,
@@ -141,5 +139,5 @@ class PostQueries:
         return pagination_posts
 
     @strawberry.field
-    def post_by_slug(self, info, slug: str) -> PostType:
+    def post_by_slug(self, slug: str) -> PostType:
         return Post.objects.get(slug=slug)

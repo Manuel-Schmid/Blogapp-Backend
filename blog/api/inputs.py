@@ -23,11 +23,11 @@ class CommentInput:
     id: Optional[strawberry.ID] = None
     title: str
     text: str
-    post: strawberry.ID
+    post: Optional[strawberry.ID] = None
     owner: Optional[strawberry.ID] = None
 
 
 @strawberry.input
 class PostLikeInput:
     post: strawberry.ID
-    user: strawberry.ID
+    user: Optional[strawberry.ID] = None

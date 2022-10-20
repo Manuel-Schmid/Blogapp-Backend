@@ -3,7 +3,14 @@ from strawberry_django_plus.directives import SchemaDirectiveExtension
 from strawberry_django_plus.optimizer import DjangoOptimizerExtension
 from strawberry_django_jwt.middleware import JSONWebTokenMiddleware
 
-from .mutations import Mutation
+from .mutations import (
+    AuthMutation,
+    UserMutations,
+    CategoryMutations,
+    PostMutations,
+    CommentMutations,
+    PostLikeMutations,
+)
 from .queries import UserQueries, PostQueries, CategoryQueries, TagQueries
 
 
@@ -13,7 +20,14 @@ class RootQuery(UserQueries, PostQueries, CategoryQueries, TagQueries):
 
 
 @strawberry.type
-class RootMutation(Mutation):
+class RootMutation(
+    AuthMutation,
+    UserMutations,
+    CategoryMutations,
+    PostMutations,
+    CommentMutations,
+    PostLikeMutations,
+):
     pass
 
 
