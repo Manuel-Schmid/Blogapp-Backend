@@ -1,4 +1,3 @@
-
 import json
 import os.path
 import re
@@ -10,6 +9,8 @@ from django.http import JsonResponse
 from django.test import Client
 from strawberry.test import BaseGraphQLTestClient, Response
 from strawberry_django_jwt.settings import jwt_settings
+
+from blog.models import Category
 
 
 class GraphqlTestClient(BaseGraphQLTestClient):
@@ -89,13 +90,15 @@ def import_query() -> Callable:
         return content
 
     def func(path: str) -> str:
-        return read_file(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'graphql'), path)
+        return read_file(
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'graphql'), path
+        )
 
     return func
 
 
 @pytest.fixture(name='create_user')
-def fixture_create_user(db: None, django_user_model: models.Model) -> Callable:
+def fixture_create_user(django_user_model: models.Model) -> Callable:
     def func(**kwargs) -> models.Model:
         return django_user_model.objects.create_user(**kwargs)
 
@@ -149,6 +152,40 @@ def fixture_logout(client_query: Callable, import_query: Callable) -> Callable:
         assert jwt_settings.JWT_REFRESH_TOKEN_COOKIE_NAME in cookies
         assert cookies[jwt_settings.JWT_REFRESH_TOKEN_COOKIE_NAME].value == ''
         graphql_client.logout()
+        return response
+
+    return func
+
+
+@pytest.fixture(name='create_categories')
+def fixture_create_categories(
+    client_query: Callable, import_query: Callable
+) -> Callable:
+    def func() -> JsonResponse:
+        category_input = {
+            "categoryInput": {
+                "name": "test_category",
+            }
+        }
+        mutation: str = import_query('createCategory.graphql')
+        graphql_client.raw_query(mutation, category_input, asserts_errors=False)
+        response = graphql_client.raw_query(
+            mutation, category_input, asserts_errors=False
+        )
+
+        json_data: Dict = json.loads(response.content)
+        assert json_data.get('errors', None) is None
+
+        data: Dict = json_data.get('data', None)
+        assert data is not None
+
+        create_category: Dict = data.get('createCategory', None)
+        assert create_category is not None
+
+        category_id: Dict = create_category.get('id', None)
+        assert category_id is not None
+        assert category_id == "2"
+
         return response
 
     return func

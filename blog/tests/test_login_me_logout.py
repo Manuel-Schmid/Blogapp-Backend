@@ -7,7 +7,11 @@ from blog.models import User
 
 @pytest.mark.django_db
 def test_login(
-    login: Callable, create_user: Callable, import_query: Callable, client_query: Callable, logout: Callable
+    login: Callable,
+    create_user: Callable,
+    import_query: Callable,
+    client_query: Callable,
+    logout: Callable,
 ) -> None:
     username: str = 'jane.doe@eth.lo'
     password: str = 'password'
@@ -23,7 +27,10 @@ def test_login(
 
     assert response is not None
     assert response.errors is not None
-    assert response.errors[0].get('message', None) == 'You do not have permission to perform this action'
+    assert (
+        response.errors[0].get('message', None)
+        == 'You do not have permission to perform this action'
+    )
 
     # login
     login(username, password)
@@ -48,4 +55,7 @@ def test_login(
 
     assert response is not None
     assert response.errors is not None
-    assert response.errors[0].get('message', None) == 'You do not have permission to perform this action'
+    assert (
+        response.errors[0].get('message', None)
+        == 'You do not have permission to perform this action'
+    )
