@@ -16,45 +16,33 @@ from blog.models import (
 
 @gql.django.type(CategoryModel)
 class Category:
-    id: auto
+    id: strawberry.ID
     slug: str
-    name: auto
-
-
-@gql.django.type(UserModel)
-class User:
-    id: auto
-    posts: auto
-    email: auto
-    password: auto
-    username: auto
-    first_name: auto
-    last_name: auto
+    name: str
 
 
 @gql.django.type(TagModel)
 class Tag:
-    slug: auto
-    name: auto
+    slug: str
+    name: str
 
 
 @gql.django.type(PostModel)
 class Post:
-    id: auto
-    title: auto
+    id: strawberry.ID
+    title: str
     slug: str
-    text: auto
+    text: str
     image: auto
-    category: auto
-    comments: auto
-    post_likes: auto
-    owner: auto
+    category: 'Category'
+    comments: typing.List['Comment']
+    owner: 'User'
     date_created: auto
 
     is_liked: bool
     like_count: int
     comment_count: int
-    tags: typing.List[Tag]
+    tags: typing.List['Tag']
 
     def resolve_tags(self, info):
         return self.tags.all()
@@ -82,30 +70,41 @@ class Post:
         return self.comments.count()
 
 
+@gql.django.type(UserModel)
+class User:
+    id: strawberry.ID
+    posts: typing.List['Post']
+    email: str
+    password: str
+    username: str
+    first_name: str
+    last_name: str
+
+
 @gql.django.type(PostModel)
 class PaginationPosts:
-    posts: typing.List[Post]
+    posts: typing.List['Post']
     num_post_pages: int
 
 
 @gql.django.type(CommentModel)
 class Comment:
-    id: auto
-    title: auto
-    text: auto
-    post: auto
-    owner: auto
+    id: strawberry.ID
+    title: str
+    text: str
+    post: 'Post'
+    owner: 'User'
 
 
 @gql.django.type(PostLikeModel)
 class PostLike:
-    id: auto
-    post: auto
-    user: auto
+    id: strawberry.ID
+    post: 'Post'
+    user: 'User'
 
 
 @gql.django.type(CommentLikeModel)
 class CommentLike:
-    id: auto
-    comment: auto
-    user: auto
+    id: strawberry.ID
+    comment: 'Comment'
+    user: 'User'
