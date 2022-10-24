@@ -70,11 +70,14 @@ class CategoryMutations:
 @strawberry.type
 class PostMutations:
     @strawberry.mutation
-    def create_post(self, post_input: PostInput) -> Union[PostType, None]:
-        form = PostForm(data=vars(post_input))
-        if form.is_valid():
-            post = form.save()
-            return post
+    def create_post(self, info: Info, post_input: PostInput) -> Union[PostType, None]:
+        user = info.context.request.user
+        if user.is_authenticated:
+            post_input.owner = user.id
+            form = PostForm(data=vars(post_input))
+            if form.is_valid():
+                post = form.save()
+                return post
         return None
 
     @strawberry.mutation
@@ -90,11 +93,16 @@ class PostMutations:
 @strawberry.type
 class CommentMutations:
     @strawberry.mutation
-    def create_comment(self, comment_input: CommentInput) -> Union[CommentType, None]:
-        form = CreateCommentForm(data=vars(comment_input))
-        if form.is_valid():
-            comment = form.save()
-            return comment
+    def create_comment(
+        self, info: Info, comment_input: CommentInput
+    ) -> Union[CommentType, None]:
+        user = info.context.request.user
+        if user.is_authenticated:
+            comment_input.owner = user.id
+            form = CreateCommentForm(data=vars(comment_input))
+            if form.is_valid():
+                comment = form.save()
+                return comment
         return None
 
     @strawberry.mutation

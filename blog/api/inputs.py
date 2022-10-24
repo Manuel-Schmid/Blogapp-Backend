@@ -8,7 +8,7 @@ class PostInput:
     title: str
     text: str
     category: strawberry.ID
-    owner: strawberry.ID
+    owner: Optional[strawberry.ID] = None
 
 
 @strawberry.input
