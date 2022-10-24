@@ -155,6 +155,13 @@ CORS_ORIGIN_REGEX_WHITELIST = [
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 CORS_ALLOW_CREDENTIALS = True
 
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8080',
+    'http://frontend.blogapp.com:8080',
+    'http://127.0.0.1:8080',
+]
+
 # GraphQL
 
 GRAPHQL_JWT = {
@@ -164,6 +171,12 @@ GRAPHQL_JWT = {
     'JWT_COOKIE_SECURE': True,
     "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp'
+EMAIL_PORT = '25'
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = False
 
 # Logging
 
