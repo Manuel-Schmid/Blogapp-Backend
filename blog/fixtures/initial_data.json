@@ -321,8 +321,8 @@
     "model": "taggit.tag",
     "pk": 5,
     "fields": {
-        "name": "controversial",
-        "slug": "controversial"
+        "name": "interesting",
+        "slug": "interesting"
     }
 },
 {

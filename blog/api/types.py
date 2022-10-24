@@ -2,6 +2,7 @@ import typing
 
 from strawberry import auto
 import strawberry
+from strawberry.types import Info
 from strawberry_django_plus import gql
 from taggit.models import Tag as TagModel
 from blog.models import (
@@ -39,16 +40,13 @@ class Post:
     owner: 'User'
     date_created: auto
 
-    is_liked: bool
-    like_count: int
-    comment_count: int
-    tags: typing.List['Tag']
+    @strawberry.field
+    def tags(self) -> typing.List['Tag']:
+        return TagModel.objects.all()
 
-    def resolve_tags(self, info):
-        return self.tags.all()
-
-    def resolve_is_liked(self, info):
-        user = info.context.user
+    @strawberry.field
+    def is_liked(self, info: Info) -> bool:
+        user = info.context.request.user
         if user.is_authenticated:
             return (
                 len(
@@ -63,10 +61,12 @@ class Post:
             )
         return False
 
-    def resolve_like_count(self, info):
+    @strawberry.field
+    def like_count(self) -> int:
         return self.post_likes.count()
 
-    def resolve_comment_count(self, info):
+    @strawberry.field
+    def comment_count(self) -> int:
         return self.comments.count()
 
 
