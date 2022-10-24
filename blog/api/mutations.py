@@ -28,6 +28,7 @@ class AuthMutation:
     verify_token = jwt_mutations.Verify.verify
     refresh_token = jwt_mutations.Refresh.refresh
     delete_token_cookie = jwt_mutations.DeleteJSONWebTokenCookie.delete_cookie
+    delete_refresh_token_cookie = jwt_mutations.DeleteRefreshTokenCookie.delete_cookie
 
 
 @strawberry.type
