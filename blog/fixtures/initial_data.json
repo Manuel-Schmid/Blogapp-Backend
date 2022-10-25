@@ -18,47 +18,39 @@
     }
 },
 {
-    "model":"blog.user",
+    "model": "blog.user",
     "pk": 2,
-    "fields":{
-        "password":"pbkdf2_sha256$390000$Jb8s9SqG4upFI3FFNvOHhc$KHneaQaIZJ9CFIQa7hxAdij6Nk90nWx93BlSclHlv5Q=",
-        "last_login":null,
-        "is_superuser":false,
-        "username":"John",
-        "first_name":"John",
-        "last_name":"Doe",
-        "email":"john.doe@example.com",
-        "is_staff":false,
-        "is_active":true,
-        "date_joined":"2022-08-16T06:37:49Z",
-        "groups":[
-
-        ],
-        "user_permissions":[
-
-        ]
+    "fields": {
+        "password": "pbkdf2_sha256$390000$Jb8s9SqG4upFI3FFNvOHhc$KHneaQaIZJ9CFIQa7hxAdij6Nk90nWx93BlSclHlv5Q=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "John",
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john.doe@example.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-08-16T06:37:49Z",
+        "groups": [],
+        "user_permissions": []
     }
 },
 {
-    "model":"blog.user",
+    "model": "blog.user",
     "pk": 3,
-    "fields":{
-        "password":"pbkdf2_sha256$390000$3eKCxDNKxCOfBjz4J4kwQ5$iwyGEfwcLx6MW02CYOdlT1k9vjXwf73WP5+F3dOp9Vs=",
-        "last_login":null,
-        "is_superuser":false,
-        "username":"Richard",
-        "first_name":"Richard",
-        "last_name":"Roe",
-        "email":"richard.roe@gmx.com",
-        "is_staff":false,
-        "is_active":true,
-        "date_joined":"2022-08-16T06:39:20Z",
-        "groups":[
-
-        ],
-        "user_permissions":[
-
-        ]
+    "fields": {
+        "password": "pbkdf2_sha256$390000$3eKCxDNKxCOfBjz4J4kwQ5$iwyGEfwcLx6MW02CYOdlT1k9vjXwf73WP5+F3dOp9Vs=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "Richard",
+        "first_name": "Richard",
+        "last_name": "Roe",
+        "email": "richard.roe@gmx.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-08-16T06:39:20Z",
+        "groups": [],
+        "user_permissions": []
     }
 },
 {
@@ -75,7 +67,6 @@
     "fields": {
         "name": "Politics",
         "slug": "politics"
-
     }
 },
 {
@@ -119,7 +110,9 @@
         "text": "Duis auctor tellus id ornare feugiat. Nullam commodo dignissim dolor vel egestas. Mauris lobortis nec est a ultricies. Sed euismod varius odio. Vivamus leo lectus, pellentesque eu congue quis, eleifend id odio. Ut malesuada eros eget enim cursus dignissim eu id metus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
         "image": "images/green.jpg",
         "category": 3,
-        "owner": 2,
+        "owner": [
+            "John"
+        ],
         "date_created": "2022-08-16T06:33:14.592Z"
     }
 },
@@ -132,7 +125,9 @@
         "text": "Vivamus aliquam lacus in sem bibendum ultricies nec nec justo. Aenean luctus velit blandit nulla pharetra, non pellentesque quam accumsan. Suspendisse varius nunc in massa convallis tempor.",
         "image": "images/Landscape-Color.jpg",
         "category": 6,
-        "owner": 3,
+        "owner": [
+            "Richard"
+        ],
         "date_created": "2022-08-16T06:31:23.250Z"
     }
 },
@@ -145,7 +140,9 @@
         "text": "Fusce rhoncus molestie condimentum. Phasellus vitae imperdiet orci. Nulla facilisis viverra lorem sit amet varius. Phasellus in finibus libero. Morbi erat urna, accumsan ut molestie in, aliquam vitae mi. In tempus, tortor pharetra pretium cursus, arcu quam gravida tortor, sed feugiat nibh tellus vitae augue.",
         "image": "images/lake.jpg",
         "category": 3,
-        "owner": 2,
+        "owner": [
+            "John"
+        ],
         "date_created": "2022-08-16T06:30:42.455Z"
     }
 },
@@ -158,7 +155,9 @@
         "text": "itudin. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Proin id viverra augue, at euismod purus. Nam sapien enim, hendrerit eget t",
         "image": "images/central_park.jpg",
         "category": 3,
-        "owner": 3,
+        "owner": [
+            "Richard"
+        ],
         "date_created": "2022-08-15T15:00:57.031Z"
     }
 },
@@ -171,7 +170,9 @@
         "text": "Ilitora torquent per nulla facilisis viverra lorem sit amet varius. Proin id viverra augue, at euismod purus. Nam sapien enean luctus velit blandit ",
         "image": "images/sea.jpg",
         "category": 2,
-        "owner": 3,
+        "owner": [
+            "Richard"
+        ],
         "date_created": "2022-08-15T15:00:57.031Z"
     }
 },
@@ -182,7 +183,9 @@
         "title": "Phasus etnicus",
         "text": "Fusce rhoncus molestie condimentum. Phasellus vitae imperdiet orci. Nulla facilisis viverra lorem sit amet varius. Phasellus in finibus libero. Morbi erat urna, accumsan ut molestie in, aliquam vitae mi. In tempus, tortor pharetra pretium cursus, arcu quam gravida tortor, sed feugiat nibh tellus vitae augue.",
         "post": 2,
-        "owner": 1
+        "owner": [
+            "admin"
+        ]
     }
 },
 {
@@ -192,7 +195,9 @@
         "title": "Augue blandit.",
         "text": "Donec nec ullamcorper quam, non lobortis enim. Vestibulum aliquam venenatis ipsum nec vehicula. Nunc vehicula urna arcu, id efficitur nisl vehicula nec. Curabitur dignissim, nunc eu tempor convallis, lorem erat congue arcu, quis ullamcorper elit lectus blandit ex. Nullam dignissim sem ac nisi venenatis",
         "post": 2,
-        "owner": 1
+        "owner": [
+            "admin"
+        ]
     }
 },
 {
@@ -202,7 +207,9 @@
         "title": "Vasus ca",
         "text": "Aliquam luctus tellus ut augue vehicula, in tincidunt dui cursus. Suspendisse tincidunt nunc eget aliquet ornare. Praesent cursus metus dolor, at fermentum sapien lacinia quis. Suspendisse potenti. Morbi ultrices finibus turpis, non tincidunt tellus volutpat vitae. Sed dui mi, rhoncus at condimentum quis, efficitur lacinia erat.",
         "post": 1,
-        "owner": 1
+        "owner": [
+            "admin"
+        ]
     }
 },
 {
@@ -210,7 +217,9 @@
     "pk": 1,
     "fields": {
         "comment": 1,
-        "user": 1
+        "user": [
+            "admin"
+        ]
     }
 },
 {
@@ -218,7 +227,9 @@
     "pk": 2,
     "fields": {
         "comment": 2,
-        "user": 1
+        "user": [
+            "admin"
+        ]
     }
 },
 {
@@ -226,7 +237,9 @@
     "pk": 3,
     "fields": {
         "comment": 1,
-        "user": 1
+        "user": [
+            "admin"
+        ]
     }
 },
 {
@@ -234,7 +247,9 @@
     "pk": 4,
     "fields": {
         "comment": 1,
-        "user": 1
+        "user": [
+            "admin"
+        ]
     }
 },
 {
@@ -242,7 +257,9 @@
     "pk": 1,
     "fields": {
         "post": 2,
-        "user": 1
+        "user": [
+            "admin"
+        ]
     }
 },
 {
@@ -250,7 +267,9 @@
     "pk": 2,
     "fields": {
         "post": 3,
-        "user": 1
+        "user": [
+            "admin"
+        ]
     }
 },
 {
@@ -258,7 +277,9 @@
     "pk": 3,
     "fields": {
         "post": 4,
-        "user": 2
+        "user": [
+            "John"
+        ]
     }
 },
 {
@@ -266,7 +287,9 @@
     "pk": 4,
     "fields": {
         "post": 4,
-        "user": 3
+        "user": [
+            "Richard"
+        ]
     }
 },
 {
@@ -274,7 +297,9 @@
     "pk": 5,
     "fields": {
         "post": 2,
-        "user": 2
+        "user": [
+            "John"
+        ]
     }
 },
 {
@@ -282,7 +307,9 @@
     "pk": 6,
     "fields": {
         "post": 2,
-        "user": 3
+        "user": [
+            "Richard"
+        ]
     }
 },
 {
@@ -394,7 +421,10 @@
     "pk": 1,
     "fields": {
         "tag": 1,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 1
     }
 },
@@ -403,7 +433,10 @@
     "pk": 2,
     "fields": {
         "tag": 2,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 1
     }
 },
@@ -412,7 +445,10 @@
     "pk": 3,
     "fields": {
         "tag": 3,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 1
     }
 },
@@ -421,7 +457,10 @@
     "pk": 4,
     "fields": {
         "tag": 4,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 1
     }
 },
@@ -430,7 +469,10 @@
     "pk": 5,
     "fields": {
         "tag": 5,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 1
     }
 },
@@ -439,7 +481,10 @@
     "pk": 6,
     "fields": {
         "tag": 1,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 2
     }
 },
@@ -448,7 +493,10 @@
     "pk": 7,
     "fields": {
         "tag": 2,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 2
     }
 },
@@ -457,7 +505,10 @@
     "pk": 8,
     "fields": {
         "tag": 3,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 2
     }
 },
@@ -466,7 +517,10 @@
     "pk": 9,
     "fields": {
         "tag": 4,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 2
     }
 },
@@ -475,7 +529,10 @@
     "pk": 10,
     "fields": {
         "tag": 5,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 2
     }
 },
@@ -484,7 +541,10 @@
     "pk": 11,
     "fields": {
         "tag": 1,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 3
     }
 },
@@ -493,7 +553,10 @@
     "pk": 12,
     "fields": {
         "tag": 2,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 3
     }
 },
@@ -502,7 +565,10 @@
     "pk": 13,
     "fields": {
         "tag": 3,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 3
     }
 },
@@ -511,7 +577,10 @@
     "pk": 14,
     "fields": {
         "tag": 4,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 3
     }
 },
@@ -520,7 +589,10 @@
     "pk": 15,
     "fields": {
         "tag": 5,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 3
     }
 },
@@ -529,7 +601,10 @@
     "pk": 16,
     "fields": {
         "tag": 8,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 4
     }
 },
@@ -538,7 +613,10 @@
     "pk": 17,
     "fields": {
         "tag": 6,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 4
     }
 },
@@ -547,7 +625,10 @@
     "pk": 18,
     "fields": {
         "tag": 7,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 4
     }
 },
@@ -556,7 +637,10 @@
     "pk": 19,
     "fields": {
         "tag": 9,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 4
     }
 },
@@ -565,7 +649,10 @@
     "pk": 20,
     "fields": {
         "tag": 10,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 4
     }
 },
@@ -574,7 +661,10 @@
     "pk": 21,
     "fields": {
         "tag": 11,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 4
     }
 },
@@ -583,7 +673,10 @@
     "pk": 23,
     "fields": {
         "tag": 13,
-        "content_type": 8,
+        "content_type": [
+            "blog",
+            "post"
+        ],
         "object_id": 2
     }
 }

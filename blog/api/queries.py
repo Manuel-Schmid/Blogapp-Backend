@@ -103,13 +103,13 @@ class PostQueries:
             # for tag in tag_slugs_list:
             #     tag_filter |= Q(tag__slug=tag)
             # tagged_posts = list(
-            #     TaggedItem.objects
-            #     .select_related('tag')
+            #     TaggedItem.objects.select_related('tag')
             #     .values('object_id')
             #     .annotate(Count('object_id'))
             #     .filter(tag_filter)
             #     .filter(object_id__count=len(tag_slugs_list))
-            #     .values_list('object_id', flat=True))
+            #     .values_list('object_id', flat=True)
+            # )
             # post_filter &= Q(id__in=tagged_posts)
 
         if category_slug is not None:
