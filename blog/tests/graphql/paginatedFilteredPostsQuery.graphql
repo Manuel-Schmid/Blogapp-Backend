@@ -1,0 +1,14 @@
+#import "./fragments/postFragment.graphql"
+
+query PaginatedFilteredPosts($tagSlugs: String, $categorySlug: String, $activePage: Int) {
+    paginatedPosts(
+        tagSlugs: $tagSlugs
+        categorySlug: $categorySlug
+        activePage: $activePage
+    ) {
+        posts {
+            ...PostFragment
+        }
+        numPostPages
+    }
+}
