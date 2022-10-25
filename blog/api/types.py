@@ -42,23 +42,23 @@ class Post:
 
     @strawberry.field
     def tags(self) -> typing.List['Tag']:
-        return TagModel.objects.all()
+        return TagModel.objects.filter(
+            taggit_taggeditem_items__object_id__exact=self.id
+        )
 
     @strawberry.field
     def is_liked(self, info: Info) -> bool:
         user = info.context.request.user
         if user.is_authenticated:
-            return (
-                len(
-                    list(
-                        filter(
-                            lambda post_like: post_like.user == user,
-                            self.post_likes.all(),
-                        )
+            user_like_count = len(
+                list(
+                    filter(
+                        lambda post_like: post_like.user == user,
+                        self.post_likes.all(),
                     )
                 )
-                > 0
             )
+            return user_like_count > 0
         return False
 
     @strawberry.field
