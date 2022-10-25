@@ -1,0 +1,12 @@
+fragment PostFragment on Post {
+    title
+    text
+    slug
+    owner {
+        username
+    }
+    category {
+        slug
+    }
+}
+
