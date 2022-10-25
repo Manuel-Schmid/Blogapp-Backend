@@ -102,6 +102,7 @@ def test_create_post_invalid_owner_id(
     assert response.errors is None
 
     create_post: Dict = response.data.get('createPost', None)
+    assert create_post is None
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
@@ -126,6 +127,7 @@ def test_create_post_invalid_category_id(
     assert response.errors is None
 
     create_post: Dict = response.data.get('createPost', None)
+    assert create_post is None
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)

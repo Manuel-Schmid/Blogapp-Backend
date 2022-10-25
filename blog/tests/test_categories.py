@@ -1,9 +1,6 @@
-import json
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict
 import pytest
 from strawberry.test import Response
-
-from blog.models import Category
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
