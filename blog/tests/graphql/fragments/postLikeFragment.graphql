@@ -1,0 +1,13 @@
+fragment PostLikeFragment on PostLike {
+    id
+    post {
+        id
+        likeCount
+    }
+    user {
+        username
+    }
+}
+
+
+

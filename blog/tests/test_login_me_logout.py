@@ -13,7 +13,7 @@ def test_login(
     client_query: Callable,
     logout: Callable,
 ) -> None:
-    username: str = 'jane.doe@eth.lo'
+    username: str = 'jane.doe@blogapp.lo'
     password: str = 'password'
 
     # create a user

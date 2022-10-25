@@ -1,0 +1,10 @@
+fragment CommentFragment on Comment {
+    title
+    text
+    post {
+        slug
+    }
+    owner {
+        username
+    }
+}

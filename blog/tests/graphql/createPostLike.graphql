@@ -1,0 +1,7 @@
+#import "./fragments/postLikeFragment.graphql"
+
+mutation createPostLike($postLikeInput: PostLikeInput!) {
+    createPostLike(postLikeInput: $postLikeInput) {
+        ...PostLikeFragment
+    }
+}

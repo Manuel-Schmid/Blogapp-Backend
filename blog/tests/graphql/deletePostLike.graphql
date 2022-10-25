@@ -1,0 +1,3 @@
+mutation deletePostLike($postLikeInput: PostLikeInput!) {
+    deletePostLike(postLikeInput: $postLikeInput)
+}

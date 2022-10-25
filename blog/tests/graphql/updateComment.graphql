@@ -1,0 +1,7 @@
+#import "./fragments/commentFragment.graphql"
+
+mutation UpdateComment($commentInput: CommentInput!) {
+    updateComment(commentInput: $commentInput) {
+        ...CommentFragment
+    }
+}

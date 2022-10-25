@@ -116,6 +116,24 @@ def fixture_create_user(django_user_model: models.Model) -> Callable:
     return func
 
 
+@pytest.fixture(name='auth')
+def fixture_auth(
+    create_user: Callable,
+    login: Callable,
+    client_query: Callable,
+    import_query: Callable,
+) -> Callable:
+    def func() -> None:
+        username: str = 'jane.doe@blogapp.lo'
+        password: str = 'password'
+        user: User = create_user(username=username)
+        user.set_password(password)
+        user.save()
+        login(username, password)
+
+    return func
+
+
 @pytest.fixture(name='login')
 def fixture_login(client_query: Callable, import_query: Callable) -> Callable:
     def func(username: str, password: str) -> JsonResponse:

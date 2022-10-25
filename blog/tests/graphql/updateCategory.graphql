@@ -1,0 +1,7 @@
+#import "./fragments/categoryFragment.graphql"
+
+mutation UpdateCategory($categoryInput: CategoryInput!) {
+    updateCategory(categoryInput: $categoryInput) {
+        ...CategoryFragment
+    }
+}
