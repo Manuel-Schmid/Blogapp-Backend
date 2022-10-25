@@ -1,14 +1,27 @@
 import json
 import os.path
 import re
+import typing
 from typing import Dict, Optional, Callable, Union, Coroutine, Any
 
 import pytest
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.http import JsonResponse
 from django.test import Client
 from strawberry.test import BaseGraphQLTestClient, Response
 from strawberry_django_jwt.settings import jwt_settings
+from taggit.models import Tag, TaggedItem
+
+from blog.api.types import (
+    Category as CategoryType,
+    User as UserType,
+    Tag as TagType,
+    Post as PostType,
+    Comment as CommentType,
+    PostLike as PostLikeType,
+)
+from blog.models import Category, User, Post, Comment, PostLike
 
 
 class GraphqlTestClient(BaseGraphQLTestClient):
@@ -155,35 +168,109 @@ def fixture_logout(client_query: Callable, import_query: Callable) -> Callable:
     return func
 
 
+@pytest.fixture(name='create_users')
+def fixture_create_users(client_query: Callable, import_query: Callable) -> Callable:
+    def func() -> typing.List[UserType]:
+        user1 = User.objects.create(username='test_user1', email='user1@example.com')
+        user1.set_password('password1')
+        user1.save()
+        user2 = User.objects.create(username='test_user2', email='user2@example.com')
+        user2.set_password('password2')
+        user2.save()
+        return User.objects.all()
+
+    return func
+
+
 @pytest.fixture(name='create_categories')
 def fixture_create_categories(
     client_query: Callable, import_query: Callable
 ) -> Callable:
-    def func() -> JsonResponse:
-        category_input = {
-            "categoryInput": {
-                "name": "test_category",
-            }
-        }
-        mutation: str = import_query('createCategory.graphql')
-        graphql_client.raw_query(mutation, category_input, asserts_errors=False)
-        response = graphql_client.raw_query(
-            mutation, category_input, asserts_errors=False
+    def func() -> typing.List[CategoryType]:
+        Category.objects.create(name='test_category1', slug='test_category1')
+        Category.objects.create(name='test_category2', slug='test_category2')
+        return Category.objects.all()
+
+    return func
+
+
+@pytest.fixture(name='create_posts')
+def fixture_create_posts(
+    create_users: Callable,
+    create_categories: Callable,
+    client_query: Callable,
+    import_query: Callable,
+) -> Callable:
+    def func() -> typing.List[PostType]:
+        users = create_users()
+        categories = create_categories()
+        Post.objects.create(
+            title='Test_Post 1',
+            text='test_text1',
+            owner=users[0],
+            category=categories[0],
         )
+        Post.objects.create(
+            title='Test_Post 2',
+            text='test_text2',
+            owner=users[1],
+            category=categories[1],
+        )
+        return Post.objects.all()
 
-        json_data: Dict = json.loads(response.content)
-        assert json_data.get('errors', None) is None
+    return func
 
-        data: Dict = json_data.get('data', None)
-        assert data is not None
 
-        create_category: Dict = data.get('createCategory', None)
-        assert create_category is not None
+@pytest.fixture(name='create_comments')
+def fixture_create_comments(
+    create_posts: Callable,
+    client_query: Callable,
+    import_query: Callable,
+) -> Callable:
+    def func() -> typing.List[CommentType]:
+        posts = create_posts()
+        users = User.objects.all()
+        Comment.objects.create(title='test_comment1', post=posts[0], owner=users[0])
+        Comment.objects.create(title='test_comment2', post=posts[1], owner=users[1])
+        return Comment.objects.all()
 
-        category_id: Dict = create_category.get('id', None)
-        assert category_id is not None
-        assert category_id == "2"
+    return func
 
-        return response
+
+@pytest.fixture(name='create_post_likes')
+def fixture_create_post_likes(
+    create_posts: Callable,
+    client_query: Callable,
+    import_query: Callable,
+) -> Callable:
+    def func() -> typing.List[PostLikeType]:
+        posts = create_posts()
+        users = User.objects.all()
+        PostLike.objects.create(user=users[0], post=posts[1])
+        PostLike.objects.create(user=users[1], post=posts[1])
+        return PostLike.objects.all()
+
+    return func
+
+
+@pytest.fixture(name='create_tags')
+def fixture_create_tags(
+    create_posts: Callable,
+    client_query: Callable,
+    import_query: Callable,
+) -> Callable:
+    def func() -> typing.List[TagType]:
+        posts = create_posts()
+        content_type = ContentType.objects.get(app_label='blog', model='post')
+        tag1 = Tag.objects.create(name='tag_1', slug='tag_1_slug')
+        TaggedItem.objects.create(
+            tag=tag1, object_id=posts[0].id, content_type=content_type
+        )
+        tag2 = Tag.objects.create(name='tag_2', slug='tag_2_slug')
+        TaggedItem.objects.create(
+            tag=tag2, object_id=posts[1].id, content_type=content_type
+        )
+        Tag.objects.create(name='tag_3', slug='tag_3_slug')
+        return Tag.objects.all()
 
     return func
