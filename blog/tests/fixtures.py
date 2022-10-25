@@ -10,8 +10,6 @@ from django.test import Client
 from strawberry.test import BaseGraphQLTestClient, Response
 from strawberry_django_jwt.settings import jwt_settings
 
-from blog.models import Category
-
 
 class GraphqlTestClient(BaseGraphQLTestClient):
     def __init__(self, client: Client, path: str) -> None:

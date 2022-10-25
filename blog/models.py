@@ -8,15 +8,15 @@ class User(AbstractUser):
     pass
 
 
-def slugify(value):
-    return value.replace(' ', '-').lower()
+def slugify(string: str) -> str:
+    return string.replace(' ', '-').lower()
 
 
-def post_slug_populate_from(value):
+def post_slug_populate_from(value: object) -> object:
     return value.title
 
 
-def category_slug_populate_from(value):
+def category_slug_populate_from(value: object) -> object:
     return value.name
 
 
@@ -33,7 +33,7 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = 'Categories'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -58,11 +58,11 @@ class Post(models.Model):
     tags = TaggableManager()
 
     @property
-    def image_url(self):
+    def image_url(self) -> str:
         if self.image and hasattr(self.image, 'url'):
             return self.image.url
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.title
 
 

@@ -8,7 +8,7 @@ admin.site.register(Category)
 
 
 class PostAdmin(admin.ModelAdmin):
-    def image_tag(self, obj):
+    def image_tag(self, obj: object) -> str:
         return format_html('<img src="{}" width=150 height=150/>'.format(obj.image_url))
 
     image_tag.short_description = 'Image'
