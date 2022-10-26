@@ -1,0 +1,7 @@
+#import "./fragments/tagFragment.graphql"
+
+query AllTags{
+    tags {
+        ...TagFragment
+    }
+}

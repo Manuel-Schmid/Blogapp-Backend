@@ -1,0 +1,7 @@
+#import "./fragments/tagFragment.graphql"
+
+query UsedTags($categorySlug: String) {
+    usedTags(categorySlug: $categorySlug) {
+        ...TagFragment
+    }
+}
