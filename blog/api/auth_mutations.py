@@ -2,7 +2,7 @@ import strawberry
 from blog.models import User, UserStatus
 
 
-class Register:
+class AuthMutations:
     @strawberry.mutation
     def register(
         self, email: str, username: str, password1: str, password2: str
