@@ -1,18 +1,12 @@
 from django.contrib.auth import get_user_model
-
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
 from django.template.loader import render_to_string
-from django.utils.html import strip_tags
-
-# from strawberry_django_jwt.shortcuts import get_token
 from taggit.managers import TaggableManager
 from autoslug import AutoSlugField
-
 from django.conf import settings
+from blog.utils import TokenAction, get_token
 
 
 class User(AbstractUser):
@@ -27,47 +21,39 @@ class UserStatus(models.Model):
     archived = models.BooleanField(default=False)
     secondary_email = models.EmailField(blank=True, null=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "%s - status" % self.user
 
-    def send(self, subject, template, context, recipient_list=None):
-        _subject = render_to_string(subject, context).replace("\n", " ").strip()
-        html_message = render_to_string(template, context)
-        message = strip_tags(html_message)
+    def send(self, subject_path: str, template_path: str, email_context: object) -> None:
+        html_message = render_to_string(template_path, email_context)
+        subject = open(subject_path, 'r').read()
 
-        return send_mail(
-            subject=_subject,
+        mail = EmailMessage(
+            subject=subject,
+            body=html_message,
             from_email=settings.EMAIL_FROM,
-            message=message,
-            html_message=html_message,
-            recipient_list=(
-                recipient_list or [getattr(self.user, get_user_model().EMAIL_FIELD)]
-            ),
-            fail_silently=False,
+            to=[getattr(self.user, get_user_model().EMAIL_FIELD)],
         )
+        mail.content_subtype = 'html'
+        mail.send()
 
-    def get_email_context(self, info, path, action, **kwargs):
-        token = None
-        # token = get_token(self.user, action, **kwargs)
-        site = get_current_site(info.context)
+    def get_email_context(self, url_path: str, action: TokenAction, **kwargs) -> object:
+        token = get_token(self.user, action, **kwargs)
         return {
             "user": self.user,
             "token": token,
-            "port": info.context.get_port(),
-            "site_name": site.name,
-            "domain": site.domain,
-            "protocol": "https" if info.context.is_secure() else "http",
-            "path": path,
+            "port": settings.FRONTEND_PORT,
+            "site_name": settings.FRONTEND_SITE_NAME,
+            "protocol": settings.FRONTEND_PROTOCOL,
+            "path": url_path,
+            "frontend_domain": settings.FRONTEND_DOMAIN
         }
 
-    #
-    # def send_activation_email(self, info, *args, **kwargs):
-    #     # email_context = self.get_email_context(
-    #     #     info, base.ACTIVATION_PATH_ON_EMAIL, TokenAction.ACTIVATION
-    #     # )
-    #     # template = base.EMAIL_TEMPLATE_ACTIVATION
-    #     # subject = base.EMAIL_SUBJECT_ACTIVATION
-    #     return self.send("subject", "template", "email_context", *args, **kwargs)
+    def send_activation_email(self) -> None:
+        template_path = "email/activation_email.html"
+        subject_path = "blog/templates/blog/email/activation_subject.txt"
+        email_context = self.get_email_context(settings.ACTIVATION_PATH_ON_EMAIL, TokenAction.ACTIVATION)
+        self.send(subject_path, template_path, email_context)
 
 
 def slugify(string: str) -> str:

@@ -4,6 +4,7 @@ import strawberry
 import strawberry_django_jwt.mutations as jwt_mutations
 from strawberry.types import Info
 
+from blog.api import auth_mutations
 from blog.api.inputs import PostInput, CategoryInput, CommentInput, PostLikeInput
 from blog.api.types import (
     Category as CategoryType,
@@ -29,6 +30,8 @@ class AuthMutation:
     refresh_token = jwt_mutations.Refresh.refresh
     delete_token_cookie = jwt_mutations.DeleteJSONWebTokenCookie.delete_cookie
     delete_refresh_token_cookie = jwt_mutations.DeleteRefreshTokenCookie.delete_cookie
+
+    register = auth_mutations.Register.register
 
 
 @strawberry.type

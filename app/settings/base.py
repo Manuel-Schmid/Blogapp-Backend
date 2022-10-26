@@ -59,12 +59,16 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'app.urls'
 
-FRONTEND_DOMAIN = os.getenv('FRONTEND_DOMAIN')
+ACTIVATION_PATH_ON_EMAIL = 'activate'
+FRONTEND_DOMAIN = 'frontend.blogapp.com'
+FRONTEND_SITE_NAME = 'Blogapp.com'
+FRONTEND_PORT = '8080'
+FRONTEND_PROTOCOL = 'http'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['test/templates'],
+        'DIRS': [os.path.join(BASE_DIR, "blog/templates/blog")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -175,6 +179,7 @@ GRAPHQL_JWT = {
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp'
 EMAIL_PORT = '25'
+EMAIL_FROM = 'admin@blogapp.com'  # todo
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = False
 
