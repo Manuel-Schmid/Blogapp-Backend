@@ -60,12 +60,13 @@ class UserStatus(models.Model):
         payload = get_token_payload(
             token, TokenAction.ACTIVATION
         )
-        user = User._default_manager.get(**payload)
-        user_status = UserStatus.objects.get(user=user)
-        if user_status.verified is False:
-            user_status.verified = True
-            user_status.save(update_fields=["verified"])
-            return True
+        if payload:
+            user = User._default_manager.get(**payload)
+            user_status = UserStatus.objects.get(user=user)
+            if user_status.verified is False:
+                user_status.verified = True
+                user_status.save(update_fields=["verified"])
+                return True
         return False
 
 
