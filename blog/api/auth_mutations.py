@@ -27,7 +27,6 @@ class AuthMutations:
 
         return RegisterAccountType(success=not has_errors, errors=errors if errors else None)
 
-
     @strawberry.mutation
     def verify_account(
             self, token: str

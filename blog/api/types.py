@@ -25,6 +25,7 @@ class BaseGraphQLType:
 class RegisterAccountType(BaseGraphQLType):
     success: bool
 
+
 @strawberry.type
 class VerifyAccountType:
     success: bool

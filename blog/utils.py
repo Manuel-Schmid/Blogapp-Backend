@@ -18,7 +18,7 @@ def get_token(user: any, action: TokenAction, **kwargs) -> str:
     return token
 
 
-def get_token_payload(token, action, exp=None):
+def get_token_payload(token: str, action: TokenAction, exp: any = None) -> any:
     try:
         payload = signing.loads(token, max_age=exp)
     except signing.BadSignature:
