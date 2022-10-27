@@ -31,6 +31,21 @@ class VerifyAccountType:
     success: bool
 
 
+@strawberry.type
+class SendPasswordResetEmailType:
+    success: bool
+
+
+@strawberry.type
+class PasswordResetType(BaseGraphQLType):
+    success: bool
+
+
+@strawberry.type
+class PasswordChangeType(BaseGraphQLType):
+    success: bool
+
+
 @gql.django.type(CategoryModel)
 class Category:
     id: strawberry.ID
