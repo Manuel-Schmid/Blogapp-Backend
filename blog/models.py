@@ -22,7 +22,7 @@ class UserStatus(models.Model):
     secondary_email = models.EmailField(blank=True, null=True)
 
     def __str__(self) -> str:
-        return "%s - status" % self.user
+        return f'{self.user} - status'
 
     def send(self, subject_path: str, template_path: str, email_context: object) -> None:
         html_message = render_to_string(template_path, email_context)

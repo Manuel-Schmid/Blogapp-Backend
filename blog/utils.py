@@ -1,7 +1,7 @@
 from django.core import signing
 
 
-class TokenAction(object):
+class TokenAction:
     ACTIVATION = "activation"
     PASSWORD_RESET = "password_reset"
     ACTIVATION_SECONDARY_EMAIL = "activation_secondary_email"
