@@ -83,6 +83,7 @@ services:
       EMAIL_HOST: '${EMAIL_HOST}'
       EMAIL_PORT: '${EMAIL_PORT}'
       EMAIL_FROM: '${EMAIL_FROM}'
+      SECRET_KEY: '${SECRET_KEY}'
     networks:
       default:
         aliases:
