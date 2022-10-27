@@ -16,6 +16,12 @@ class PasswordChangeInput:
     new_password1: str
     new_password2: str
 
+@strawberry.input
+class PasswordResetInput:
+    new_password1: str
+    new_password2: str
+    token: str
+
 
 @strawberry.input
 class PostInput:
