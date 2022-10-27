@@ -67,7 +67,7 @@ class UserStatus(models.Model):
             token, TokenAction.ACTIVATION
         )
         if payload:
-            user = User._default_manager.get(**payload)
+            user = User.objects.get(**payload)
             user_status = UserStatus.objects.get(user=user)
             if user_status.verified is False:
                 user_status.verified = True

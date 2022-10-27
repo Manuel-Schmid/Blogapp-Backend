@@ -71,7 +71,7 @@ class AuthMutations:
 
         payload = get_token_payload(password_reset_input.token, TokenAction.PASSWORD_RESET)
         if payload:
-            user = User._default_manager.get(**payload)
+            user = User.objects.get(**payload)
             form = SetPasswordForm(user=user, data=vars(password_reset_input))
 
             if not form.is_valid():
