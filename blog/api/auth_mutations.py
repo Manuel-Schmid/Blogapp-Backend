@@ -36,7 +36,6 @@ class AuthMutations:
     ) -> VerifyAccountType:
         return VerifyAccountType(success=UserStatus.verify(token))
 
-
     @strawberry.mutation
     def password_change(self, info: Info, password_change_input: PasswordChangeInput) -> PasswordChangeType:
         errors = {}
@@ -54,4 +53,3 @@ class AuthMutations:
                 form.save()
 
             return PasswordChangeType(success=not has_errors, errors=errors if errors else None)
-
