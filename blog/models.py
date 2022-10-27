@@ -61,7 +61,6 @@ class UserStatus(models.Model):
         email_context = self.get_email_context(settings.PASSWORD_RESET_PATH_ON_EMAIL, TokenAction.PASSWORD_RESET)
         self.send(subject_path, template_path, email_context)
 
-
     @staticmethod
     def verify(token: str) -> bool:
         payload = get_token_payload(

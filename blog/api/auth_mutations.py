@@ -64,7 +64,6 @@ class AuthMutations:
         UserStatus.objects.get(user=user).send_password_reset_email()
         return SendPasswordResetEmailType(success=True)
 
-
     @strawberry.mutation
     def password_reset(self, password_reset_input: PasswordResetInput) -> PasswordResetType:
         errors = {}

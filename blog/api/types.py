@@ -35,6 +35,7 @@ class VerifyAccountType:
 class SendPasswordResetEmailType:
     success: bool
 
+
 @strawberry.type
 class PasswordResetType(BaseGraphQLType):
     success: bool
