@@ -31,6 +31,11 @@ class VerifyAccountType:
     success: bool
 
 
+@strawberry.type
+class PasswordChangeType(BaseGraphQLType):
+    success: bool
+
+
 @gql.django.type(CategoryModel)
 class Category:
     id: strawberry.ID

@@ -33,6 +33,7 @@ class AuthMutation:
 
     register = AuthMutations.register
     verify_account = AuthMutations.verify_account
+    password_change = AuthMutations.password_change
 
 
 @strawberry.type
