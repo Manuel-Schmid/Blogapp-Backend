@@ -71,7 +71,7 @@ def test_get_used_tags_in_category(
 ) -> None:
     create_tags()
 
-    category_slug = {"categorySlug": "test_category2"}
+    category_slug = {'categorySlug': 'test_category2'}
 
     query: str = import_query('usedTags.graphql')
     response: Response = client_query(query, category_slug)

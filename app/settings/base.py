@@ -77,7 +77,7 @@ EMAIL_USE_SSL = False
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, "blog/templates/blog")],
+        'DIRS': [os.path.join(BASE_DIR, 'blog/templates/blog')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -182,7 +182,7 @@ GRAPHQL_JWT = {
     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
     'JWT_VERIFY_EXPIRATION': True,
     'JWT_COOKIE_SECURE': True,
-    "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
+    'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
 }
 
 # Logging
