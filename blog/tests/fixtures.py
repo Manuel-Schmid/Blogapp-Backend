@@ -129,7 +129,7 @@ def fixture_auth(
         user: User = create_user(username=username)
         user.set_password(password)
         user.save()
-        login(username, password)
+        return login(username, password)
 
     return func
 
