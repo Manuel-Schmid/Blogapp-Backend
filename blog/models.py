@@ -26,7 +26,7 @@ class UserStatus(models.Model):
 
     def send(self, subject_path: str, template_path: str, email_context: object) -> None:
         html_message = render_to_string(template_path, email_context)
-        subject = open(subject_path, 'r').read()
+        subject = render_to_string(subject_path, email_context)
 
         mail = EmailMessage(
             subject=subject,
@@ -50,9 +50,15 @@ class UserStatus(models.Model):
         }
 
     def send_activation_email(self) -> None:
-        template_path = "email/activation_email.html"
-        subject_path = "blog/templates/blog/email/activation_subject.txt"
+        template_path = "blog/email/activation_email.html"
+        subject_path = "blog/email/activation_subject.txt"
         email_context = self.get_email_context(settings.ACTIVATION_PATH_ON_EMAIL, TokenAction.ACTIVATION)
+        self.send(subject_path, template_path, email_context)
+
+    def send_password_reset_email(self) -> None:
+        template_path = "blog/email/password_reset_email.html"
+        subject_path = "blog/email/password_reset_subject.txt"
+        email_context = self.get_email_context(settings.PASSWORD_RESET_PATH_ON_EMAIL, TokenAction.PASSWORD_RESET)
         self.send(subject_path, template_path, email_context)
 
     @staticmethod
@@ -61,7 +67,7 @@ class UserStatus(models.Model):
             token, TokenAction.ACTIVATION
         )
         if payload:
-            user = User._default_manager.get(**payload)
+            user = User.objects.get(**payload)
             user_status = UserStatus.objects.get(user=user)
             if user_status.verified is False:
                 user_status.verified = True

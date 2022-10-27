@@ -18,6 +18,13 @@ class PasswordChangeInput:
 
 
 @strawberry.input
+class PasswordResetInput:
+    new_password1: str
+    new_password2: str
+    token: str
+
+
+@strawberry.input
 class PostInput:
     slug: Optional[str] = None
     title: str
