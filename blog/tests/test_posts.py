@@ -20,10 +20,10 @@ def test_create_post(
     auth()
     create_categories()
     post_input = {
-        "postInput": {
-            "title": "test_post",
-            "text": "this a test",
-            "category": 2,
+        'postInput': {
+            'title': 'test_post',
+            'text': 'this a test',
+            'category': 2,
         }
     }
 
@@ -38,19 +38,19 @@ def test_create_post(
 
     post_title: Dict = create_post.get('title', None)
     assert post_title is not None
-    assert post_title == "test_post"
+    assert post_title == 'test_post'
 
     post_slug: Dict = create_post.get('slug', None)
     assert post_slug is not None
-    assert post_slug == "test_post"
+    assert post_slug == 'test_post'
 
     post_owner: Dict = create_post.get('owner', None)
     assert post_owner is not None
-    assert post_owner.get('username', None) == "jane.doe@blogapp.lo"
+    assert post_owner.get('username', None) == 'jane.doe@blogapp.lo'
 
     post_category: Dict = create_post.get('category', None)
     assert post_category is not None
-    assert post_category.get('slug', None) == "test_category2"
+    assert post_category.get('slug', None) == 'test_category2'
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
@@ -63,10 +63,10 @@ def test_create_post_too_long_fields(
     auth()
     create_categories()
     post_input = {
-        "postInput": {
-            "title": "e" * 201,
-            "text": "this a test",
-            "category": 2,
+        'postInput': {
+            'title': 'e' * 201,
+            'text': 'this a test',
+            'category': 2,
         }
     }
 
@@ -88,10 +88,10 @@ def test_create_post_invalid_owner_id(
 ) -> None:
     create_categories()
     post_input = {
-        "postInput": {
-            "title": "test_post",
-            "text": "this a test",
-            "category": 2,
+        'postInput': {
+            'title': 'test_post',
+            'text': 'this a test',
+            'category': 2,
         }
     }
 
@@ -113,10 +113,10 @@ def test_create_post_invalid_category_id(
 ) -> None:
     auth()
     post_input = {
-        "postInput": {
-            "title": "test_post",
-            "text": "this a test",
-            "category": 1,
+        'postInput': {
+            'title': 'test_post',
+            'text': 'this a test',
+            'category': 1,
         }
     }
 
@@ -139,12 +139,12 @@ def test_update_post(
 ) -> None:
     create_posts()
     post_input = {
-        "postInput": {
-            "slug": "test_post-1",
-            "title": "Test_post3",
-            "text": "New Text",
-            "category": 1,
-            "owner": 1,
+        'postInput': {
+            'slug': 'test_post-1',
+            'title': 'Test_post3',
+            'text': 'New Text',
+            'category': 1,
+            'owner': 1,
         }
     }
 
@@ -159,16 +159,16 @@ def test_update_post(
 
     post_title: Dict = update_post.get('title', None)
     assert post_title is not None
-    assert post_title == "Test_post3"
+    assert post_title == 'Test_post3'
 
     post_slug: Dict = update_post.get('slug', None)
     assert post_slug is not None
-    assert post_slug == "test_post-1"
+    assert post_slug == 'test_post-1'
 
     post_owner: Dict = update_post.get('owner', None)
     assert post_owner is not None
-    assert post_owner.get('username', None) == "test_user1"
+    assert post_owner.get('username', None) == 'test_user1'
 
     post_category: Dict = update_post.get('category', None)
     assert post_category is not None
-    assert post_category.get('slug', None) == "test_category1"
+    assert post_category.get('slug', None) == 'test_category1'

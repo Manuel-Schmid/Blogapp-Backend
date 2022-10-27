@@ -15,7 +15,7 @@ class User(AbstractUser):
 
 class UserStatus(models.Model):
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="status"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='status'
     )
     verified = models.BooleanField(default=False)
     archived = models.BooleanField(default=False)
@@ -40,13 +40,13 @@ class UserStatus(models.Model):
     def get_email_context(self, url_path: str, action: TokenAction, **kwargs) -> object:
         token = get_token(self.user, action, **kwargs)
         return {
-            "user": self.user,
-            "token": token,
-            "port": settings.FRONTEND_PORT,
-            "site_name": settings.FRONTEND_SITE_NAME,
-            "protocol": settings.FRONTEND_PROTOCOL,
-            "path": url_path,
-            "frontend_domain": settings.FRONTEND_DOMAIN
+            'user': self.user,
+            'token': token,
+            'port': settings.FRONTEND_PORT,
+            'site_name': settings.FRONTEND_SITE_NAME,
+            'protocol': settings.FRONTEND_PROTOCOL,
+            'path': url_path,
+            'frontend_domain': settings.FRONTEND_DOMAIN
         }
 
     def send_activation_email(self) -> None:
@@ -71,7 +71,7 @@ class UserStatus(models.Model):
             user_status = UserStatus.objects.get(user=user)
             if user_status.verified is False:
                 user_status.verified = True
-                user_status.save(update_fields=["verified"])
+                user_status.save(update_fields=['verified'])
                 return True
         return False
 

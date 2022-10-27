@@ -10,11 +10,11 @@ def test_register(
         client_query: Callable,
 ) -> None:
     user_registration_input = {
-        "userRegistrationInput": {
-            "email": "admin@admin.com",
-            "username": "abc",
-            "password1": "helloWorld++x",
-            "password2": "helloWorld++x"
+        'userRegistrationInput': {
+            'email': 'admin@admin.com',
+            'username': 'abc',
+            'password1': 'helloWorld++x',
+            'password2': 'helloWorld++x'
         }
     }
 
@@ -42,11 +42,11 @@ def test_register_duplicate_email(
         client_query: Callable,
 ) -> None:
     user_registration_input = {
-        "userRegistrationInput": {
-            "email": "admin@admin.com",
-            "username": "abc",
-            "password1": "helloWorld++x",
-            "password2": "helloWorld++x"
+        'userRegistrationInput': {
+            'email': 'admin@admin.com',
+            'username': 'abc',
+            'password1': 'helloWorld++x',
+            'password2': 'helloWorld++x'
         }
     }
 
@@ -76,7 +76,7 @@ def test_verify_invalid_token(
         client_query: Callable,
 ) -> None:
     token = {
-        "token": "test_token",
+        'token': 'test_token',
     }
 
     query: str = import_query('verifyAccount.graphql')
