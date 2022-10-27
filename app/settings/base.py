@@ -59,12 +59,25 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'app.urls'
 
+ACTIVATION_PATH_ON_EMAIL = 'activate'
+
 FRONTEND_DOMAIN = os.getenv('FRONTEND_DOMAIN')
+FRONTEND_SITE_NAME = os.getenv('FRONTEND_SITE_NAME')
+FRONTEND_PORT = os.getenv('FRONTEND_PORT')
+FRONTEND_PROTOCOL = os.getenv('FRONTEND_PROTOCOL')
+
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_FROM = os.getenv('EMAIL_FROM')
+
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = False
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['test/templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'blog/templates/blog')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -169,14 +182,8 @@ GRAPHQL_JWT = {
     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
     'JWT_VERIFY_EXPIRATION': True,
     'JWT_COOKIE_SECURE': True,
-    "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
+    'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
 }
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp'
-EMAIL_PORT = '25'
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = False
 
 # Logging
 

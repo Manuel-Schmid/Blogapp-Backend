@@ -3,6 +3,14 @@ import strawberry
 
 
 @strawberry.input
+class UserRegistrationInput:
+    email: str
+    username: str
+    password1: str
+    password2: str
+
+
+@strawberry.input
 class PostInput:
     slug: Optional[str] = None
     title: str

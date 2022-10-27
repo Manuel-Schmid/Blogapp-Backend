@@ -1,11 +1,13 @@
+from django.contrib.auth import get_user_model
 from django.forms import ModelForm
-from blog.models import User, Category, Post, Comment, PostLike
+from django.contrib.auth.forms import UserCreationForm
+from blog.models import Category, Post, Comment, PostLike
 
 
-class UserForm(ModelForm):
+class UserForm(UserCreationForm):
     class Meta:
-        model = User
-        fields = ['email', 'password', 'username', 'first_name', 'last_name']
+        model = get_user_model()
+        fields = ['email', 'password1', 'password2', 'username']
 
 
 class CategoryForm(ModelForm):

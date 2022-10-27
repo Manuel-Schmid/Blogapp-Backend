@@ -43,7 +43,7 @@ def test_query_posts_by_category(
 ) -> None:
     create_posts()
     filter_input = {
-        "categorySlug": "test_category1",
+        'categorySlug': 'test_category1',
     }
 
     query: str = import_query('paginatedFilteredPostsQuery.graphql')
@@ -75,7 +75,7 @@ def test_query_posts_by_tag(
 ) -> None:
     create_tags()
     filter_input = {
-        "tagSlugs": "tag_2_slug",
+        'tagSlugs': 'tag_2_slug',
     }
 
     query: str = import_query('paginatedFilteredPostsQuery.graphql')
@@ -106,7 +106,7 @@ def test_query_existing_post_by_tag_and_category(
     client_query: Callable,
 ) -> None:
     create_tags()
-    filter_input = {"tagSlugs": "tag_2_slug", "categorySlug": "test_category2"}
+    filter_input = {'tagSlugs': 'tag_2_slug', 'categorySlug': 'test_category2'}
 
     query: str = import_query('paginatedFilteredPostsQuery.graphql')
     response: Response = client_query(query, filter_input)
@@ -136,7 +136,7 @@ def test_query_non_existent_post_by_tag_and_category(
     client_query: Callable,
 ) -> None:
     create_tags()
-    filter_input = {"tagSlugs": "tag_2_slug", "categorySlug": "test_category1"}
+    filter_input = {'tagSlugs': 'tag_2_slug', 'categorySlug': 'test_category1'}
 
     query: str = import_query('paginatedFilteredPostsQuery.graphql')
     response: Response = client_query(query, filter_input)

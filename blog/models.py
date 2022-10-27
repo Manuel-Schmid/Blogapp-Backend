@@ -1,11 +1,73 @@
+from django.contrib.auth import get_user_model
+from django.core.mail import EmailMessage
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.template.loader import render_to_string
 from taggit.managers import TaggableManager
 from autoslug import AutoSlugField
+from django.conf import settings
+from blog.utils import TokenAction, get_token, get_token_payload
 
 
 class User(AbstractUser):
     pass
+
+
+class UserStatus(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='status'
+    )
+    verified = models.BooleanField(default=False)
+    archived = models.BooleanField(default=False)
+    secondary_email = models.EmailField(blank=True, null=True)
+
+    def __str__(self) -> str:
+        return f'{self.user} - status'
+
+    def send(self, subject_path: str, template_path: str, email_context: object) -> None:
+        html_message = render_to_string(template_path, email_context)
+        subject = open(subject_path, 'r').read()
+
+        mail = EmailMessage(
+            subject=subject,
+            body=html_message,
+            from_email=settings.EMAIL_FROM,
+            to=[getattr(self.user, get_user_model().EMAIL_FIELD)],
+        )
+        mail.content_subtype = 'html'
+        mail.send()
+
+    def get_email_context(self, url_path: str, action: TokenAction, **kwargs) -> object:
+        token = get_token(self.user, action, **kwargs)
+        return {
+            'user': self.user,
+            'token': token,
+            'port': settings.FRONTEND_PORT,
+            'site_name': settings.FRONTEND_SITE_NAME,
+            'protocol': settings.FRONTEND_PROTOCOL,
+            'path': url_path,
+            'frontend_domain': settings.FRONTEND_DOMAIN
+        }
+
+    def send_activation_email(self) -> None:
+        template_path = 'email/activation_email.html'
+        subject_path = 'blog/templates/blog/email/activation_subject.txt'
+        email_context = self.get_email_context(settings.ACTIVATION_PATH_ON_EMAIL, TokenAction.ACTIVATION)
+        self.send(subject_path, template_path, email_context)
+
+    @staticmethod
+    def verify(token: str) -> bool:
+        payload = get_token_payload(
+            token, TokenAction.ACTIVATION
+        )
+        if payload:
+            user = User._default_manager.get(**payload)
+            user_status = UserStatus.objects.get(user=user)
+            if user_status.verified is False:
+                user_status.verified = True
+                user_status.save(update_fields=['verified'])
+                return True
+        return False
 
 
 def slugify(string: str) -> str:

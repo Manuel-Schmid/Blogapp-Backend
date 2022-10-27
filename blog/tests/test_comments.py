@@ -20,10 +20,10 @@ def test_create_comment(
     auth()
     create_posts()
     comment_input = {
-        "commentInput": {
-            "title": "test_comment",
-            "text": "test_comment_text",
-            "post": 1,
+        'commentInput': {
+            'title': 'test_comment',
+            'text': 'test_comment_text',
+            'post': 1,
         }
     }
 
@@ -38,15 +38,15 @@ def test_create_comment(
 
     comment_title: Dict = create_comment.get('title', None)
     assert comment_title is not None
-    assert comment_title == "test_comment"
+    assert comment_title == 'test_comment'
 
     comment_owner: Dict = create_comment.get('owner', None)
     assert comment_owner is not None
-    assert comment_owner.get('username', None) == "jane.doe@blogapp.lo"
+    assert comment_owner.get('username', None) == 'jane.doe@blogapp.lo'
 
     comment_post: Dict = create_comment.get('post', None)
     assert comment_post is not None
-    assert comment_post.get('slug', None) == "test_post-1"
+    assert comment_post.get('slug', None) == 'test_post-1'
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
@@ -59,10 +59,10 @@ def test_create_comment_too_long_fields(
     auth()
     create_posts()
     comment_input = {
-        "commentInput": {
-            "title": "e" * 201,
-            "text": "test_comment_text",
-            "post": 1,
+        'commentInput': {
+            'title': 'e' * 201,
+            'text': 'test_comment_text',
+            'post': 1,
         }
     }
 
@@ -84,10 +84,10 @@ def test_create_comment_invalid_post_id(
 ) -> None:
     auth()
     comment_input = {
-        "commentInput": {
-            "title": "test_comment",
-            "text": "test_comment_text",
-            "post": 1,
+        'commentInput': {
+            'title': 'test_comment',
+            'text': 'test_comment_text',
+            'post': 1,
         }
     }
 
@@ -109,10 +109,10 @@ def test_create_comment_invalid_owner_id(
 ) -> None:
     create_posts()
     comment_input = {
-        "commentInput": {
-            "title": "test_comment",
-            "text": "test_comment_text",
-            "post": 1,
+        'commentInput': {
+            'title': 'test_comment',
+            'text': 'test_comment_text',
+            'post': 1,
         }
     }
 
@@ -136,10 +136,10 @@ def test_update_comment(
     auth()
     create_comments()
     comment_input = {
-        "commentInput": {
-            "id": 2,
-            "title": "test_comment3",
-            "text": "test_comment_text3",
+        'commentInput': {
+            'id': 2,
+            'title': 'test_comment3',
+            'text': 'test_comment_text3',
         }
     }
 
@@ -154,7 +154,7 @@ def test_update_comment(
 
     comment_title: Dict = update_comment.get('title', None)
     assert comment_title is not None
-    assert comment_title == "test_comment3"
+    assert comment_title == 'test_comment3'
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
@@ -166,7 +166,7 @@ def test_delete_comment(
 ) -> None:
     auth()
     create_comments()
-    comment_input = {"commentId": 2}
+    comment_input = {'commentId': 2}
 
     query: str = import_query('deleteComment.graphql')
     response: Response = client_query(query, comment_input)

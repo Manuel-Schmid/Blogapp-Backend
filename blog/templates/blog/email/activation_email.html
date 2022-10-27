@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ site_name }} Account Activation</title>
+</head>
+<body>
+<h3>{{ site_name }}</h3>
+
+<p>Hello {{ user.username }}</p>
+
+<p>You can activate your account: <a href="{{ protocol }}://{{ frontend_domain }}:{{ port }}/{{ path }}/{{ token }}">here</a>.</p>
+
+<p>We wish you a nice day and happy blogging!</p>
+</body>
+</html>

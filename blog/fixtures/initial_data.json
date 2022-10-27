@@ -54,6 +54,42 @@
     }
 },
 {
+    "model": "blog.userstatus",
+    "pk": 1,
+    "fields": {
+        "user": [
+            "admin"
+        ],
+        "verified": true,
+        "archived": false,
+        "secondary_email": null
+    }
+},
+{
+    "model": "blog.userstatus",
+    "pk": 2,
+    "fields": {
+        "user": [
+            "John"
+        ],
+        "verified": true,
+        "archived": true,
+        "secondary_email": null
+    }
+},
+{
+    "model": "blog.userstatus",
+    "pk": 3,
+    "fields": {
+        "user": [
+            "Richard"
+        ],
+        "verified": true,
+        "archived": false,
+        "secondary_email": null
+    }
+},
+{
     "model": "blog.category",
     "pk": 1,
     "fields": {
