@@ -68,3 +68,24 @@ def test_register_duplicate_email(
 
     assert len(mail.outbox) == 1
     assert mail.outbox[0].to == ['admin@admin.com']
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_verify_invalid_token(
+        import_query: Callable,
+        client_query: Callable,
+) -> None:
+    token = {
+        "token": "test_token",
+    }
+
+    query: str = import_query('verifyAccount.graphql')
+    response: Response = client_query(query, token)
+
+    assert response is not None
+    verify_account: Dict = response.data.get('verifyAccount', None)
+    assert verify_account is not None
+
+    success: Dict = verify_account.get('success', None)
+    assert success is not None
+    assert success is False
