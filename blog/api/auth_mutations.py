@@ -2,14 +2,14 @@ import strawberry
 from blog.forms import UserForm
 from blog.models import UserStatus
 from blog.api.inputs import UserRegistrationInput
-from blog.api.types import RegisterType
+from blog.api.types import RegisterAccountType, VerifyAccountType
 
 
 class AuthMutations:
     @strawberry.mutation
     def register(
         self, user_registration_input: UserRegistrationInput
-    ) -> RegisterType:
+    ) -> RegisterAccountType:
         errors = {}
         has_errors = False
 
@@ -25,4 +25,11 @@ class AuthMutations:
             )
             user_status.send_activation_email()
 
-        return RegisterType(success=not has_errors, errors=errors if errors else None)
+        return RegisterAccountType(success=not has_errors, errors=errors if errors else None)
+
+
+    @strawberry.mutation
+    def verify_account(
+            self, token: str
+    ) -> VerifyAccountType:
+        return VerifyAccountType(success=UserStatus.verify(token))

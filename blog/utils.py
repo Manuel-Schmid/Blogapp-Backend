@@ -16,3 +16,11 @@ def get_token(user: any, action: TokenAction, **kwargs) -> str:
         payload.update(**kwargs)
     token = signing.dumps(payload)
     return token
+
+
+def get_token_payload(token, action, exp=None):
+    payload = signing.loads(token, max_age=exp)
+    _action = payload.pop("action")
+    if _action != action:
+        return None
+    return payload

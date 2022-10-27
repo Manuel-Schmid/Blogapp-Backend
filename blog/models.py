@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from taggit.managers import TaggableManager
 from autoslug import AutoSlugField
 from django.conf import settings
-from blog.utils import TokenAction, get_token
+from blog.utils import TokenAction, get_token, get_token_payload
 
 
 class User(AbstractUser):
@@ -54,6 +54,19 @@ class UserStatus(models.Model):
         subject_path = "blog/templates/blog/email/activation_subject.txt"
         email_context = self.get_email_context(settings.ACTIVATION_PATH_ON_EMAIL, TokenAction.ACTIVATION)
         self.send(subject_path, template_path, email_context)
+
+    @staticmethod
+    def verify(token: str) -> bool:
+        payload = get_token_payload(
+            token, TokenAction.ACTIVATION
+        )
+        user = User._default_manager.get(**payload)
+        user_status = UserStatus.objects.get(user=user)
+        if user_status.verified is False:
+            user_status.verified = True
+            user_status.save(update_fields=["verified"])
+            return True
+        return False
 
 
 def slugify(string: str) -> str:
