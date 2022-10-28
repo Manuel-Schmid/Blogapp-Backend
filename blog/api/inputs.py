@@ -25,6 +25,12 @@ class PasswordResetInput:
 
 
 @strawberry.input
+class UpdateAccountInput:
+    first_name: str
+    last_name: str
+
+
+@strawberry.input
 class PostInput:
     slug: Optional[str] = None
     title: str

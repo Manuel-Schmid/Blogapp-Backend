@@ -36,6 +36,7 @@ class AuthMutation:
     password_change = AuthMutations.password_change
     send_password_reset_email = AuthMutations.send_password_reset_email
     password_reset = AuthMutations.password_reset
+    update_account = AuthMutations.update_account
 
 
 @strawberry.type

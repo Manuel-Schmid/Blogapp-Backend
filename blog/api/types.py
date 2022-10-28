@@ -46,6 +46,11 @@ class PasswordChangeType(BaseGraphQLType):
     success: bool
 
 
+@strawberry.type
+class UpdateAccountType(BaseGraphQLType):
+    success: bool
+
+
 @gql.django.type(CategoryModel)
 class Category:
     id: strawberry.ID

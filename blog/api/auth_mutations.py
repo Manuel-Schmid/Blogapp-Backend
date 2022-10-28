@@ -2,11 +2,11 @@ import strawberry
 from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from strawberry.types import Info
 
-from blog.forms import UserForm
+from blog.forms import UserForm, UpdateAccountForm
 from blog.models import UserStatus, User
-from blog.api.inputs import UserRegistrationInput, PasswordChangeInput, PasswordResetInput
+from blog.api.inputs import UserRegistrationInput, PasswordChangeInput, PasswordResetInput, UpdateAccountInput
 from blog.api.types import RegisterAccountType, VerifyAccountType, PasswordChangeType, PasswordResetType, \
-    SendPasswordResetEmailType
+    SendPasswordResetEmailType, UpdateAccountType
 from blog.utils import TokenAction, get_token_payload
 
 
@@ -54,7 +54,7 @@ class AuthMutations:
             if not has_errors:
                 form.save()
 
-            return PasswordChangeType(success=not has_errors, errors=errors if errors else None)
+        return PasswordChangeType(success=not has_errors, errors=errors if errors else None)
 
     @strawberry.mutation
     def send_password_reset_email(
@@ -86,3 +86,32 @@ class AuthMutations:
             errors.update({'token': 'Invalid Token'})
 
         return PasswordResetType(success=not has_errors, errors=errors if errors else None)
+
+
+    @strawberry.mutation
+    def update_account(self, info: Info, update_account_input: UpdateAccountInput) -> UpdateAccountType:
+        errors = {}
+        has_errors = False
+
+        user = info.context.request.user
+        if user.is_authenticated:
+
+            if not UserStatus.objects.get(user=user).verified:
+                has_errors = True
+                errors.update({'user': 'User not verified'})
+
+
+            form = UpdateAccountForm(instance=user, data=vars(update_account_input))
+
+            if not form.is_valid():
+                has_errors = True
+                errors.update(form.errors.get_json_data())
+
+            if not has_errors:
+                form.save()
+
+        else:
+            has_errors = True
+            errors.update({'user': 'Not authenticated'})
+
+        return UpdateAccountType(success=not has_errors, errors=errors if errors else None)
