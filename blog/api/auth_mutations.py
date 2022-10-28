@@ -87,7 +87,6 @@ class AuthMutations:
 
         return PasswordResetType(success=not has_errors, errors=errors if errors else None)
 
-
     @strawberry.mutation
     def update_account(self, info: Info, update_account_input: UpdateAccountInput) -> UpdateAccountType:
         errors = {}
@@ -99,7 +98,6 @@ class AuthMutations:
             if not UserStatus.objects.get(user=user).verified:
                 has_errors = True
                 errors.update({'user': 'User not verified'})
-
 
             form = UpdateAccountForm(instance=user, data=vars(update_account_input))
 

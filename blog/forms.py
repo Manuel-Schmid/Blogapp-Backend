@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.forms import ModelForm
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm
 from blog.models import Category, Post, Comment, PostLike
 
 
@@ -9,10 +9,12 @@ class UserForm(UserCreationForm):
         model = get_user_model()
         fields = ['email', 'password1', 'password2', 'username']
 
+
 class UpdateAccountForm(ModelForm):
     class Meta:
         model = get_user_model()
         fields = ['first_name', 'last_name']
+
 
 class CategoryForm(ModelForm):
     class Meta:
