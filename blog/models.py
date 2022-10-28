@@ -10,7 +10,7 @@ from blog.utils import TokenAction, get_token, get_token_payload
 
 
 class User(AbstractUser):
-    pass
+    email = models.EmailField(blank=True)
 
 
 class UserStatus(models.Model):
