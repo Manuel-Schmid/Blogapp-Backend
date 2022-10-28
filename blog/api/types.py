@@ -37,6 +37,11 @@ class SendPasswordResetEmailType:
 
 
 @strawberry.type
+class ResendActivationEmailType(BaseGraphQLType):
+    success: bool
+
+
+@strawberry.type
 class PasswordResetType(BaseGraphQLType):
     success: bool
 
