@@ -117,6 +117,7 @@ class AuthMutations:
     def email_change(self, email_change_input: EmailChangeInput) -> EmailChangeType:
         errors = {}
         has_errors = False
+        user = None
 
         payload = get_token_payload(email_change_input.token, TokenAction.EMAIL_CHANGE)
         if payload:
@@ -134,5 +135,7 @@ class AuthMutations:
             errors.update({'token': 'Invalid Token'})
 
         return EmailChangeType(
-            success=not has_errors, errors=errors if errors else None
+            success=not has_errors,
+            errors=errors if errors else None,
+            user=user if not has_errors else None,
         )

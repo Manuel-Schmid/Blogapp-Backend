@@ -54,6 +54,7 @@ class PasswordChangeType(BaseGraphQLType):
 @strawberry.type
 class EmailChangeType(BaseGraphQLType):
     success: bool
+    user: typing.Optional['User']
 
 
 @gql.django.type(CategoryModel)
