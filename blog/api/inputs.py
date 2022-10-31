@@ -21,6 +21,7 @@ class PasswordChangeInput:
 class EmailChangeInput:
     new_email1: str
     new_email2: str
+    token: str
 
 
 @strawberry.input

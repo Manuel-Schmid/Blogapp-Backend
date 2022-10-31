@@ -4,6 +4,7 @@ from django.core import signing
 class TokenAction:
     ACTIVATION = 'activation'
     PASSWORD_RESET = 'password_reset'
+    EMAIL_CHANGE = 'email_change'
     ACTIVATION_SECONDARY_EMAIL = 'activation_secondary_email'
 
 

@@ -24,7 +24,9 @@ class UserStatus(models.Model):
     def __str__(self) -> str:
         return f'{self.user} - status'
 
-    def send(self, subject_path: str, template_path: str, email_context: object) -> None:
+    def send(
+        self, subject_path: str, template_path: str, email_context: object
+    ) -> None:
         html_message = render_to_string(template_path, email_context)
         subject = render_to_string(subject_path, email_context)
 
@@ -46,26 +48,36 @@ class UserStatus(models.Model):
             'site_name': settings.FRONTEND_SITE_NAME,
             'protocol': settings.FRONTEND_PROTOCOL,
             'path': url_path,
-            'frontend_domain': settings.FRONTEND_DOMAIN
+            'frontend_domain': settings.FRONTEND_DOMAIN,
         }
 
     def send_activation_email(self) -> None:
         template_path = "blog/email/activation_email.html"
         subject_path = "blog/email/activation_subject.txt"
-        email_context = self.get_email_context(settings.ACTIVATION_PATH_ON_EMAIL, TokenAction.ACTIVATION)
+        email_context = self.get_email_context(
+            settings.ACTIVATION_PATH_ON_EMAIL, TokenAction.ACTIVATION
+        )
         self.send(subject_path, template_path, email_context)
 
     def send_password_reset_email(self) -> None:
         template_path = "blog/email/password_reset_email.html"
         subject_path = "blog/email/password_reset_subject.txt"
-        email_context = self.get_email_context(settings.PASSWORD_RESET_PATH_ON_EMAIL, TokenAction.PASSWORD_RESET)
+        email_context = self.get_email_context(
+            settings.PASSWORD_RESET_PATH_ON_EMAIL, TokenAction.PASSWORD_RESET
+        )
+        self.send(subject_path, template_path, email_context)
+
+    def send_email_change_email(self) -> None:
+        template_path = "blog/email/email_change_email.html"
+        subject_path = "blog/email/email_change_email.txt"
+        email_context = self.get_email_context(
+            settings.EMAIL_CHANGE_PATH_ON_EMAIL, TokenAction.EMAIL_CHANGE
+        )
         self.send(subject_path, template_path, email_context)
 
     @staticmethod
     def verify(token: str) -> bool:
-        payload = get_token_payload(
-            token, TokenAction.ACTIVATION
-        )
+        payload = get_token_payload(token, TokenAction.ACTIVATION)
         if payload:
             user = User.objects.get(**payload)
             user_status = UserStatus.objects.get(user=user)
