@@ -1,10 +1,10 @@
-from importlib._common import _
+from django.db.models import Count
 
 from django import forms
 from django.contrib.auth import get_user_model
 from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm
-from blog.models import Category, Post, Comment, PostLike
+from blog.models import Category, Post, Comment, PostLike, User
 
 
 class UserForm(UserCreationForm):
@@ -15,17 +15,18 @@ class UserForm(UserCreationForm):
 
 class EmailChangeForm(forms.Form):
     error_messages = {
-        'email_mismatch': _("The two email addresses fields didn't match."),
-        'not_changed': _("The email address is the same as the one already defined."),
+        'email_mismatch': "The two email addresses fields didn't match",
+        'not_changed': "The email address is the same as the one already defined",
+        'duplicate_email': "There is already an account using this email address",
     }
 
     new_email1 = forms.EmailField(
-        label=_("New email address"),
+        label="New email address",
         widget=forms.EmailInput,
     )
 
     new_email2 = forms.EmailField(
-        label=_("New email address confirmation"),
+        label="New email address confirmation",
         widget=forms.EmailInput,
     )
 
@@ -41,6 +42,11 @@ class EmailChangeForm(forms.Form):
                 raise forms.ValidationError(
                     self.error_messages['not_changed'],
                     code='not_changed',
+                )
+            if len(User.objects.filter(email=new_email1).annotate(Count('id'))) > 0:
+                raise forms.ValidationError(
+                    self.error_messages['duplicate_email'],
+                    code='duplicate_email',
                 )
         return new_email1
 
