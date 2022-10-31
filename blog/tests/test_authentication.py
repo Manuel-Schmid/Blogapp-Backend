@@ -6,15 +6,15 @@ from strawberry.test import Response
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_register(
-        import_query: Callable,
-        client_query: Callable,
+    import_query: Callable,
+    client_query: Callable,
 ) -> None:
     user_registration_input = {
         'userRegistrationInput': {
             'email': 'admin@admin.com',
             'username': 'abc',
             'password1': 'helloWorld++x',
-            'password2': 'helloWorld++x'
+            'password2': 'helloWorld++x',
         }
     }
 
@@ -38,15 +38,15 @@ def test_register(
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_register_duplicate_email(
-        import_query: Callable,
-        client_query: Callable,
+    import_query: Callable,
+    client_query: Callable,
 ) -> None:
     user_registration_input = {
         'userRegistrationInput': {
             'email': 'admin@admin.com',
             'username': 'abc',
             'password1': 'helloWorld++x',
-            'password2': 'helloWorld++x'
+            'password2': 'helloWorld++x',
         }
     }
 
@@ -72,8 +72,8 @@ def test_register_duplicate_email(
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_verify_invalid_token(
-        import_query: Callable,
-        client_query: Callable,
+    import_query: Callable,
+    client_query: Callable,
 ) -> None:
     token = {
         'token': 'test_token',

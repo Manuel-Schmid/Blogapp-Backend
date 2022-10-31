@@ -125,7 +125,7 @@ def fixture_auth(
 ) -> Callable:
     def func() -> None:
         username: str = 'jane.doe@blogapp.lo'
-        password: str = 'password'
+        password: str = 'admin_password_155'
         user: User = create_user(username=username)
         user.set_password(password)
         user.save()
