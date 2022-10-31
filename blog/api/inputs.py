@@ -18,6 +18,12 @@ class PasswordChangeInput:
 
 
 @strawberry.input
+class EmailChangeInput:
+    new_email1: str
+    new_email2: str
+
+
+@strawberry.input
 class PasswordResetInput:
     new_password1: str
     new_password2: str
