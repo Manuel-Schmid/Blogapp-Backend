@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm
 from blog.models import Category, Post, Comment, PostLike, User
+from blog.api.types import User as UserType
 
 
 class UserForm(UserCreationForm):
@@ -30,11 +31,11 @@ class EmailChangeForm(forms.Form):
         widget=forms.EmailInput,
     )
 
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, user: UserType, *args: any, **kwargs: any) -> None:
         self.user = user
         super(EmailChangeForm, self).__init__(*args, **kwargs)
 
-    def clean_new_email1(self):
+    def clean_new_email1(self) -> str:
         old_email = self.user.email
         new_email1 = self.cleaned_data.get('new_email1')
         if new_email1 and old_email:
@@ -50,7 +51,7 @@ class EmailChangeForm(forms.Form):
                 )
         return new_email1
 
-    def clean_new_email2(self):
+    def clean_new_email2(self) -> str:
         new_email1 = self.cleaned_data.get('new_email1')
         new_email2 = self.cleaned_data.get('new_email2')
         if new_email1 and new_email2:
@@ -61,7 +62,7 @@ class EmailChangeForm(forms.Form):
                 )
         return new_email2
 
-    def save(self, commit=True):
+    def save(self, commit: bool = True) -> UserType:
         email = self.cleaned_data["new_email1"]
         self.user.email = email
         if commit:
