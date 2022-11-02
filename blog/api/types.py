@@ -57,6 +57,11 @@ class PasswordChangeType(BaseGraphQLType):
 
 
 @strawberry.type
+class UpdateAccountType(BaseGraphQLType):
+    success: bool
+
+
+@strawberry.type
 class EmailChangeType(BaseGraphQLType):
     success: bool
     user: typing.Optional['User']
