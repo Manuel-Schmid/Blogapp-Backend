@@ -39,6 +39,11 @@ class SendPasswordResetEmailType:
 @strawberry.type
 class ResendActivationEmailType(BaseGraphQLType):
     success: bool
+    
+
+@strawberry.type
+class SendEmailChangeEmailType:
+    success: bool
 
 
 @strawberry.type
@@ -49,6 +54,12 @@ class PasswordResetType(BaseGraphQLType):
 @strawberry.type
 class PasswordChangeType(BaseGraphQLType):
     success: bool
+
+
+@strawberry.type
+class EmailChangeType(BaseGraphQLType):
+    success: bool
+    user: typing.Optional['User']
 
 
 @gql.django.type(CategoryModel)
