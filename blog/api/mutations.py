@@ -32,6 +32,7 @@ class AuthMutation:
     delete_refresh_token_cookie = jwt_mutations.DeleteRefreshTokenCookie.delete_cookie
 
     register = AuthMutations.register
+    resend_activation_email = AuthMutations.resend_activation_email
     verify_account = AuthMutations.verify_account
     password_change = AuthMutations.password_change
     email_change = AuthMutations.email_change
