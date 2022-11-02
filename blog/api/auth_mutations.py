@@ -119,20 +119,30 @@ class AuthMutations:
         has_errors = False
         user = None
 
-        payload = get_token_payload(email_change_input.token, TokenAction.EMAIL_CHANGE)
-        if payload:
-            user = User.objects.get(**payload)
-            form = EmailChangeForm(user=user, data=vars(email_change_input))
-
-            if not form.is_valid():
-                has_errors = True
-                errors.update(form.errors.get_json_data())
-
-            if not has_errors:
-                form.save()
-        else:
+        if email_change_input.new_email1 != email_change_input.new_email2:
             has_errors = True
-            errors.update({'token': 'Invalid Token'})
+            errors.update(
+                {'email_mismatch': 'The two email address fields did not match'}
+            )
+
+        else:
+            payload = get_token_payload(
+                email_change_input.token, TokenAction.EMAIL_CHANGE
+            )
+            if payload:
+                user = User.objects.get(**payload)
+                form = EmailChangeForm(
+                    instance=user, data={"email": email_change_input.new_email1}
+                )
+
+                if not form.is_valid():
+                    errors.update(form.errors.get_json_data())
+
+                if not has_errors:
+                    form.save()
+            else:
+                has_errors = True
+                errors.update({'token': 'Invalid Token'})
 
         return EmailChangeType(
             success=not has_errors,
