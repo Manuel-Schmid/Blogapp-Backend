@@ -78,3 +78,12 @@ Whenever you change the api, run the following command:
 ## Update Fixtures
 
     ./manage.py dumpdata --natural-foreign --indent 4 --exclude admin --exclude auth --exclude contenttypes --exclude sessions --exclude refresh_token.refreshtoken > blog/fixtures/initial_data.json
+
+##
+Returning a lot of "fake" posts for testing:
+
+    posts_list = []
+    for post in posts:
+        for i in range(100):
+            posts_list.append(post)
+    paginator = Paginator(posts_list, 4)
