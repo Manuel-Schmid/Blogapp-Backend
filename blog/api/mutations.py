@@ -34,7 +34,9 @@ class AuthMutation:
     register = AuthMutations.register
     verify_account = AuthMutations.verify_account
     password_change = AuthMutations.password_change
+    email_change = AuthMutations.email_change
     send_password_reset_email = AuthMutations.send_password_reset_email
+    send_email_change_email = AuthMutations.send_email_change_email
     password_reset = AuthMutations.password_reset
 
 
