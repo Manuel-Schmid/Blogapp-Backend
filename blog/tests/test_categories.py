@@ -4,9 +4,7 @@ from strawberry.test import Response
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
-def test_create_categories(
-    create_categories: Callable, import_query: Callable, client_query: Callable
-) -> None:
+def test_create_categories(create_categories: Callable) -> None:
     assert len(create_categories()) == 2
 
 

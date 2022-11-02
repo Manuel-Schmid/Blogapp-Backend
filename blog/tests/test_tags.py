@@ -4,9 +4,7 @@ from strawberry.test import Response
 
 
 @pytest.mark.django_db
-def test_create_tags(
-    create_tags: Callable, import_query: Callable, client_query: Callable
-) -> None:
+def test_create_tags(create_tags: Callable) -> None:
     assert len(create_tags()) == 3
 
 
