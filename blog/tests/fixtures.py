@@ -5,6 +5,7 @@ import typing
 from typing import Dict, Optional, Callable, Union, Coroutine, Any
 
 import pytest
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.http import JsonResponse
@@ -21,7 +22,7 @@ from blog.api.types import (
     Comment as CommentType,
     PostLike as PostLikeType,
 )
-from blog.models import Category, User, Post, Comment, PostLike
+from blog.models import Category, User, Post, Comment, PostLike, UserStatus
 
 
 class GraphqlTestClient(BaseGraphQLTestClient):
@@ -134,6 +135,21 @@ def fixture_auth(
     return func
 
 
+@pytest.fixture(name='get_token_from_mail')
+def fixture_get_token_from_mail() -> Callable:
+    def func(mail_body: any, path: str) -> str:
+        regex = r'{}://{}:{}/{}/(.+)\"'.format(
+            re.escape(settings.FRONTEND_PROTOCOL),
+            re.escape(settings.FRONTEND_DOMAIN),
+            re.escape(settings.FRONTEND_PORT),
+            re.escape(path),
+        )
+        url = re.findall(regex, str(mail_body))
+        return url[0] if len(url) > 0 else None
+
+    return func
+
+
 @pytest.fixture(name='login')
 def fixture_login(client_query: Callable, import_query: Callable) -> Callable:
     def func(username: str, password: str) -> JsonResponse:
@@ -192,9 +208,15 @@ def fixture_create_users(client_query: Callable, import_query: Callable) -> Call
         user1 = User.objects.create(username='test_user1', email='user1@example.com')
         user1.set_password('password1')
         user1.save()
+        UserStatus.objects.create(
+            user=user1, verified=False, archived=False, secondary_email=False
+        )
         user2 = User.objects.create(username='test_user2', email='user2@example.com')
         user2.set_password('password2')
         user2.save()
+        UserStatus.objects.create(
+            user=user2, verified=False, archived=False, secondary_email=False
+        )
         return User.objects.all()
 
     return func
