@@ -136,6 +136,7 @@ class AuthMutations:
                 )
 
                 if not form.is_valid():
+                    has_errors = True
                     errors.update(form.errors.get_json_data())
 
                 if not has_errors:
