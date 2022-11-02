@@ -78,3 +78,9 @@ Whenever you change the api, run the following command:
 ## Update Fixtures
 
     ./manage.py dumpdata --natural-foreign --indent 4 --exclude admin --exclude auth --exclude contenttypes --exclude sessions --exclude refresh_token.refreshtoken > blog/fixtures/initial_data.json
+
+## Flake8
+
+Ignore a certain rule for a line
+    
+    ...code...  # noqa: W503 (or whatever rule you want to ignore)
