@@ -18,6 +18,7 @@ from blog.api.types import (
     SendPasswordResetEmailType,
     SendEmailChangeEmailType,
     EmailChangeType,
+    ResendActivationEmailType,
 )
 from blog.utils import TokenAction, get_token_payload
 
@@ -43,6 +44,24 @@ class AuthMutations:
             user_status.send_activation_email()
 
         return RegisterAccountType(
+            success=not has_errors, errors=errors if errors else None
+        )
+
+    @strawberry.mutation
+    def resend_activation_email(self, email: str) -> ResendActivationEmailType:
+        errors = {}
+        has_errors = False
+
+        user = User.objects.get(email=email)
+        user_status = UserStatus.objects.get(user=user)
+
+        if user_status.verified:
+            has_errors = True
+            errors.update({'userStatus': 'User already verified'})
+        else:
+            user_status.send_activation_email()
+
+        return ResendActivationEmailType(
             success=not has_errors, errors=errors if errors else None
         )
 
