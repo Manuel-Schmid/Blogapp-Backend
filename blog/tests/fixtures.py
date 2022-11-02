@@ -185,21 +185,28 @@ def fixture_login(client_query: Callable, import_query: Callable) -> Callable:
 
 @pytest.fixture(name='logout')
 def fixture_logout(client_query: Callable, import_query: Callable) -> Callable:
-    def func() -> JsonResponse:
+    def func(assert_errors: bool = True) -> JsonResponse:
         mutation: str = import_query('deleteTokenCookie.graphql')
         response = graphql_client.raw_query(mutation, None, asserts_errors=False)
 
-        cookies: Dict = response.cookies
+        if assert_errors:
+            cookies: Dict = response.cookies
+            assert cookies is not None
+            assert jwt_settings.JWT_COOKIE_NAME in cookies
+            assert cookies[jwt_settings.JWT_COOKIE_NAME].value == ''
+            assert jwt_settings.JWT_REFRESH_TOKEN_COOKIE_NAME in cookies
+            assert cookies[jwt_settings.JWT_REFRESH_TOKEN_COOKIE_NAME].value == ''
 
-        assert cookies is not None
-        assert jwt_settings.JWT_COOKIE_NAME in cookies
-        assert cookies[jwt_settings.JWT_COOKIE_NAME].value == ''
-        assert jwt_settings.JWT_REFRESH_TOKEN_COOKIE_NAME in cookies
-        assert cookies[jwt_settings.JWT_REFRESH_TOKEN_COOKIE_NAME].value == ''
         graphql_client.logout()
         return response
 
     return func
+
+
+@pytest.fixture(name='auto_logout', autouse=True)
+def fixture_auto_logout(logout: Callable) -> None:
+    # automatically logout before each test
+    logout(assert_errors=False)
 
 
 @pytest.fixture(name='create_users')
