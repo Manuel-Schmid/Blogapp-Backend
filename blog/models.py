@@ -10,7 +10,7 @@ from blog.utils import TokenAction, get_token, get_token_payload
 
 
 class User(AbstractUser):
-    email = models.EmailField(blank=True)
+    email = models.EmailField(unique=True, max_length=254, verbose_name='email address')
 
 
 class UserStatus(models.Model):
