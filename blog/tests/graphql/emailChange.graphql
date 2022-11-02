@@ -1,0 +1,11 @@
+mutation EmailChange($emailChangeInput: EmailChangeInput!) {
+    emailChange(emailChangeInput: $emailChangeInput) {
+        success
+        errors
+        user {
+            id
+            username
+            email
+        }
+    }
+}
