@@ -47,3 +47,9 @@ backend:test:
     DJANGO_DB_NAME: 'test'
     DJANGO_DB_USER: 'root'
     DJANGO_DB_PW: 'test'
+
+unit-test:
+  stage: test
+  coverage: '/coverage: \^TOTAL.+?(\d+\%)$/'
+  script:
+    - go test -cover
