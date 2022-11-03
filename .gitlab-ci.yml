@@ -24,7 +24,7 @@ backend:test:
     python:3.9
   script:
     - pip install --upgrade pip && pip install -r requirements.txt
-    - pytest
+    - pytest --cov=blog blog/tests
   stage: test
   only:
     - branches
@@ -47,9 +47,3 @@ backend:test:
     DJANGO_DB_NAME: 'test'
     DJANGO_DB_USER: 'root'
     DJANGO_DB_PW: 'test'
-
-unit-test:
-  stage: test
-  coverage: '/coverage: \d+.\d+% of statements/'
-  script:
-    - go test -cover
