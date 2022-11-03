@@ -79,8 +79,20 @@ Whenever you change the api, run the following command:
 
     ./manage.py dumpdata --natural-foreign --indent 4 --exclude admin --exclude auth --exclude contenttypes --exclude sessions --exclude refresh_token.refreshtoken > blog/fixtures/initial_data.json
 
+
 ## Flake8
 
 Ignore a certain rule for a line
     
     ...code...  # noqa: W503 (or whatever rule you want to ignore)
+
+
+## Test data
+
+Returning a lot of "fake" posts for testing:
+
+    posts_list = []
+    for post in posts:
+        for i in range(100):
+            posts_list.append(post)
+    paginator = Paginator(posts_list, 4)
