@@ -63,15 +63,15 @@ ACTIVATION_PATH_ON_EMAIL = 'activate'
 PASSWORD_RESET_PATH_ON_EMAIL = 'password-reset'
 EMAIL_CHANGE_PATH_ON_EMAIL = 'email-change'
 
-FRONTEND_DOMAIN = os.getenv('FRONTEND_DOMAIN')
-FRONTEND_SITE_NAME = os.getenv('FRONTEND_SITE_NAME')
-FRONTEND_PORT = os.getenv('FRONTEND_PORT')
-FRONTEND_PROTOCOL = os.getenv('FRONTEND_PROTOCOL')
+FRONTEND_DOMAIN = os.getenv('FRONTEND_DOMAIN', default='frontend.blogapp.com')
+FRONTEND_SITE_NAME = os.getenv('FRONTEND_SITE_NAME', default='Blogapp.com')
+FRONTEND_PORT = os.getenv('FRONTEND_PORT', default='8080')
+FRONTEND_PROTOCOL = os.getenv('FRONTEND_PROTOCOL', default='http')
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.getenv('EMAIL_HOST')
-EMAIL_PORT = os.getenv('EMAIL_PORT')
-EMAIL_FROM = os.getenv('EMAIL_FROM')
+EMAIL_HOST = os.getenv('EMAIL_HOST', default='smtp')
+EMAIL_PORT = os.getenv('EMAIL_PORT', default='25')
+EMAIL_FROM = os.getenv('EMAIL_FROM', default='admin@blogapp.com')
 
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = False

@@ -1,5 +1,7 @@
 # Django Blogapp
 
+[![pipeline status](https://gitlab.liip.ch/liip-sg-apprentice/manuel-schmid/blogapp-backend/badges/main/pipeline.svg)](https://gitlab.liip.ch/liip-sg-apprentice/manuel-schmid/blogapp-backend/-/commits/main)    [![coverage report](https://gitlab.liip.ch/liip-sg-apprentice/manuel-schmid/blogapp-backend/badges/main/coverage.svg)](https://gitlab.liip.ch/liip-sg-apprentice/manuel-schmid/blogapp-backend/-/commits/main)
+
 ## Project setup
 
 Add the following to your `/etc/hosts` file.
@@ -79,7 +81,16 @@ Whenever you change the api, run the following command:
 
     ./manage.py dumpdata --natural-foreign --indent 4 --exclude admin --exclude auth --exclude contenttypes --exclude sessions --exclude refresh_token.refreshtoken > blog/fixtures/initial_data.json
 
-##
+
+## Flake8
+
+Ignore a certain rule for a line
+    
+    ...code...  # noqa: W503 (or whatever rule you want to ignore)
+
+
+## Test data
+
 Returning a lot of "fake" posts for testing:
 
     posts_list = []

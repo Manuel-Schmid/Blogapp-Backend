@@ -4,9 +4,7 @@ from strawberry.test import Response
 
 
 @pytest.mark.django_db
-def test_create_posts(
-    create_posts: Callable, import_query: Callable, client_query: Callable
-) -> None:
+def test_create_posts(create_posts: Callable) -> None:
     assert len(create_posts()) == 2
 
 
@@ -132,7 +130,6 @@ def test_create_post_invalid_category_id(
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_update_post(
-    create_users: Callable,
     create_posts: Callable,
     import_query: Callable,
     client_query: Callable,
@@ -143,8 +140,8 @@ def test_update_post(
             'slug': 'test_post-1',
             'title': 'Test_post3',
             'text': 'New Text',
-            'category': 1,
-            'owner': 1,
+            'category': 2,
+            'owner': 2,
         }
     }
 
@@ -167,8 +164,8 @@ def test_update_post(
 
     post_owner: Dict = update_post.get('owner', None)
     assert post_owner is not None
-    assert post_owner.get('username', None) == 'test_user1'
+    assert post_owner.get('username', None) == 'test_user2'
 
     post_category: Dict = update_post.get('category', None)
     assert post_category is not None
-    assert post_category.get('slug', None) == 'test_category1'
+    assert post_category.get('slug', None) == 'test_category2'

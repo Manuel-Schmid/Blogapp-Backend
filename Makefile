@@ -23,3 +23,7 @@ init::
 .PHONY: codegen
 codegen::
 		$(RUN) ./codegen.py
+
+.PHONY: test
+test::
+		pytest --cov=blog blog/tests/

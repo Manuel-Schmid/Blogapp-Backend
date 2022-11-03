@@ -1,0 +1,5 @@
+mutation SendEmailChangeEmail($email: String!) {
+    sendEmailChangeEmail(email: $email) {
+        success
+    }
+}

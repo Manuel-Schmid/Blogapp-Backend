@@ -5,6 +5,7 @@ import typing
 from typing import Dict, Optional, Callable, Union, Coroutine, Any
 
 import pytest
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.http import JsonResponse
@@ -21,7 +22,7 @@ from blog.api.types import (
     Comment as CommentType,
     PostLike as PostLikeType,
 )
-from blog.models import Category, User, Post, Comment, PostLike
+from blog.models import Category, User, Post, Comment, PostLike, UserStatus
 
 
 class GraphqlTestClient(BaseGraphQLTestClient):
@@ -125,11 +126,26 @@ def fixture_auth(
 ) -> Callable:
     def func() -> None:
         username: str = 'jane.doe@blogapp.lo'
-        password: str = 'password'
+        password: str = 'admin_password_155'
         user: User = create_user(username=username)
         user.set_password(password)
         user.save()
         return login(username, password)
+
+    return func
+
+
+@pytest.fixture(name='get_token_from_mail')
+def fixture_get_token_from_mail() -> Callable:
+    def func(mail_body: any, path: str) -> str:
+        regex = r'{}://{}:{}/{}/(.+)\"'.format(
+            re.escape(settings.FRONTEND_PROTOCOL),
+            re.escape(settings.FRONTEND_DOMAIN),
+            re.escape(settings.FRONTEND_PORT),
+            re.escape(path),
+        )
+        url = re.findall(regex, str(mail_body))
+        return url[0] if len(url) > 0 else None
 
     return func
 
@@ -169,21 +185,28 @@ def fixture_login(client_query: Callable, import_query: Callable) -> Callable:
 
 @pytest.fixture(name='logout')
 def fixture_logout(client_query: Callable, import_query: Callable) -> Callable:
-    def func() -> JsonResponse:
+    def func(assert_errors: bool = True) -> JsonResponse:
         mutation: str = import_query('deleteTokenCookie.graphql')
         response = graphql_client.raw_query(mutation, None, asserts_errors=False)
 
-        cookies: Dict = response.cookies
+        if assert_errors:
+            cookies: Dict = response.cookies
+            assert cookies is not None
+            assert jwt_settings.JWT_COOKIE_NAME in cookies
+            assert cookies[jwt_settings.JWT_COOKIE_NAME].value == ''
+            assert jwt_settings.JWT_REFRESH_TOKEN_COOKIE_NAME in cookies
+            assert cookies[jwt_settings.JWT_REFRESH_TOKEN_COOKIE_NAME].value == ''
 
-        assert cookies is not None
-        assert jwt_settings.JWT_COOKIE_NAME in cookies
-        assert cookies[jwt_settings.JWT_COOKIE_NAME].value == ''
-        assert jwt_settings.JWT_REFRESH_TOKEN_COOKIE_NAME in cookies
-        assert cookies[jwt_settings.JWT_REFRESH_TOKEN_COOKIE_NAME].value == ''
         graphql_client.logout()
         return response
 
     return func
+
+
+@pytest.fixture(name='auto_logout', autouse=True)
+def fixture_auto_logout(logout: Callable) -> None:
+    # automatically logout before each test
+    logout(assert_errors=False)
 
 
 @pytest.fixture(name='create_users')
@@ -192,9 +215,15 @@ def fixture_create_users(client_query: Callable, import_query: Callable) -> Call
         user1 = User.objects.create(username='test_user1', email='user1@example.com')
         user1.set_password('password1')
         user1.save()
+        UserStatus.objects.create(
+            user=user1, verified=False, archived=False, secondary_email=False
+        )
         user2 = User.objects.create(username='test_user2', email='user2@example.com')
         user2.set_password('password2')
         user2.save()
+        UserStatus.objects.create(
+            user=user2, verified=False, archived=False, secondary_email=False
+        )
         return User.objects.all()
 
     return func
