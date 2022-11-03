@@ -4,7 +4,7 @@
     <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoredPackages">
         <value>
-          <list size="49">
+          <list size="51">
             <item index="0" class="java.lang.String" itemvalue="django-taggit" />
             <item index="1" class="java.lang.String" itemvalue="django-autoslug" />
             <item index="2" class="java.lang.String" itemvalue="Pillow" />
@@ -54,6 +54,8 @@
             <item index="46" class="java.lang.String" itemvalue="typing_extensions" />
             <item index="47" class="java.lang.String" itemvalue="charset-normalizer" />
             <item index="48" class="java.lang.String" itemvalue="idna" />
+            <item index="49" class="java.lang.String" itemvalue="coverage" />
+            <item index="50" class="java.lang.String" itemvalue="pytest-cov" />
           </list>
         </value>
       </option>
