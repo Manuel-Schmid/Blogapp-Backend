@@ -1,5 +1,7 @@
 # Django Blogapp
 
+[![pipeline status](https://gitlab.liip.ch/liip-sg-apprentice/manuel-schmid/blogapp-backend/badges/main/pipeline.svg)](https://gitlab.liip.ch/liip-sg-apprentice/manuel-schmid/blogapp-backend/-/commits/main)    [![coverage report](https://gitlab.liip.ch/liip-sg-apprentice/manuel-schmid/blogapp-backend/badges/main/coverage.svg)](https://gitlab.liip.ch/liip-sg-apprentice/manuel-schmid/blogapp-backend/-/commits/main)
+
 ## Project setup
 
 Add the following to your `/etc/hosts` file.
