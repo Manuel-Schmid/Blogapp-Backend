@@ -50,6 +50,6 @@ backend:test:
 
 unit-test:
   stage: test
-  coverage: '/coverage: \^TOTAL.+?(\d+\%)$/'
+  coverage: '/coverage: \d+.\d+% of statements/'
   script:
     - go test -cover
