@@ -43,24 +43,9 @@ class AuthMutation:
 
 
 @strawberry.type
-class UserMutations:
-    @strawberry.mutation
-    def update_user_email(self, info: Info, new_email: str) -> Union[UserType, None]:
-        user = info.context.request.user
-        if user.is_authenticated:
-            new_user = User.objects.get(pk=user.id)
-            new_user.email = new_email
-            new_user.save()
-            return new_user
-        return None
-
-
-@strawberry.type
 class CategoryMutations:
     @strawberry.mutation
-    def create_category(
-        self, category_input: CategoryInput
-    ) -> Union[CategoryType, None]:
+    def create_category(self, category_input: CategoryInput) -> Union[CategoryType, None]:
         form = CategoryForm(data=vars(category_input))
         if form.is_valid():
             category = form.save()
@@ -68,9 +53,7 @@ class CategoryMutations:
         return None
 
     @strawberry.mutation
-    def update_category(
-        self, category_input: CategoryInput
-    ) -> Union[CategoryType, None]:
+    def update_category(self, category_input: CategoryInput) -> Union[CategoryType, None]:
         category = Category.objects.get(pk=category_input.id)
         form = CategoryForm(instance=category, data=vars(category_input))
         if form.is_valid():
@@ -105,9 +88,7 @@ class PostMutations:
 @strawberry.type
 class CommentMutations:
     @strawberry.mutation
-    def create_comment(
-        self, info: Info, comment_input: CommentInput
-    ) -> Union[CommentType, None]:
+    def create_comment(self, info: Info, comment_input: CommentInput) -> Union[CommentType, None]:
         user = info.context.request.user
         if user.is_authenticated:
             comment_input.owner = user.id
@@ -137,9 +118,7 @@ class CommentMutations:
 @strawberry.type
 class PostLikeMutations:
     @strawberry.mutation
-    def create_post_like(
-        self, info: Info, post_like_input: PostLikeInput
-    ) -> Union[PostLikeType, None]:
+    def create_post_like(self, info: Info, post_like_input: PostLikeInput) -> Union[PostLikeType, None]:
         user = info.context.request.user
         if user.is_authenticated:
             post_like_input.user = user.id

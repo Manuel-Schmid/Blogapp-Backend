@@ -5,7 +5,6 @@ from strawberry_django_jwt.middleware import JSONWebTokenMiddleware
 
 from .mutations import (
     AuthMutation,
-    UserMutations,
     CategoryMutations,
     PostMutations,
     CommentMutations,
@@ -22,7 +21,6 @@ class RootQuery(UserQueries, PostQueries, CategoryQueries, TagQueries):
 @strawberry.type
 class RootMutation(
     AuthMutation,
-    UserMutations,
     CategoryMutations,
     PostMutations,
     CommentMutations,
