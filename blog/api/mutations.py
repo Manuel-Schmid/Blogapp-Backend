@@ -11,9 +11,8 @@ from blog.api.types import (
     Post as PostType,
     Comment as CommentType,
     PostLike as PostLikeType,
-    User as UserType,
 )
-from blog.models import Post, Category, Comment, PostLike, User
+from blog.models import Post, Category, Comment, PostLike
 from blog.forms import (
     CategoryForm,
     PostForm,
