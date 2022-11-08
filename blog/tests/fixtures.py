@@ -122,7 +122,7 @@ def fixture_auth(
     client_query: Callable,
     import_query: Callable,
 ) -> Callable:
-    def func(is_author=True) -> None:
+    def func(is_author: bool = True) -> None:
         username: str = 'jane.doe@blogapp.lo'
         password: str = 'admin_password_155'
         user: User = create_user(username=username)
