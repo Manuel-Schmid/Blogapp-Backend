@@ -14,19 +14,16 @@ class User(AbstractUser):
 
 
 class UserStatus(models.Model):
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='status'
-    )
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='status')
     verified = models.BooleanField(default=False)
     archived = models.BooleanField(default=False)
+    is_author = models.BooleanField(default=False)
     secondary_email = models.EmailField(blank=True, null=True)
 
     def __str__(self) -> str:
         return f'{self.user} - status'
 
-    def send(
-        self, subject_path: str, template_path: str, email_context: object
-    ) -> None:
+    def send(self, subject_path: str, template_path: str, email_context: object) -> None:
         html_message = render_to_string(template_path, email_context)
         subject = render_to_string(subject_path, email_context)
 
@@ -54,25 +51,19 @@ class UserStatus(models.Model):
     def send_activation_email(self) -> None:
         template_path = "blog/email/activation_email.html"
         subject_path = "blog/email/activation_subject.txt"
-        email_context = self.get_email_context(
-            settings.ACTIVATION_PATH_ON_EMAIL, TokenAction.ACTIVATION
-        )
+        email_context = self.get_email_context(settings.ACTIVATION_PATH_ON_EMAIL, TokenAction.ACTIVATION)
         self.send(subject_path, template_path, email_context)
 
     def send_password_reset_email(self) -> None:
         template_path = "blog/email/password_reset_email.html"
         subject_path = "blog/email/password_reset_subject.txt"
-        email_context = self.get_email_context(
-            settings.PASSWORD_RESET_PATH_ON_EMAIL, TokenAction.PASSWORD_RESET
-        )
+        email_context = self.get_email_context(settings.PASSWORD_RESET_PATH_ON_EMAIL, TokenAction.PASSWORD_RESET)
         self.send(subject_path, template_path, email_context)
 
     def send_email_change_email(self) -> None:
         template_path = "blog/email/email_change_email.html"
         subject_path = "blog/email/email_change_email.txt"
-        email_context = self.get_email_context(
-            settings.EMAIL_CHANGE_PATH_ON_EMAIL, TokenAction.EMAIL_CHANGE
-        )
+        email_context = self.get_email_context(settings.EMAIL_CHANGE_PATH_ON_EMAIL, TokenAction.EMAIL_CHANGE)
         self.send(subject_path, template_path, email_context)
 
     @staticmethod
@@ -128,12 +119,8 @@ class Post(models.Model):
     )
     text = models.TextField()
     image = models.ImageField(upload_to='images', null=True)
-    category = models.ForeignKey(
-        'blog.Category', related_name='posts', on_delete=models.CASCADE
-    )
-    owner = models.ForeignKey(
-        'blog.User', related_name='posts', on_delete=models.CASCADE
-    )
+    category = models.ForeignKey('blog.Category', related_name='posts', on_delete=models.CASCADE)
+    owner = models.ForeignKey('blog.User', related_name='posts', on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now=True)
     tags = TaggableManager()
 
@@ -149,30 +136,18 @@ class Post(models.Model):
 class Comment(models.Model):
     title = models.CharField(max_length=200)
     text = models.TextField()
-    post = models.ForeignKey(
-        'blog.Post', related_name='comments', on_delete=models.CASCADE
-    )
-    owner = models.ForeignKey(
-        'blog.User', related_name='comments', on_delete=models.CASCADE
-    )
+    post = models.ForeignKey('blog.Post', related_name='comments', on_delete=models.CASCADE)
+    owner = models.ForeignKey('blog.User', related_name='comments', on_delete=models.CASCADE)
 
 
 class CommentLike(models.Model):
-    comment = models.ForeignKey(
-        'blog.Comment', related_name='comment_likes', on_delete=models.CASCADE
-    )
-    user = models.ForeignKey(
-        'blog.User', related_name='comment_likes', on_delete=models.CASCADE
-    )
+    comment = models.ForeignKey('blog.Comment', related_name='comment_likes', on_delete=models.CASCADE)
+    user = models.ForeignKey('blog.User', related_name='comment_likes', on_delete=models.CASCADE)
 
 
 class PostLike(models.Model):
-    post = models.ForeignKey(
-        'blog.Post', related_name='post_likes', on_delete=models.CASCADE
-    )
-    user = models.ForeignKey(
-        'blog.User', related_name='post_likes', on_delete=models.CASCADE
-    )
+    post = models.ForeignKey('blog.Post', related_name='post_likes', on_delete=models.CASCADE)
+    user = models.ForeignKey('blog.User', related_name='post_likes', on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('post', 'user')
