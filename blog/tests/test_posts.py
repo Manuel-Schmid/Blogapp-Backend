@@ -52,6 +52,33 @@ def test_create_post(
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_create_post_no_author(
+    auth: Callable,
+    create_categories: Callable,
+    import_query: Callable,
+    client_query: Callable,
+) -> None:
+    auth(is_author=False)
+    create_categories()
+    post_input = {
+        'postInput': {
+            'title': 'test',
+            'text': 'this a test',
+            'category': 1,
+        }
+    }
+
+    query: str = import_query('createPost.graphql')
+    response: Response = client_query(query, post_input)
+
+    assert response is not None
+    assert response.errors is None
+
+    create_post: Dict = response.data.get('createPost', None)
+    assert create_post is None
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_create_post_too_long_fields(
     auth: Callable,
     create_categories: Callable,
