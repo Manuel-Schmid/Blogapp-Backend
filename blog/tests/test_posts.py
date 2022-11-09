@@ -72,10 +72,11 @@ def test_create_post_no_author(
     response: Response = client_query(query, post_input)
 
     assert response is not None
-    assert response.errors is None
+    assert response.errors is not None
 
-    create_post: Dict = response.data.get('createPost', None)
-    assert create_post is None
+    assert len(response.errors) > 0
+    error_msg: Dict = response.errors[0]
+    assert error_msg.get('message', None) == 'You do not have permission to perform this action'
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
