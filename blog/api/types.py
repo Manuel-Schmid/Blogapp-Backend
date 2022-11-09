@@ -9,6 +9,7 @@ from taggit.models import Tag as TagModel
 from blog.models import (
     Category as CategoryModel,
     User as UserModel,
+    UserStatus as UserStatusModel,
     Post as PostModel,
     Comment as CommentModel,
     PostLike as PostLikeModel,
@@ -94,9 +95,7 @@ class Post:
 
     @strawberry.field
     def tags(self) -> typing.List['Tag']:
-        return TagModel.objects.filter(
-            taggit_taggeditem_items__object_id__exact=self.id
-        )
+        return TagModel.objects.filter(taggit_taggeditem_items__object_id__exact=self.id)
 
     @strawberry.field
     def is_liked(self, info: Info) -> bool:
@@ -122,6 +121,16 @@ class Post:
         return self.comments.count()
 
 
+@gql.django.type(UserStatusModel)
+class UserStatus:
+    id: strawberry.ID
+    user: 'User'
+    verified: bool
+    archived: bool
+    secondary_email: typing.Optional[str]
+    is_author: bool
+
+
 @gql.django.type(UserModel)
 class User:
     id: strawberry.ID
@@ -131,6 +140,7 @@ class User:
     username: str
     first_name: str
     last_name: str
+    user_status: 'UserStatus'
 
 
 @gql.django.type(PostModel)

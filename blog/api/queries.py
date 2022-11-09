@@ -31,13 +31,13 @@ class UserQueries:
 
     @strawberry.field
     def users(self) -> typing.List[UserType]:
-        return User.objects.all()
+        return User.objects.select_related('user_status').all()
 
     @strawberry.field
     def user(self, info: Info) -> Optional[UserType]:
         user = info.context.request.user
         if user.is_authenticated:
-            return User.objects.get(pk=user.id)
+            return User.objects.select_related('user_status').get(pk=user.id)
         return None
 
 
@@ -73,10 +73,7 @@ class TagQueries:
             )
             tag_filter &= Q(object_id__in=category_posts)
 
-        tags = [
-            obj.tag
-            for obj in TaggedItem.objects.select_related('tag').filter(tag_filter)
-        ]
+        tags = [obj.tag for obj in TaggedItem.objects.select_related('tag').filter(tag_filter)]
         return list(set(tags))
 
 

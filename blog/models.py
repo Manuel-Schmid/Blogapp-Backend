@@ -14,7 +14,7 @@ class User(AbstractUser):
 
 
 class UserStatus(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='status')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_status')
     verified = models.BooleanField(default=False)
     archived = models.BooleanField(default=False)
     is_author = models.BooleanField(default=False)
