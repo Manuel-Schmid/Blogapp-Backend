@@ -122,7 +122,7 @@ class Post(models.Model):
     category = models.ForeignKey('blog.Category', related_name='posts', on_delete=models.CASCADE)
     owner = models.ForeignKey('blog.User', related_name='posts', on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now=True)
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
 
     @property
     def image_url(self) -> str:
