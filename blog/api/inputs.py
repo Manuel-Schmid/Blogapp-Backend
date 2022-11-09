@@ -44,6 +44,7 @@ class PostInput:
     text: str
     category: strawberry.ID
     owner: Optional[strawberry.ID] = None
+    tags: Optional[str] = None
 
 
 @strawberry.input
