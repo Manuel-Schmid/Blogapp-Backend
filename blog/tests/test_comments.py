@@ -118,14 +118,46 @@ def test_create_comment_invalid_owner_id(
     response: Response = client_query(query, comment_input)
 
     assert response is not None
-    assert response.errors is None
+    assert response.errors is not None
 
-    create_comment: Dict = response.data.get('createComment', None)
-    assert create_comment is None
+    assert len(response.errors) > 0
+    error_msg: Dict = response.errors[0]
+    assert error_msg.get('message', None) == 'You do not have permission to perform this action'
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_update_comment(
+    auth: Callable,
+    create_comments: Callable,
+    import_query: Callable,
+    client_query: Callable,
+) -> None:
+    auth()
+    create_comments()
+    comment_input = {
+        'commentInput': {
+            'id': 1,
+            'title': 'test_comment3',
+            'text': 'test_comment_text3',
+        }
+    }
+
+    query: str = import_query('updateComment.graphql')
+    response: Response = client_query(query, comment_input)
+
+    assert response is not None
+    assert response.errors is None
+
+    update_comment: Dict = response.data.get('updateComment', None)
+    assert update_comment is not None
+
+    comment_title: Dict = update_comment.get('title', None)
+    assert comment_title is not None
+    assert comment_title == 'test_comment3'
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_update_comment_not_owner(
     auth: Callable,
     create_comments: Callable,
     import_query: Callable,
@@ -148,11 +180,7 @@ def test_update_comment(
     assert response.errors is None
 
     update_comment: Dict = response.data.get('updateComment', None)
-    assert update_comment is not None
-
-    comment_title: Dict = update_comment.get('title', None)
-    assert comment_title is not None
-    assert comment_title == 'test_comment3'
+    assert update_comment is None
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)

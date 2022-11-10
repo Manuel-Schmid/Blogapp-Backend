@@ -31,7 +31,7 @@ class CategoryForm(ModelForm):
 class PostForm(ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'text', 'category', 'owner']
+        fields = ['title', 'text', 'category', 'owner', 'tags']
 
 
 class PostLikeForm(ModelForm):

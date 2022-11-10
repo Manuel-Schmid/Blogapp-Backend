@@ -1,6 +1,8 @@
 import strawberry
 from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from strawberry.types import Info
+from strawberry_django_jwt.decorators import login_required
+
 from blog.forms import UserForm, UpdateAccountForm, EmailChangeForm
 from blog.api.inputs import (
     UserRegistrationInput,
@@ -62,25 +64,21 @@ class AuthMutations:
     def verify_account(self, token: str) -> VerifyAccountType:
         return VerifyAccountType(success=UserStatus.verify(token))
 
+    @login_required
     @strawberry.mutation
     def password_change(self, info: Info, password_change_input: PasswordChangeInput) -> PasswordChangeType:
         errors = {}
         has_errors = False
 
         user = info.context.request.user
-        if user.is_authenticated:
-            form = PasswordChangeForm(user=user, data=vars(password_change_input))
+        form = PasswordChangeForm(user=user, data=vars(password_change_input))
 
-            if not form.is_valid():
-                has_errors = True
-                errors.update(form.errors.get_json_data())
-
-            if not has_errors:
-                form.save()
-
-        else:
+        if not form.is_valid():
             has_errors = True
-            errors.update({'user': 'Not authenticated'})
+            errors.update(form.errors.get_json_data())
+
+        if not has_errors:
+            form.save()
 
         return PasswordChangeType(success=not has_errors, errors=errors if errors else None)
 
@@ -113,30 +111,25 @@ class AuthMutations:
 
         return PasswordResetType(success=not has_errors, errors=errors if errors else None)
 
+    @login_required
     @strawberry.mutation
     def update_account(self, info: Info, update_account_input: UpdateAccountInput) -> UpdateAccountType:
         errors = {}
         has_errors = False
 
         user = info.context.request.user
-        if user.is_authenticated:
-
-            if not UserStatus.objects.get(user=user).verified:
-                has_errors = True
-                errors.update({'user': 'User not verified'})
-
-            form = UpdateAccountForm(instance=user, data=vars(update_account_input))
-
-            if not form.is_valid():
-                has_errors = True
-                errors.update(form.errors.get_json_data())
-
-            if not has_errors:
-                form.save()
-
-        else:
+        if not UserStatus.objects.get(user=user).verified:
             has_errors = True
-            errors.update({'user': 'Not authenticated'})
+            errors.update({'user': 'User not verified'})
+
+        form = UpdateAccountForm(instance=user, data=vars(update_account_input))
+
+        if not form.is_valid():
+            has_errors = True
+            errors.update(form.errors.get_json_data())
+
+        if not has_errors:
+            form.save()
 
         return UpdateAccountType(success=not has_errors, errors=errors if errors else None)
 
