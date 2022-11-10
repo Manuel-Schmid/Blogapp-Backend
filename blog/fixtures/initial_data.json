@@ -62,6 +62,7 @@
         ],
         "verified": true,
         "archived": false,
+        "is_author": true,
         "secondary_email": null
     }
 },
@@ -74,6 +75,7 @@
         ],
         "verified": true,
         "archived": true,
+        "is_author":  false,
         "secondary_email": null
     }
 },
@@ -86,6 +88,7 @@
         ],
         "verified": true,
         "archived": false,
+        "is_author":  false,
         "secondary_email": null
     }
 },

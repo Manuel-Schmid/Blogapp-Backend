@@ -6,6 +6,7 @@ from strawberry.types import Info
 from strawberry_django_jwt.decorators import login_required
 
 from blog.api.auth_mutations import AuthMutations
+from blog.api.decorators import author_permission_required
 from blog.api.inputs import PostInput, CategoryInput, CommentInput, PostLikeInput
 from blog.api.types import (
     Category as CategoryType,
@@ -13,7 +14,7 @@ from blog.api.types import (
     Comment as CommentType,
     PostLike as PostLikeType,
 )
-from blog.models import Post, Category, Comment, PostLike
+from blog.models import Post, Category, Comment, PostLike, UserStatus
 from blog.forms import (
     CategoryForm,
     PostForm,
@@ -65,14 +66,17 @@ class CategoryMutations:
 @strawberry.type
 class PostMutations:
     @login_required
+    @author_permission_required
     @strawberry.mutation
     def create_post(self, info: Info, post_input: PostInput) -> Union[PostType, None]:
         user = info.context.request.user
-        post_input.owner = user.id
-        form = PostForm(data=vars(post_input))
-        if form.is_valid():
-            post = form.save()
-            return post
+        user_status = UserStatus.objects.get(user=user)
+        if user_status.is_author:
+            post_input.owner = user.id
+            form = PostForm(data=vars(post_input))
+            if form.is_valid():
+                post = form.save()
+                return post
         return None
 
     @strawberry.mutation
