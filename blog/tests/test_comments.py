@@ -136,7 +136,7 @@ def test_update_comment(
     create_comments()
     comment_input = {
         'commentInput': {
-            'id': 2,
+            'id': 1,
             'title': 'test_comment3',
             'text': 'test_comment_text3',
         }
@@ -154,6 +154,33 @@ def test_update_comment(
     comment_title: Dict = update_comment.get('title', None)
     assert comment_title is not None
     assert comment_title == 'test_comment3'
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_update_comment_not_owner(
+    auth: Callable,
+    create_comments: Callable,
+    import_query: Callable,
+    client_query: Callable,
+) -> None:
+    auth()
+    create_comments()
+    comment_input = {
+        'commentInput': {
+            'id': 2,
+            'title': 'test_comment3',
+            'text': 'test_comment_text3',
+        }
+    }
+
+    query: str = import_query('updateComment.graphql')
+    response: Response = client_query(query, comment_input)
+
+    assert response is not None
+    assert response.errors is None
+
+    update_comment: Dict = response.data.get('updateComment', None)
+    assert update_comment is None
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)

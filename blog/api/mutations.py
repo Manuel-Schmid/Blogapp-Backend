@@ -102,12 +102,14 @@ class CommentMutations:
 
     @login_required
     @strawberry.mutation
-    def update_comment(self, comment_input: CommentInput) -> Union[CommentType, None]:
+    def update_comment(self, info: Info, comment_input: CommentInput) -> Union[CommentType, None]:
+        user = info.context.request.user
         comment = Comment.objects.get(pk=comment_input.id)
-        form = UpdateCommentForm(instance=comment, data=vars(comment_input))
-        if form.is_valid():
-            comment = form.save()
-            return comment
+        if comment.owner == user:
+            form = UpdateCommentForm(instance=comment, data=vars(comment_input))
+            if form.is_valid():
+                comment = form.save()
+                return comment
         return None
 
     @login_required
