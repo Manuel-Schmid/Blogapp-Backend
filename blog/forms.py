@@ -34,6 +34,12 @@ class PostForm(ModelForm):
         fields = ['title', 'text', 'category', 'owner', 'tags']
 
 
+class CreatePostForm(ModelForm):
+    class Meta:
+        model = Post
+        fields = ['title', 'text', 'image', 'category', 'owner', 'tags']
+
+
 class PostLikeForm(ModelForm):
     class Meta:
         model = PostLike

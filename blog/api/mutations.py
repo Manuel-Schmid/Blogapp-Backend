@@ -13,6 +13,7 @@ from blog.api.types import (
     Post as PostType,
     Comment as CommentType,
     PostLike as PostLikeType,
+    CreatePostType,
 )
 from blog.models import Post, Category, Comment, PostLike
 from blog.forms import (
@@ -21,6 +22,7 @@ from blog.forms import (
     PostLikeForm,
     CreateCommentForm,
     UpdateCommentForm,
+    CreatePostForm,
 )
 
 
@@ -68,14 +70,16 @@ class PostMutations:
     @login_required
     @author_permission_required
     @strawberry.mutation
-    def create_post(self, info: Info, post_input: PostInput) -> Union[PostType, None]:
+    def create_post(self, info: Info, post_input: PostInput) -> CreatePostType:
         user = info.context.request.user
         post_input.owner = user.id
-        form = PostForm(data=vars(post_input))
+        post_input.image = info.context.request.FILES.get('1', None)
+        print(post_input.image)
+        form = CreatePostForm(data=vars(post_input))
         if form.is_valid():
             post = form.save()
-            return post
-        return None
+            return CreatePostType(post=post, success=True, errors=None)
+        return CreatePostType(post=None, success=False, errors=form.errors.get_json_data())
 
     @strawberry.mutation
     def update_post(self, post_input: PostInput) -> Union[PostType, None]:

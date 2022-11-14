@@ -1,5 +1,6 @@
 from typing import Optional
 import strawberry
+from strawberry.file_uploads import Upload
 
 
 @strawberry.input
@@ -42,6 +43,7 @@ class PostInput:
     slug: Optional[str] = None
     title: str
     text: str
+    image: Optional[Upload] = None
     category: strawberry.ID
     owner: Optional[strawberry.ID] = None
     tags: Optional[str] = None

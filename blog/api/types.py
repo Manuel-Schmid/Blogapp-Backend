@@ -121,6 +121,12 @@ class Post:
         return self.comments.count()
 
 
+@strawberry.type
+class CreatePostType(BaseGraphQLType):
+    post: typing.Optional[Post]
+    success: bool
+
+
 @gql.django.type(UserStatusModel)
 class UserStatus:
     id: strawberry.ID
