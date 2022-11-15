@@ -74,8 +74,8 @@ class PostMutations:
         user = info.context.request.user
         post_input.owner = user.id
         post_input.image = info.context.request.FILES.get('1', None)
-        print(post_input.image)
-        form = CreatePostForm(data=vars(post_input))
+        print(post_input)
+        form = CreatePostForm(data=vars(post_input), files=info.context.request.FILES)
         if form.is_valid():
             post = form.save()
             return CreatePostType(post=post, success=True, errors=None)
