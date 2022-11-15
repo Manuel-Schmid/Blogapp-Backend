@@ -7,6 +7,7 @@ from typing import Dict, Optional, Callable, Union, Coroutine, Any
 import pytest
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
 from django.http import JsonResponse
 from django.test import Client
@@ -147,6 +148,22 @@ def fixture_get_token_from_mail() -> Callable:
         return url[0] if len(url) > 0 else None
 
     return func
+
+
+@pytest.fixture(name='file_image_jpg')
+def file_image_jpg() -> SimpleUploadedFile:
+    mime_type = 'image/jpeg'
+    image_path = os.path.join(settings.BASE_DIR, 'blog', 'tests', 'media', 'image.jpg')
+    file = open(image_path, 'rb').read()
+    return SimpleUploadedFile(name='image.jpg', content=file, content_type=mime_type)
+
+
+@pytest.fixture(name='file_image_png')
+def file_image_jpg() -> SimpleUploadedFile:
+    mime_type = 'image/png'
+    image_path = os.path.join(settings.BASE_DIR, 'blog', 'tests', 'media', 'image.png')
+    file = open(image_path, 'rb').read()
+    return SimpleUploadedFile(name='image.png', content=file, content_type=mime_type)
 
 
 @pytest.fixture(name='login')
