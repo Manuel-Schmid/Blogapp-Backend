@@ -112,13 +112,11 @@ def import_query() -> Callable:
     return func
 
 
-@pytest.fixture(name='create_post')
-def fixture_create_post(
-    auth: Callable,
+@pytest.fixture(name='query_post')
+def fixture_query_post(
     create_categories: Callable,
 ) -> Callable:
-    def func(query, post_input, image):
-        auth()
+    def func(query: str, post_input: Dict, image: Union[SimpleUploadedFile]) -> Dict:
         create_categories()
 
         query = query
@@ -141,7 +139,6 @@ def fixture_create_post(
 
         response = graphql_client.client.post('/graphql/', data=data)
         json_data: Dict = json.loads(response.content)
-
         return json_data
 
     return func
