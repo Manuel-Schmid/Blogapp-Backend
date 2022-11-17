@@ -87,7 +87,11 @@ def import_query() -> Callable:
     def read_file(base_path: str, path: str, content: str = '') -> str:
         file_path = os.path.join(base_path, path)
         if not os.path.exists(file_path):
-            raise FileNotFoundError
+            head, tail = os.path.split(file_path)
+            head = os.path.join(head, 'fragments')
+            file_path = os.path.join(head, tail)
+            if not os.path.exists(file_path):
+                raise FileNotFoundError
         with open(file_path) as f:
             file_content = f.read()
             content += file_content
@@ -104,6 +108,41 @@ def import_query() -> Callable:
 
     def func(path: str) -> str:
         return read_file(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'graphql'), path)
+
+    return func
+
+
+@pytest.fixture(name='create_post')
+def fixture_create_post(
+    auth: Callable,
+    create_categories: Callable,
+) -> Callable:
+    def func(query, post_input, image):
+        auth()
+        create_categories()
+
+        query = query
+        data = {
+            'operations': json.dumps(
+                {
+                    'query': query,
+                    'variables': {
+                        'postInput': post_input,
+                    },
+                }
+            ),
+            '1': image,
+            'map': json.dumps(
+                {
+                    '1': ['variables.postInput.image'],
+                }
+            ),
+        }
+
+        response = graphql_client.client.post('/graphql/', data=data)
+        json_data: Dict = json.loads(response.content)
+
+        return json_data
 
     return func
 
@@ -159,7 +198,7 @@ def file_image_jpg() -> SimpleUploadedFile:
 
 
 @pytest.fixture(name='file_image_png')
-def file_image_jpg() -> SimpleUploadedFile:
+def file_image_png() -> SimpleUploadedFile:
     mime_type = 'image/png'
     image_path = os.path.join(settings.BASE_DIR, 'blog', 'tests', 'media', 'image.png')
     file = open(image_path, 'rb').read()
