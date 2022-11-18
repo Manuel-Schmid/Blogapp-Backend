@@ -9,3 +9,4 @@ static/*
 .DS_Store
 .vscode
 .coverage
+blog/tests/media/uploaded_test_files

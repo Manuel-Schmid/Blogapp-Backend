@@ -13,6 +13,7 @@ from blog.api.types import (
     Post as PostType,
     Comment as CommentType,
     PostLike as PostLikeType,
+    CreatePostType,
 )
 from blog.models import Post, Category, Comment, PostLike
 from blog.forms import (
@@ -21,6 +22,7 @@ from blog.forms import (
     PostLikeForm,
     CreateCommentForm,
     UpdateCommentForm,
+    CreatePostForm,
 )
 
 
@@ -68,14 +70,29 @@ class PostMutations:
     @login_required
     @author_permission_required
     @strawberry.mutation
-    def create_post(self, info: Info, post_input: PostInput) -> Union[PostType, None]:
+    def create_post(self, info: Info, post_input: PostInput) -> CreatePostType:
+        errors = {}
+        has_errors = False
+        post = None
         user = info.context.request.user
         post_input.owner = user.id
-        form = PostForm(data=vars(post_input))
-        if form.is_valid():
-            post = form.save()
-            return post
-        return None
+        files = info.context.request.FILES
+
+        if len(files) != 1:
+            has_errors = True
+            errors.update({'file': 'You must upload exactly one image file per post'})
+
+        if not has_errors:
+            form = CreatePostForm(data=vars(post_input), files={'image': files['1']})
+
+            if not form.is_valid():
+                has_errors = True
+                errors.update(form.errors.get_json_data())
+
+            if not has_errors:
+                post = form.save()
+
+        return CreatePostType(post=post, success=not has_errors, errors=errors if errors else None)
 
     @strawberry.mutation
     def update_post(self, post_input: PostInput) -> Union[PostType, None]:

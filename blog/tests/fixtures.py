@@ -7,6 +7,7 @@ from typing import Dict, Optional, Callable, Union, Coroutine, Any
 import pytest
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
 from django.http import JsonResponse
 from django.test import Client
@@ -86,7 +87,11 @@ def import_query() -> Callable:
     def read_file(base_path: str, path: str, content: str = '') -> str:
         file_path = os.path.join(base_path, path)
         if not os.path.exists(file_path):
-            raise FileNotFoundError
+            head, tail = os.path.split(file_path)
+            head = os.path.join(head, 'fragments')
+            file_path = os.path.join(head, tail)
+            if not os.path.exists(file_path):
+                raise FileNotFoundError
         with open(file_path) as f:
             file_content = f.read()
             content += file_content
@@ -103,6 +108,38 @@ def import_query() -> Callable:
 
     def func(path: str) -> str:
         return read_file(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'graphql'), path)
+
+    return func
+
+
+@pytest.fixture(name='query_post')
+def fixture_query_post(
+    create_categories: Callable,
+) -> Callable:
+    def func(query: str, post_input: Dict, image: Union[SimpleUploadedFile]) -> Dict:
+        create_categories()
+
+        query = query
+        data = {
+            'operations': json.dumps(
+                {
+                    'query': query,
+                    'variables': {
+                        'postInput': post_input,
+                    },
+                }
+            ),
+            '1': image,
+            'map': json.dumps(
+                {
+                    '1': ['variables.postInput.image'],
+                }
+            ),
+        }
+
+        response = graphql_client.client.post('/graphql/', data=data)
+        json_data: Dict = json.loads(response.content)
+        return json_data
 
     return func
 
@@ -147,6 +184,22 @@ def fixture_get_token_from_mail() -> Callable:
         return url[0] if len(url) > 0 else None
 
     return func
+
+
+@pytest.fixture(name='file_image_jpg')
+def file_image_jpg() -> SimpleUploadedFile:
+    mime_type = 'image/jpeg'
+    image_path = os.path.join(settings.BASE_DIR, 'blog', 'tests', 'media', 'image.jpg')
+    file = open(image_path, 'rb').read()
+    return SimpleUploadedFile(name='image.jpg', content=file, content_type=mime_type)
+
+
+@pytest.fixture(name='file_image_png')
+def file_image_png() -> SimpleUploadedFile:
+    mime_type = 'image/png'
+    image_path = os.path.join(settings.BASE_DIR, 'blog', 'tests', 'media', 'image.png')
+    file = open(image_path, 'rb').read()
+    return SimpleUploadedFile(name='image.png', content=file, content_type=mime_type)
 
 
 @pytest.fixture(name='login')
