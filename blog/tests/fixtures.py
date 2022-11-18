@@ -107,9 +107,7 @@ def import_query() -> Callable:
         return content
 
     def func(path: str) -> str:
-        return read_file(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), "graphql"), path
-        )
+        return read_file(os.path.join(os.path.dirname(os.path.abspath(__file__)), "graphql"), path)
 
     return func
 
@@ -275,24 +273,18 @@ def fixture_create_users(client_query: Callable, import_query: Callable) -> Call
         user1 = User.objects.create(username="test_user1", email="user1@example.com")
         user1.set_password("password1")
         user1.save()
-        UserStatus.objects.create(
-            user=user1, verified=False, archived=False, secondary_email=False
-        )
+        UserStatus.objects.create(user=user1, verified=True, archived=False, secondary_email=False)
         user2 = User.objects.create(username="test_user2", email="user2@example.com")
         user2.set_password("password2")
         user2.save()
-        UserStatus.objects.create(
-            user=user2, verified=False, archived=False, secondary_email=False
-        )
+        UserStatus.objects.create(user=user2, verified=False, archived=False, secondary_email=False)
         return User.objects.all()
 
     return func
 
 
 @pytest.fixture(name="create_categories")
-def fixture_create_categories(
-    client_query: Callable, import_query: Callable
-) -> Callable:
+def fixture_create_categories(client_query: Callable, import_query: Callable) -> Callable:
     def func() -> typing.List[CategoryType]:
         Category.objects.create(name="test_category1", slug="test_category1")
         Category.objects.create(name="test_category2", slug="test_category2")
@@ -370,13 +362,9 @@ def fixture_create_tags(
         posts = create_posts()
         content_type = ContentType.objects.get(app_label="blog", model="post")
         tag1 = Tag.objects.create(name="tag_1", slug="tag_1_slug")
-        TaggedItem.objects.create(
-            tag=tag1, object_id=posts[0].id, content_type=content_type
-        )
+        TaggedItem.objects.create(tag=tag1, object_id=posts[0].id, content_type=content_type)
         tag2 = Tag.objects.create(name="tag_2", slug="tag_2_slug")
-        TaggedItem.objects.create(
-            tag=tag2, object_id=posts[1].id, content_type=content_type
-        )
+        TaggedItem.objects.create(tag=tag2, object_id=posts[1].id, content_type=content_type)
         Tag.objects.create(name="tag_3", slug="tag_3_slug")
         return Tag.objects.all()
 
