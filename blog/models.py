@@ -10,20 +10,24 @@ from blog.utils import TokenAction, get_token, get_token_payload
 
 
 class User(AbstractUser):
-    email = models.EmailField(unique=True, verbose_name='email address')
+    email = models.EmailField(unique=True, verbose_name="email address")
 
 
 class UserStatus(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_status')
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user_status"
+    )
     verified = models.BooleanField(default=False)
     archived = models.BooleanField(default=False)
     is_author = models.BooleanField(default=False)
     secondary_email = models.EmailField(blank=True, null=True)
 
     def __str__(self) -> str:
-        return f'{self.user} - status'
+        return f"{self.user} - status"
 
-    def send(self, subject_path: str, template_path: str, email_context: object) -> None:
+    def send(
+        self, subject_path: str, template_path: str, email_context: object
+    ) -> None:
         html_message = render_to_string(template_path, email_context)
         subject = render_to_string(subject_path, email_context)
 
@@ -33,37 +37,43 @@ class UserStatus(models.Model):
             from_email=settings.EMAIL_FROM,
             to=[getattr(self.user, get_user_model().EMAIL_FIELD)],
         )
-        mail.content_subtype = 'html'
+        mail.content_subtype = "html"
         mail.send()
 
     def get_email_context(self, url_path: str, action: TokenAction, **kwargs) -> object:
         token = get_token(self.user, action, **kwargs)
         return {
-            'user': self.user,
-            'token': token,
-            'port': settings.FRONTEND_PORT,
-            'site_name': settings.FRONTEND_SITE_NAME,
-            'protocol': settings.FRONTEND_PROTOCOL,
-            'path': url_path,
-            'frontend_domain': settings.FRONTEND_DOMAIN,
+            "user": self.user,
+            "token": token,
+            "port": settings.FRONTEND_PORT,
+            "site_name": settings.FRONTEND_SITE_NAME,
+            "protocol": settings.FRONTEND_PROTOCOL,
+            "path": url_path,
+            "frontend_domain": settings.FRONTEND_DOMAIN,
         }
 
     def send_activation_email(self) -> None:
         template_path = "blog/email/activation_email.html"
         subject_path = "blog/email/activation_subject.txt"
-        email_context = self.get_email_context(settings.ACTIVATION_PATH_ON_EMAIL, TokenAction.ACTIVATION)
+        email_context = self.get_email_context(
+            settings.ACTIVATION_PATH_ON_EMAIL, TokenAction.ACTIVATION
+        )
         self.send(subject_path, template_path, email_context)
 
     def send_password_reset_email(self) -> None:
         template_path = "blog/email/password_reset_email.html"
         subject_path = "blog/email/password_reset_subject.txt"
-        email_context = self.get_email_context(settings.PASSWORD_RESET_PATH_ON_EMAIL, TokenAction.PASSWORD_RESET)
+        email_context = self.get_email_context(
+            settings.PASSWORD_RESET_PATH_ON_EMAIL, TokenAction.PASSWORD_RESET
+        )
         self.send(subject_path, template_path, email_context)
 
     def send_email_change_email(self) -> None:
         template_path = "blog/email/email_change_email.html"
         subject_path = "blog/email/email_change_email.txt"
-        email_context = self.get_email_context(settings.EMAIL_CHANGE_PATH_ON_EMAIL, TokenAction.EMAIL_CHANGE)
+        email_context = self.get_email_context(
+            settings.EMAIL_CHANGE_PATH_ON_EMAIL, TokenAction.EMAIL_CHANGE
+        )
         self.send(subject_path, template_path, email_context)
 
     @staticmethod
@@ -74,13 +84,13 @@ class UserStatus(models.Model):
             user_status = UserStatus.objects.get(user=user)
             if user_status.verified is False:
                 user_status.verified = True
-                user_status.save(update_fields=['verified'])
+                user_status.save(update_fields=["verified"])
                 return True
         return False
 
 
 def slugify(string: str) -> str:
-    return string.replace(' ', '-').lower()
+    return string.replace(" ", "-").lower()
 
 
 def post_slug_populate_from(value: object) -> object:
@@ -102,7 +112,7 @@ class Category(models.Model):
     )
 
     class Meta:
-        verbose_name_plural = 'Categories'
+        verbose_name_plural = "Categories"
 
     def __str__(self) -> str:
         return self.name
@@ -118,15 +128,19 @@ class Post(models.Model):
         slugify=slugify,
     )
     text = models.TextField()
-    image = models.ImageField(upload_to='images', null=True)
-    category = models.ForeignKey('blog.Category', related_name='posts', on_delete=models.CASCADE)
-    owner = models.ForeignKey('blog.User', related_name='posts', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="images", null=True)
+    category = models.ForeignKey(
+        "blog.Category", related_name="posts", on_delete=models.CASCADE
+    )
+    owner = models.ForeignKey(
+        "blog.User", related_name="posts", on_delete=models.CASCADE
+    )
     date_created = models.DateTimeField(auto_now=True)
     tags = TaggableManager(blank=True)
 
     @property
     def image_url(self) -> str:
-        if self.image and hasattr(self.image, 'url'):
+        if self.image and hasattr(self.image, "url"):
             return self.image.url
 
     def __str__(self) -> str:
@@ -136,18 +150,30 @@ class Post(models.Model):
 class Comment(models.Model):
     title = models.CharField(max_length=200)
     text = models.TextField()
-    post = models.ForeignKey('blog.Post', related_name='comments', on_delete=models.CASCADE)
-    owner = models.ForeignKey('blog.User', related_name='comments', on_delete=models.CASCADE)
+    post = models.ForeignKey(
+        "blog.Post", related_name="comments", on_delete=models.CASCADE
+    )
+    owner = models.ForeignKey(
+        "blog.User", related_name="comments", on_delete=models.CASCADE
+    )
 
 
 class CommentLike(models.Model):
-    comment = models.ForeignKey('blog.Comment', related_name='comment_likes', on_delete=models.CASCADE)
-    user = models.ForeignKey('blog.User', related_name='comment_likes', on_delete=models.CASCADE)
+    comment = models.ForeignKey(
+        "blog.Comment", related_name="comment_likes", on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        "blog.User", related_name="comment_likes", on_delete=models.CASCADE
+    )
 
 
 class PostLike(models.Model):
-    post = models.ForeignKey('blog.Post', related_name='post_likes', on_delete=models.CASCADE)
-    user = models.ForeignKey('blog.User', related_name='post_likes', on_delete=models.CASCADE)
+    post = models.ForeignKey(
+        "blog.Post", related_name="post_likes", on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        "blog.User", related_name="post_likes", on_delete=models.CASCADE
+    )
 
     class Meta:
-        unique_together = ('post', 'user')
+        unique_together = ("post", "user")
