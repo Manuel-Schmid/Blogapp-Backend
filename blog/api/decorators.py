@@ -23,8 +23,8 @@ from blog.models import UserStatus
 author_permission_required = user_passes_test(lambda u: UserStatus.objects.get(user=u).is_author)
 
 
-def token_auth(f: Any) -> Coroutine:  # noqa: ANN401 todo
-    async def wrapper_async(cls: Any, info: Info, password: str, **kwargs: Any) -> Coroutine:  # noqa: ANN401 todo
+def token_auth(f: Any) -> Coroutine:
+    async def wrapper_async(cls: Any, info: Info, password: str, **kwargs: Any) -> Coroutine:
         context = get_context(info)
         context._jwt_token_auth = True
         username = kwargs.get(get_user_model().USERNAME_FIELD)
@@ -55,7 +55,7 @@ def token_auth(f: Any) -> Coroutine:  # noqa: ANN401 todo
     @setup_jwt_cookie
     @csrf_rotation
     @refresh_expiration
-    def wrapper(cls: Any, info: Info, password: str, **kwargs: Any) -> Coroutine:  # noqa: ANN401 todo
+    def wrapper(cls: Any, info: Info, password: str, **kwargs: Any) -> Coroutine:
         context = get_context(info)
         if inspect.isawaitable(f) or (isinstance(context, ASGIRequest) and is_async()):
             return wrapper_async(cls, info, password, **kwargs)
