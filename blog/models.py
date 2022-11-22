@@ -100,6 +100,9 @@ class AuthorRequest(models.Model):
         "blog.User", related_name="author_request", on_delete=models.CASCADE
     )
     date_requested = models.DateTimeField("date requested", default=timezone.now)
+    date_closed = models.DateTimeField(
+        "date closed", blank=True, null=True, default=None
+    )
     status = models.CharField(
         max_length=20, choices=Status.choices, default=Status.PENDING
     )
