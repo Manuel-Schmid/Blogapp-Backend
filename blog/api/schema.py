@@ -10,11 +10,11 @@ from .mutations import (
     CommentMutations,
     PostLikeMutations,
 )
-from .queries import UserQueries, PostQueries, CategoryQueries, TagQueries
+from .queries import UserQueries, PostQueries, CategoryQueries, TagQueries, AuthorRequestQueries
 
 
 @strawberry.type
-class RootQuery(UserQueries, PostQueries, CategoryQueries, TagQueries):
+class RootQuery(UserQueries, PostQueries, CategoryQueries, TagQueries, AuthorRequestQueries):
     pass
 
 

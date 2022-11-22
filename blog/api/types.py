@@ -1,4 +1,5 @@
 import typing
+from datetime import datetime
 
 from strawberry import auto
 import strawberry
@@ -14,6 +15,7 @@ from blog.models import (
     Comment as CommentModel,
     PostLike as PostLikeModel,
     CommentLike as CommentLikeModel,
+    AuthorRequest as AuthorRequestModel,
 )
 
 
@@ -68,6 +70,15 @@ class EmailChangeType(BaseGraphQLType):
     user: typing.Optional["User"]
 
 
+@gql.django.type(AuthorRequestModel)
+class AuthorRequest:
+    id: strawberry.ID
+    date_opened: datetime
+    date_closed: typing.Optional[datetime]
+    status: str
+    user: 'User'
+
+
 @gql.django.type(CategoryModel)
 class Category:
     id: strawberry.ID
@@ -95,9 +106,7 @@ class Post:
 
     @strawberry.field
     def tags(self) -> typing.List["Tag"]:
-        return TagModel.objects.filter(
-            taggit_taggeditem_items__object_id__exact=self.id
-        )
+        return TagModel.objects.filter(taggit_taggeditem_items__object_id__exact=self.id)
 
     @strawberry.field
     def is_liked(self, info: Info) -> bool:

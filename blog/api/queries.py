@@ -13,10 +13,13 @@ from blog.api.types import (
     Tag as TagType,
     Post as PostType,
     PaginationPosts as PaginationPostsType,
+    AuthorRequest as AuthorRequestType,
 )
 
 from taggit.models import Tag, TaggedItem
-from ..models import Category, Post, User
+
+from .inputs import AuthorRequestInput
+from ..models import Category, Post, User, AuthorRequest
 
 
 @strawberry.type
@@ -39,6 +42,18 @@ class UserQueries:
         if user.is_authenticated:
             return User.objects.select_related("user_status").get(pk=user.id)
         return None
+
+
+@strawberry.type
+class AuthorRequestQueries:
+    @strawberry.field
+    def author_requests(self, status: Optional[str] = None) -> typing.List[AuthorRequestType]:
+        request_filter = Q()
+
+        if status:
+            request_filter &= Q(status=status)
+
+        return AuthorRequest.objects.filter(request_filter)
 
 
 @strawberry.type
@@ -73,10 +88,7 @@ class TagQueries:
             )
             tag_filter &= Q(object_id__in=category_posts)
 
-        tags = [
-            obj.tag
-            for obj in TaggedItem.objects.select_related("tag").filter(tag_filter)
-        ]
+        tags = [obj.tag for obj in TaggedItem.objects.select_related("tag").filter(tag_filter)]
         return list(set(tags))
 
 
