@@ -45,13 +45,19 @@ class UserQueries:
 @strawberry.type
 class AuthorRequestQueries:
     @strawberry.field
-    def author_requests(self, status: Optional[str] = None) -> typing.List[AuthorRequestType]:
+    def author_requests(
+        self, status: Optional[str] = None
+    ) -> typing.List[AuthorRequestType]:
         request_filter = Q()
-
         if status:
             request_filter &= Q(status=status)
-
         return AuthorRequest.objects.filter(request_filter)
+
+    @login_required
+    @strawberry.field
+    def author_request_by_user(self, info: Info) -> Optional[AuthorRequestType]:
+        user = info.context.request.user
+        return AuthorRequest.objects.get(user=user)
 
 
 @strawberry.type
@@ -86,7 +92,10 @@ class TagQueries:
             )
             tag_filter &= Q(object_id__in=category_posts)
 
-        tags = [obj.tag for obj in TaggedItem.objects.select_related("tag").filter(tag_filter)]
+        tags = [
+            obj.tag
+            for obj in TaggedItem.objects.select_related("tag").filter(tag_filter)
+        ]
         return list(set(tags))
 
 
