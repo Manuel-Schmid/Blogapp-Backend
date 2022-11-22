@@ -99,7 +99,7 @@ class AuthorRequest(models.Model):
     user = models.ForeignKey(
         "blog.User", related_name="author_request", on_delete=models.CASCADE
     )
-    date_requested = models.DateTimeField("date requested", default=timezone.now)
+    date_opened = models.DateTimeField("date opened", default=timezone.now)
     date_closed = models.DateTimeField(
         "date closed", blank=True, null=True, default=None
     )
