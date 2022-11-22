@@ -12,6 +12,7 @@ from blog.api.inputs import (
     CategoryInput,
     CommentInput,
     PostLikeInput,
+    AuthorRequestInput,
 )
 from blog.api.types import (
     Category as CategoryType,
@@ -19,9 +20,9 @@ from blog.api.types import (
     Comment as CommentType,
     PostLike as PostLikeType,
     CreatePostType,
-    AuthorRequest as AuthorRequestType,
+    AuthorRequestWrapperType,
 )
-from blog.models import Post, Category, Comment, PostLike
+from blog.models import Post, Category, Comment, PostLike, AuthorRequest
 from blog.forms import (
     CategoryForm,
     PostForm,
@@ -30,6 +31,7 @@ from blog.forms import (
     UpdateCommentForm,
     CreatePostForm,
     CreateAuthorRequestForm,
+    UpdateAuthorRequestForm,
 )
 
 
@@ -80,13 +82,34 @@ class CategoryMutations:
 class AuthorRequestMutations:
     @login_required
     @strawberry.mutation
-    def create_author_request(self, info: Info) -> Union[AuthorRequestType, None]:
+    def create_author_request(self, info: Info) -> AuthorRequestWrapperType:
         user = info.context.request.user
         form = CreateAuthorRequestForm(data={"user": user.id})
         if form.is_valid():
             author_request = form.save()
-            return author_request
-        return None
+            return AuthorRequestWrapperType(
+                author_request=author_request, success=True, errors=None
+            )
+        return AuthorRequestWrapperType(
+            author_request=None, success=False, errors=form.errors.get_json_data()
+        )
+
+    @strawberry.mutation
+    def update_author_request(
+        self, author_request_input: AuthorRequestInput
+    ) -> AuthorRequestWrapperType:
+        author_request = AuthorRequest.objects.get(pk=author_request_input.id)
+        form = UpdateAuthorRequestForm(
+            instance=author_request, data=vars(author_request_input)
+        )
+        if form.is_valid():
+            author_request = form.save()
+            return AuthorRequestWrapperType(
+                author_request=author_request, success=True, errors=None
+            )
+        return AuthorRequestWrapperType(
+            author_request=None, success=False, errors=form.errors.get_json_data()
+        )
 
 
 @strawberry.type

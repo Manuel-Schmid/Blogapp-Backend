@@ -34,6 +34,12 @@ class CreateAuthorRequestForm(ModelForm):
         fields = ["user"]
 
 
+class UpdateAuthorRequestForm(ModelForm):
+    class Meta:
+        model = AuthorRequest
+        fields = ["date_closed", "status"]
+
+
 class PostForm(ModelForm):
     class Meta:
         model = Post

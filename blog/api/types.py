@@ -70,6 +70,12 @@ class EmailChangeType(BaseGraphQLType):
     user: typing.Optional["User"]
 
 
+@strawberry.type
+class AuthorRequestWrapperType(BaseGraphQLType):
+    success: bool
+    author_request: typing.Optional['AuthorRequest']
+
+
 @gql.django.type(AuthorRequestModel)
 class AuthorRequest:
     id: strawberry.ID

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 import strawberry
 from strawberry.file_uploads import Upload
@@ -47,6 +48,13 @@ class PostInput:
     category: strawberry.ID
     owner: Optional[strawberry.ID] = None
     tags: Optional[str] = None
+
+
+@strawberry.input
+class AuthorRequestInput:
+    id: strawberry.ID
+    date_closed: datetime
+    status: str
 
 
 @strawberry.input
