@@ -1,0 +1,7 @@
+#import "./fragments/authorRequest.graphql"
+
+query AuthorRequestByUser {
+  authorRequestByUser {
+    ...AuthorRequest
+  }
+}
