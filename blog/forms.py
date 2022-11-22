@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
-from blog.models import Category, Post, Comment, PostLike
+from blog.models import Category, Post, Comment, PostLike, AuthorRequest
 
 
 class UserForm(UserCreationForm):
@@ -26,6 +26,12 @@ class CategoryForm(ModelForm):
     class Meta:
         model = Category
         fields = ["name"]
+
+
+class CreateAuthorRequestForm(ModelForm):
+    class Meta:
+        model = AuthorRequest
+        fields = ["user"]
 
 
 class PostForm(ModelForm):

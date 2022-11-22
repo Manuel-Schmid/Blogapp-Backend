@@ -7,13 +7,19 @@ from strawberry_django_jwt.decorators import login_required
 
 from blog.api.auth_mutations import AuthMutations
 from blog.api.decorators import author_permission_required
-from blog.api.inputs import PostInput, CategoryInput, CommentInput, PostLikeInput
+from blog.api.inputs import (
+    PostInput,
+    CategoryInput,
+    CommentInput,
+    PostLikeInput,
+)
 from blog.api.types import (
     Category as CategoryType,
     Post as PostType,
     Comment as CommentType,
     PostLike as PostLikeType,
     CreatePostType,
+    AuthorRequest as AuthorRequestType,
 )
 from blog.models import Post, Category, Comment, PostLike
 from blog.forms import (
@@ -23,6 +29,7 @@ from blog.forms import (
     CreateCommentForm,
     UpdateCommentForm,
     CreatePostForm,
+    CreateAuthorRequestForm,
 )
 
 
@@ -66,6 +73,19 @@ class CategoryMutations:
         if form.is_valid():
             category = form.save()
             return category
+        return None
+
+
+@strawberry.type
+class AuthorRequestMutations:
+    @login_required
+    @strawberry.mutation
+    def create_author_request(self, info: Info) -> Union[AuthorRequestType, None]:
+        user = info.context.request.user
+        form = CreateAuthorRequestForm(data={"user": user.id})
+        if form.is_valid():
+            author_request = form.save()
+            return author_request
         return None
 
 

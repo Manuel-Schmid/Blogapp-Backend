@@ -9,6 +9,7 @@ from .mutations import (
     PostMutations,
     CommentMutations,
     PostLikeMutations,
+    AuthorRequestMutations,
 )
 from .queries import UserQueries, PostQueries, CategoryQueries, TagQueries, AuthorRequestQueries
 
@@ -25,6 +26,7 @@ class RootMutation(
     PostMutations,
     CommentMutations,
     PostLikeMutations,
+    AuthorRequestMutations,
 ):
     pass
 
