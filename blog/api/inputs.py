@@ -52,9 +52,9 @@ class PostInput:
 
 @strawberry.input
 class AuthorRequestInput:
-    id: strawberry.ID
     date_closed: datetime
     status: str
+    user: strawberry.ID
 
 
 @strawberry.input

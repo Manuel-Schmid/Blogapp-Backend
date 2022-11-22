@@ -22,7 +22,7 @@ from blog.api.types import (
     CreatePostType,
     AuthorRequestWrapperType,
 )
-from blog.models import Post, Category, Comment, PostLike, AuthorRequest
+from blog.models import Post, Category, Comment, PostLike, AuthorRequest, UserStatus
 from blog.forms import (
     CategoryForm,
     PostForm,
@@ -98,12 +98,16 @@ class AuthorRequestMutations:
     def update_author_request(
         self, author_request_input: AuthorRequestInput
     ) -> AuthorRequestWrapperType:
-        author_request = AuthorRequest.objects.get(pk=author_request_input.id)
+        author_request = AuthorRequest.objects.get(user=author_request_input.user)
         form = UpdateAuthorRequestForm(
             instance=author_request, data=vars(author_request_input)
         )
         if form.is_valid():
             author_request = form.save()
+            if author_request.status == 'ACCEPTED':
+                user_status = UserStatus.objects.get(user=author_request.user)
+                user_status.is_author = True
+                user_status.save()
             return AuthorRequestWrapperType(
                 author_request=author_request, success=True, errors=None
             )
