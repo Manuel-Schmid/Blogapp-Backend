@@ -48,7 +48,9 @@ class AuthMutation:
 @strawberry.type
 class CategoryMutations:
     @strawberry.mutation
-    def create_category(self, category_input: CategoryInput) -> Union[CategoryType, None]:
+    def create_category(
+        self, category_input: CategoryInput
+    ) -> Union[CategoryType, None]:
         form = CategoryForm(data=vars(category_input))
         if form.is_valid():
             category = form.save()
@@ -56,7 +58,9 @@ class CategoryMutations:
         return None
 
     @strawberry.mutation
-    def update_category(self, category_input: CategoryInput) -> Union[CategoryType, None]:
+    def update_category(
+        self, category_input: CategoryInput
+    ) -> Union[CategoryType, None]:
         category = Category.objects.get(pk=category_input.id)
         form = CategoryForm(instance=category, data=vars(category_input))
         if form.is_valid():
@@ -80,10 +84,10 @@ class PostMutations:
 
         if len(files) != 1:
             has_errors = True
-            errors.update({'file': 'You must upload exactly one image file per post'})
+            errors.update({"file": "You must upload exactly one image file per post"})
 
         if not has_errors:
-            form = CreatePostForm(data=vars(post_input), files={'image': files['1']})
+            form = CreatePostForm(data=vars(post_input), files={"image": files["1"]})
 
             if not form.is_valid():
                 has_errors = True
@@ -92,7 +96,9 @@ class PostMutations:
             if not has_errors:
                 post = form.save()
 
-        return CreatePostType(post=post, success=not has_errors, errors=errors if errors else None)
+        return CreatePostType(
+            post=post, success=not has_errors, errors=errors if errors else None
+        )
 
     @strawberry.mutation
     def update_post(self, post_input: PostInput) -> Union[PostType, None]:
@@ -108,7 +114,9 @@ class PostMutations:
 class CommentMutations:
     @login_required
     @strawberry.mutation
-    def create_comment(self, info: Info, comment_input: CommentInput) -> Union[CommentType, None]:
+    def create_comment(
+        self, info: Info, comment_input: CommentInput
+    ) -> Union[CommentType, None]:
         user = info.context.request.user
         comment_input.owner = user.id
         form = CreateCommentForm(data=vars(comment_input))
@@ -119,7 +127,9 @@ class CommentMutations:
 
     @login_required
     @strawberry.mutation
-    def update_comment(self, info: Info, comment_input: CommentInput) -> Union[CommentType, None]:
+    def update_comment(
+        self, info: Info, comment_input: CommentInput
+    ) -> Union[CommentType, None]:
         user = info.context.request.user
         comment = Comment.objects.get(pk=comment_input.id)
         if comment.owner == user:
@@ -141,7 +151,9 @@ class CommentMutations:
 class PostLikeMutations:
     @login_required
     @strawberry.mutation
-    def create_post_like(self, info: Info, post_like_input: PostLikeInput) -> Union[PostLikeType, None]:
+    def create_post_like(
+        self, info: Info, post_like_input: PostLikeInput
+    ) -> Union[PostLikeType, None]:
         user = info.context.request.user
         post_like_input.user = user.id
         form = PostLikeForm(data=vars(post_like_input))

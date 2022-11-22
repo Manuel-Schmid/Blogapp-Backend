@@ -21,9 +21,9 @@ from blog.views import set_csrf
 from django.contrib.staticfiles.urls import static, staticfiles_urlpatterns
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('graphql/', include(api_urls)),
-    path('ping/', set_csrf),
+    path("admin/", admin.site.urls),
+    path("graphql/", include(api_urls)),
+    path("ping/", set_csrf),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
@@ -33,5 +33,5 @@ if settings.DEBUG:
     import debug_toolbar
 
     urlpatterns += [
-        path('__debug__/', include(debug_toolbar.urls)),
+        path("__debug__/", include(debug_toolbar.urls)),
     ]

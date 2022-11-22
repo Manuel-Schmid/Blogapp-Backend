@@ -2,7 +2,7 @@
 import json
 import requests
 
-api_url = 'http://django:8080/graphql/'
+api_url = "http://django:8080/graphql/"
 
 introspection_query = """query IntrospectionQuery {
     __schema {
@@ -93,7 +93,7 @@ introspection_query = """query IntrospectionQuery {
     }
   }"""
 
-response = requests.post(api_url, json={'query': introspection_query})
+response = requests.post(api_url, json={"query": introspection_query})
 pretty = json.dumps(response.json(), indent=4)
-with open('.graphql-schema.json', 'w') as f:
+with open(".graphql-schema.json", "w") as f:
     f.write(pretty)

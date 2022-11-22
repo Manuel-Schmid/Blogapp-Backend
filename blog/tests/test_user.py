@@ -19,18 +19,18 @@ def test_password_change(
         }
     }
 
-    query: str = import_query('passwordChange.graphql')
+    query: str = import_query("passwordChange.graphql")
     response: Response = client_query(query, password_change_input)
 
     assert response is not None
-    password_change: Dict = response.data.get('passwordChange', None)
+    password_change: Dict = response.data.get("passwordChange", None)
     assert password_change is not None
 
-    success: Dict = password_change.get('success', None)
+    success: Dict = password_change.get("success", None)
     assert success is not None
     assert success is True
 
-    errors: Dict = password_change.get('errors', None)
+    errors: Dict = password_change.get("errors", None)
     assert errors is None
 
 
@@ -50,18 +50,18 @@ def test_password_change_to_same_password(
         }
     }
 
-    query: str = import_query('passwordChange.graphql')
+    query: str = import_query("passwordChange.graphql")
     response: Response = client_query(query, password_change_input)
 
     assert response is not None
-    password_change: Dict = response.data.get('passwordChange', None)
+    password_change: Dict = response.data.get("passwordChange", None)
     assert password_change is not None
 
-    success: Dict = password_change.get('success', None)
+    success: Dict = password_change.get("success", None)
     assert success is not None
     assert success is True
 
-    errors: Dict = password_change.get('errors', None)
+    errors: Dict = password_change.get("errors", None)
     assert errors is None
 
 
@@ -81,21 +81,21 @@ def test_password_change_wrong_old_password(
         }
     }
 
-    query: str = import_query('passwordChange.graphql')
+    query: str = import_query("passwordChange.graphql")
     response: Response = client_query(query, password_change_input)
 
     assert response is not None
-    password_change: Dict = response.data.get('passwordChange', None)
+    password_change: Dict = response.data.get("passwordChange", None)
     assert password_change is not None
 
-    success: Dict = password_change.get('success', None)
+    success: Dict = password_change.get("success", None)
     assert success is not None
     assert success is False
 
-    errors: Dict = password_change.get('errors', None)
+    errors: Dict = password_change.get("errors", None)
     assert errors is not None
 
-    old_password: Dict = errors.get('old_password', None)
+    old_password: Dict = errors.get("old_password", None)
     assert old_password is not None
 
 
@@ -115,21 +115,21 @@ def test_password_change_new_password_mismatch(
         }
     }
 
-    query: str = import_query('passwordChange.graphql')
+    query: str = import_query("passwordChange.graphql")
     response: Response = client_query(query, password_change_input)
 
     assert response is not None
-    password_change: Dict = response.data.get('passwordChange', None)
+    password_change: Dict = response.data.get("passwordChange", None)
     assert password_change is not None
 
-    success: Dict = password_change.get('success', None)
+    success: Dict = password_change.get("success", None)
     assert success is not None
     assert success is False
 
-    errors: Dict = password_change.get('errors', None)
+    errors: Dict = password_change.get("errors", None)
     assert errors is not None
 
-    new_password2: Dict = errors.get('new_password2', None)
+    new_password2: Dict = errors.get("new_password2", None)
     assert new_password2 is not None
 
 
@@ -149,21 +149,21 @@ def test_password_change_password_too_common(
         }
     }
 
-    query: str = import_query('passwordChange.graphql')
+    query: str = import_query("passwordChange.graphql")
     response: Response = client_query(query, password_change_input)
 
     assert response is not None
-    password_change: Dict = response.data.get('passwordChange', None)
+    password_change: Dict = response.data.get("passwordChange", None)
     assert password_change is not None
 
-    success: Dict = password_change.get('success', None)
+    success: Dict = password_change.get("success", None)
     assert success is not None
     assert success is False
 
-    errors: Dict = password_change.get('errors', None)
+    errors: Dict = password_change.get("errors", None)
     assert errors is not None
 
-    new_password2: Dict = errors.get('new_password2', None)
+    new_password2: Dict = errors.get("new_password2", None)
     assert new_password2 is not None
 
 
@@ -183,19 +183,19 @@ def test_password_change_similar_to_username(
         }
     }
 
-    query: str = import_query('passwordChange.graphql')
+    query: str = import_query("passwordChange.graphql")
     response: Response = client_query(query, password_change_input)
 
     assert response is not None
-    password_change: Dict = response.data.get('passwordChange', None)
+    password_change: Dict = response.data.get("passwordChange", None)
     assert password_change is not None
 
-    success: Dict = password_change.get('success', None)
+    success: Dict = password_change.get("success", None)
     assert success is not None
     assert success is False
 
-    errors: Dict = password_change.get('errors', None)
+    errors: Dict = password_change.get("errors", None)
     assert errors is not None
 
-    new_password2: Dict = errors.get('new_password2', None)
+    new_password2: Dict = errors.get("new_password2", None)
     assert new_password2 is not None

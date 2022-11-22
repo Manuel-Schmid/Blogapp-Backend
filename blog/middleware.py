@@ -30,7 +30,7 @@ class JWTAuthenticationMiddleware:
         response = self.get_response(request)
 
         # flag set by deleteTokenCookie mutation
-        delete_jwt_cookie = getattr(request, 'delete_jwt_cookie', False)
+        delete_jwt_cookie = getattr(request, "delete_jwt_cookie", False)
 
         # ensure jwt cookie is set if user has logged in via admin
         if request.user and request.user.is_authenticated and not delete_jwt_cookie:
@@ -46,7 +46,9 @@ class JWTAuthenticationMiddleware:
                 )
 
                 refresh_token = create_refresh_token(request.user)
-                expires = refresh_token.created + jwt_settings.JWT_REFRESH_EXPIRATION_DELTA
+                expires = (
+                    refresh_token.created + jwt_settings.JWT_REFRESH_EXPIRATION_DELTA
+                )
 
                 response.set_cookie(
                     jwt_settings.JWT_REFRESH_TOKEN_COOKIE_NAME,
@@ -59,7 +61,7 @@ class JWTAuthenticationMiddleware:
         # ensure cookies are deleted
         # jwt cookie needs to be deleted if user has logged out via admin
         # session cookie needs to be deleted if user has logged out via deleteTokenCookie mutation
-        if request.path == reverse('admin:logout') or delete_jwt_cookie:
+        if request.path == reverse("admin:logout") or delete_jwt_cookie:
             delete_cookie(response, jwt_settings.JWT_COOKIE_NAME)
             delete_cookie(response, jwt_settings.JWT_REFRESH_TOKEN_COOKIE_NAME)
             delete_cookie(response, settings.SESSION_COOKIE_NAME)
