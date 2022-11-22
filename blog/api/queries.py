@@ -17,8 +17,6 @@ from blog.api.types import (
 )
 
 from taggit.models import Tag, TaggedItem
-
-from .inputs import AuthorRequestInput
 from ..models import Category, Post, User, AuthorRequest
 
 
