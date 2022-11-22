@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 import strawberry
 from strawberry.file_uploads import Upload
@@ -50,10 +51,17 @@ class PostInput:
     tags: Optional[str] = None
 
 
+@strawberry.enum
+class Status(Enum):
+    PENDING = "PENDING"
+    REJECTED = "REJECTED"
+    ACCEPTED = "ACCEPTED"
+
+
 @strawberry.input
 class AuthorRequestInput:
     date_closed: datetime
-    status: str
+    status: Status
     user: strawberry.ID
 
 

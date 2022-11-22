@@ -35,6 +35,12 @@ class CreateAuthorRequestForm(ModelForm):
 
 
 class UpdateAuthorRequestForm(ModelForm):
+    def __init__(self, *args, **kwargs) -> None:
+        data = kwargs.pop('data', {})
+        data['status'] = data.get('status', {'value': None}).value
+        kwargs['data'] = data
+        super().__init__(*args, **kwargs)
+
     class Meta:
         model = AuthorRequest
         fields = ["date_closed", "status"]
