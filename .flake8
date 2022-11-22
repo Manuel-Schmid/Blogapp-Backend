@@ -14,5 +14,6 @@ ignore =
     ANN101,
     ANN102,
     ANN003,
+    ANN401,
 
 max-line-length = 120
