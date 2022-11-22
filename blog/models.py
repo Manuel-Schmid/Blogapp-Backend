@@ -26,9 +26,7 @@ class UserStatus(models.Model):
     def __str__(self) -> str:
         return f"{self.user} - status"
 
-    def send(
-        self, subject_path: str, template_path: str, email_context: object
-    ) -> None:
+    def send(self, subject_path: str, template_path: str, email_context: object) -> None:
         html_message = render_to_string(template_path, email_context)
         subject = render_to_string(subject_path, email_context)
 
@@ -96,8 +94,8 @@ class AuthorRequest(models.Model):
         REJECTED = 'REJECTED'
         ACCEPTED = 'ACCEPTED'
 
-    user = models.ForeignKey(
-        "blog.User", related_name="author_request", on_delete=models.CASCADE
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="author_request"
     )
     date_opened = models.DateTimeField("date opened", default=timezone.now)
     date_closed = models.DateTimeField(
