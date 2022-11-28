@@ -2,7 +2,7 @@ from typing import Dict, Optional, Callable
 import pytest
 from strawberry.test import Response
 
-from blog.models import User
+from blog.models import User, UserStatus
 
 
 @pytest.mark.django_db
@@ -20,6 +20,14 @@ def test_login(
     user: User = create_user(username=username)
     user.set_password(password)
     user.save()
+
+    UserStatus.objects.create(
+        user=user,
+        verified=True,
+        archived=False,
+        secondary_email=False,
+        is_author=False,
+    )
 
     # no access to profile before login
     query: str = import_query("me.graphql")
