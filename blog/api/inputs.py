@@ -60,7 +60,6 @@ class Status(Enum):
 
 @strawberry.input
 class AuthorRequestInput:
-    date_closed: datetime
     status: Status
     user: strawberry.ID
 

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Union
 
 import strawberry
@@ -99,6 +100,7 @@ class AuthorRequestMutations:
         self, author_request_input: AuthorRequestInput
     ) -> AuthorRequestWrapperType:
         author_request = AuthorRequest.objects.get(user=author_request_input.user)
+        author_request_input.date_closed = datetime.now()
         form = UpdateAuthorRequestForm(
             instance=author_request, data=vars(author_request_input)
         )
