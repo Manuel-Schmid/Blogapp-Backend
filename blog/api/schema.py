@@ -10,6 +10,7 @@ from .mutations import (
     CommentMutations,
     PostLikeMutations,
     AuthorRequestMutations,
+    ObtainJSONWebToken,
 )
 from .queries import UserQueries, PostQueries, CategoryQueries, TagQueries, AuthorRequestQueries
 
@@ -21,6 +22,7 @@ class RootQuery(UserQueries, PostQueries, CategoryQueries, TagQueries, AuthorReq
 
 @strawberry.type
 class RootMutation(
+    ObtainJSONWebToken,
     AuthMutation,
     CategoryMutations,
     PostMutations,

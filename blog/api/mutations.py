@@ -4,10 +4,11 @@ from typing import Union
 import strawberry
 import strawberry_django_jwt.mutations as jwt_mutations
 from strawberry.types import Info
-from strawberry_django_jwt.decorators import login_required
+from strawberry_django_jwt.decorators import login_required, dispose_extra_kwargs
+from strawberry_django_jwt.object_types import TokenDataType, TokenPayloadType
 
 from blog.api.auth_mutations import AuthMutations
-from blog.api.decorators import author_permission_required
+from blog.api.decorators import author_permission_required, token_auth
 from blog.api.inputs import (
     PostInput,
     CategoryInput,
@@ -37,8 +38,16 @@ from blog.forms import (
 
 
 @strawberry.type
+class ObtainJSONWebToken(jwt_mutations.ObtainJSONWebToken):
+    @strawberry.mutation
+    @token_auth  # Custom decorator based on the strawberry decorator with the same name
+    @dispose_extra_kwargs
+    def token_auth(self, info: Info) -> TokenDataType:
+        return TokenDataType(payload=TokenPayloadType())
+
+
+@strawberry.type
 class AuthMutation:
-    token_auth = jwt_mutations.ObtainJSONWebToken.obtain
     verify_token = jwt_mutations.Verify.verify
     refresh_token = jwt_mutations.Refresh.refresh
     delete_token_cookie = jwt_mutations.DeleteJSONWebTokenCookie.delete_cookie
@@ -58,9 +67,7 @@ class AuthMutation:
 @strawberry.type
 class CategoryMutations:
     @strawberry.mutation
-    def create_category(
-        self, category_input: CategoryInput
-    ) -> Union[CategoryType, None]:
+    def create_category(self, category_input: CategoryInput) -> Union[CategoryType, None]:
         form = CategoryForm(data=vars(category_input))
         if form.is_valid():
             category = form.save()
@@ -68,9 +75,7 @@ class CategoryMutations:
         return None
 
     @strawberry.mutation
-    def update_category(
-        self, category_input: CategoryInput
-    ) -> Union[CategoryType, None]:
+    def update_category(self, category_input: CategoryInput) -> Union[CategoryType, None]:
         category = Category.objects.get(pk=category_input.id)
         form = CategoryForm(instance=category, data=vars(category_input))
         if form.is_valid():
@@ -145,9 +150,7 @@ class PostMutations:
             if not has_errors:
                 post = form.save()
 
-        return CreatePostType(
-            post=post, success=not has_errors, errors=errors if errors else None
-        )
+        return CreatePostType(post=post, success=not has_errors, errors=errors if errors else None)
 
     @strawberry.mutation
     def update_post(self, post_input: PostInput) -> Union[PostType, None]:
@@ -163,9 +166,7 @@ class PostMutations:
 class CommentMutations:
     @login_required
     @strawberry.mutation
-    def create_comment(
-        self, info: Info, comment_input: CommentInput
-    ) -> Union[CommentType, None]:
+    def create_comment(self, info: Info, comment_input: CommentInput) -> Union[CommentType, None]:
         user = info.context.request.user
         comment_input.owner = user.id
         form = CreateCommentForm(data=vars(comment_input))
@@ -176,9 +177,7 @@ class CommentMutations:
 
     @login_required
     @strawberry.mutation
-    def update_comment(
-        self, info: Info, comment_input: CommentInput
-    ) -> Union[CommentType, None]:
+    def update_comment(self, info: Info, comment_input: CommentInput) -> Union[CommentType, None]:
         user = info.context.request.user
         comment = Comment.objects.get(pk=comment_input.id)
         if comment.owner == user:
@@ -200,9 +199,7 @@ class CommentMutations:
 class PostLikeMutations:
     @login_required
     @strawberry.mutation
-    def create_post_like(
-        self, info: Info, post_like_input: PostLikeInput
-    ) -> Union[PostLikeType, None]:
+    def create_post_like(self, info: Info, post_like_input: PostLikeInput) -> Union[PostLikeType, None]:
         user = info.context.request.user
         post_like_input.user = user.id
         form = PostLikeForm(data=vars(post_like_input))
