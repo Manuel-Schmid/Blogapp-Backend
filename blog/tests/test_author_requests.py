@@ -38,7 +38,6 @@ def test_create_update_and_query_author_request(
     author_request_input = {
         "authorRequestInput": {
             "user": 1,
-            "dateClosed": "2022-12-12 12:12:12.000000",
             "status": "ACCEPTED",
         }
     }
