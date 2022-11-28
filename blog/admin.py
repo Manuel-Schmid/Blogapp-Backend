@@ -1,7 +1,15 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
-from blog.models import Comment, User, Category, Post, CommentLike, PostLike
+from blog.models import (
+    Comment,
+    User,
+    Category,
+    Post,
+    CommentLike,
+    PostLike,
+    AuthorRequest,
+)
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Category)
@@ -17,6 +25,7 @@ class PostAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Post, PostAdmin)
+admin.site.register(AuthorRequest)
 
 admin.site.register(Comment)
 admin.site.register(CommentLike)

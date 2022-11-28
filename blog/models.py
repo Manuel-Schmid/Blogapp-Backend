@@ -3,6 +3,7 @@ from django.core.mail import EmailMessage
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.template.loader import render_to_string
+from django.utils import timezone
 from taggit.managers import TaggableManager
 from autoslug import AutoSlugField
 from django.conf import settings
@@ -25,9 +26,7 @@ class UserStatus(models.Model):
     def __str__(self) -> str:
         return f"{self.user} - status"
 
-    def send(
-        self, subject_path: str, template_path: str, email_context: object
-    ) -> None:
+    def send(self, subject_path: str, template_path: str, email_context: object) -> None:
         html_message = render_to_string(template_path, email_context)
         subject = render_to_string(subject_path, email_context)
 
@@ -87,6 +86,27 @@ class UserStatus(models.Model):
                 user_status.save(update_fields=["verified"])
                 return True
         return False
+
+
+class AuthorRequest(models.Model):
+    class Status(models.TextChoices):
+        PENDING = 'PENDING'
+        REJECTED = 'REJECTED'
+        ACCEPTED = 'ACCEPTED'
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="author_request"
+    )
+    date_opened = models.DateTimeField("date opened", default=timezone.now)
+    date_closed = models.DateTimeField(
+        "date closed", blank=True, null=True, default=None
+    )
+    status = models.CharField(
+        max_length=20, choices=Status.choices, default=Status.PENDING
+    )
+
+    def __str__(self) -> str:
+        return self.status
 
 
 def slugify(string: str) -> str:

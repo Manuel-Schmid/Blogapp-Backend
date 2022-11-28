@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Optional
 import strawberry
 from strawberry.file_uploads import Upload
@@ -47,6 +48,19 @@ class PostInput:
     category: strawberry.ID
     owner: Optional[strawberry.ID] = None
     tags: Optional[str] = None
+
+
+@strawberry.enum
+class Status(Enum):
+    PENDING = "PENDING"
+    REJECTED = "REJECTED"
+    ACCEPTED = "ACCEPTED"
+
+
+@strawberry.input
+class AuthorRequestInput:
+    status: Status
+    user: strawberry.ID
 
 
 @strawberry.input

@@ -1,0 +1,11 @@
+#import "./fragments/authorRequest.graphql"
+
+mutation UpdateAuthorRequest($authorRequestInput: AuthorRequestInput!) {
+  updateAuthorRequest(authorRequestInput: $authorRequestInput) {
+    success
+    errors
+    authorRequest {
+      ...AuthorRequest
+    }
+  }
+}

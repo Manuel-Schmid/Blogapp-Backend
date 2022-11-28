@@ -1,0 +1,11 @@
+#import "./fragments/authorRequest.graphql"
+
+mutation CreateAuthorRequest {
+  createAuthorRequest {
+    success
+    errors
+    authorRequest {
+      ...AuthorRequest
+    }
+  }
+}

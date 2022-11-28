@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Union
 
 import strawberry
@@ -8,15 +9,22 @@ from strawberry_django_jwt.object_types import TokenDataType, TokenPayloadType
 
 from blog.api.auth_mutations import AuthMutations
 from blog.api.decorators import author_permission_required, token_auth
-from blog.api.inputs import PostInput, CategoryInput, CommentInput, PostLikeInput
+from blog.api.inputs import (
+    PostInput,
+    CategoryInput,
+    CommentInput,
+    PostLikeInput,
+    AuthorRequestInput,
+)
 from blog.api.types import (
     Category as CategoryType,
     Post as PostType,
     Comment as CommentType,
     PostLike as PostLikeType,
     CreatePostType,
+    AuthorRequestWrapperType,
 )
-from blog.models import Post, Category, Comment, PostLike
+from blog.models import Post, Category, Comment, PostLike, AuthorRequest, UserStatus
 from blog.forms import (
     CategoryForm,
     PostForm,
@@ -24,6 +32,8 @@ from blog.forms import (
     CreateCommentForm,
     UpdateCommentForm,
     CreatePostForm,
+    CreateAuthorRequestForm,
+    UpdateAuthorRequestForm,
 )
 
 
@@ -72,6 +82,45 @@ class CategoryMutations:
             category = form.save()
             return category
         return None
+
+
+@strawberry.type
+class AuthorRequestMutations:
+    @login_required
+    @strawberry.mutation
+    def create_author_request(self, info: Info) -> AuthorRequestWrapperType:
+        user = info.context.request.user
+        form = CreateAuthorRequestForm(data={"user": user.id})
+        if form.is_valid():
+            author_request = form.save()
+            return AuthorRequestWrapperType(
+                author_request=author_request, success=True, errors=None
+            )
+        return AuthorRequestWrapperType(
+            author_request=None, success=False, errors=form.errors.get_json_data()
+        )
+
+    @strawberry.mutation
+    def update_author_request(
+        self, author_request_input: AuthorRequestInput
+    ) -> AuthorRequestWrapperType:
+        author_request = AuthorRequest.objects.get(user=author_request_input.user)
+        author_request_input.date_closed = datetime.now()
+        form = UpdateAuthorRequestForm(
+            instance=author_request, data=vars(author_request_input)
+        )
+        if form.is_valid():
+            author_request = form.save()
+            if author_request.status == 'ACCEPTED':
+                user_status = UserStatus.objects.get(user=author_request.user)
+                user_status.is_author = True
+                user_status.save()
+            return AuthorRequestWrapperType(
+                author_request=author_request, success=True, errors=None
+            )
+        return AuthorRequestWrapperType(
+            author_request=None, success=False, errors=form.errors.get_json_data()
+        )
 
 
 @strawberry.type

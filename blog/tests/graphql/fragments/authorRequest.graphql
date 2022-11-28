@@ -1,0 +1,9 @@
+fragment AuthorRequest on AuthorRequest {
+  id
+  dateOpened
+  dateClosed
+  status
+  user {
+    username
+  }
+}
