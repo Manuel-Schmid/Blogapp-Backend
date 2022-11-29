@@ -90,37 +90,25 @@ class AuthorRequestMutations:
     @strawberry.mutation
     def create_author_request(self, info: Info) -> AuthorRequestWrapperType:
         user = info.context.request.user
-        form = CreateAuthorRequestForm(data={"user": user.id})
+        form = CreateAuthorRequestForm(data={'user': user.id})
         if form.is_valid():
             author_request = form.save()
-            return AuthorRequestWrapperType(
-                author_request=author_request, success=True, errors=None
-            )
-        return AuthorRequestWrapperType(
-            author_request=None, success=False, errors=form.errors.get_json_data()
-        )
+            return AuthorRequestWrapperType(author_request=author_request, success=True, errors=None)
+        return AuthorRequestWrapperType(author_request=None, success=False, errors=form.errors.get_json_data())
 
     @strawberry.mutation
-    def update_author_request(
-        self, author_request_input: AuthorRequestInput
-    ) -> AuthorRequestWrapperType:
+    def update_author_request(self, author_request_input: AuthorRequestInput) -> AuthorRequestWrapperType:
         author_request = AuthorRequest.objects.get(user=author_request_input.user)
         author_request_input.date_closed = datetime.now()
-        form = UpdateAuthorRequestForm(
-            instance=author_request, data=vars(author_request_input)
-        )
+        form = UpdateAuthorRequestForm(instance=author_request, data=vars(author_request_input))
         if form.is_valid():
             author_request = form.save()
             if author_request.status == 'ACCEPTED':
                 user_status = UserStatus.objects.get(user=author_request.user)
                 user_status.is_author = True
                 user_status.save()
-            return AuthorRequestWrapperType(
-                author_request=author_request, success=True, errors=None
-            )
-        return AuthorRequestWrapperType(
-            author_request=None, success=False, errors=form.errors.get_json_data()
-        )
+            return AuthorRequestWrapperType(author_request=author_request, success=True, errors=None)
+        return AuthorRequestWrapperType(author_request=None, success=False, errors=form.errors.get_json_data())
 
 
 @strawberry.type
@@ -138,10 +126,10 @@ class PostMutations:
 
         if len(files) != 1:
             has_errors = True
-            errors.update({"file": "You must upload exactly one image file per post"})
+            errors.update({'file': 'You must upload exactly one image file per post'})
 
         if not has_errors:
-            form = CreatePostForm(data=vars(post_input), files={"image": files["1"]})
+            form = CreatePostForm(data=vars(post_input), files={'image': files['1']})
 
             if not form.is_valid():
                 has_errors = True

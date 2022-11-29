@@ -19,9 +19,9 @@ class PostAdmin(admin.ModelAdmin):
     def image_tag(self, obj: object) -> str:
         return format_html('<img src="{}" width=150 height=150/>'.format(obj.image_url))
 
-    image_tag.short_description = "Image"
+    image_tag.short_description = 'Image'
 
-    list_display = ("title", "date_created", "category", "owner", "image_tag")
+    list_display = ('title', 'date_created', 'category', 'owner', 'image_tag')
 
 
 admin.site.register(Post, PostAdmin)

@@ -32,22 +32,20 @@ class UserQueries:
 
     @strawberry.field
     def users(self) -> typing.List[UserType]:
-        return User.objects.select_related("user_status").all()
+        return User.objects.select_related('user_status').all()
 
     @strawberry.field
     def user(self, info: Info) -> Optional[UserType]:
         user = info.context.request.user
         if user.is_authenticated:
-            return User.objects.select_related("user_status").get(pk=user.id)
+            return User.objects.select_related('user_status').get(pk=user.id)
         return None
 
 
 @strawberry.type
 class AuthorRequestQueries:
     @strawberry.field
-    def author_requests(
-        self, status: Optional[str] = None
-    ) -> typing.List[AuthorRequestType]:
+    def author_requests(self, status: Optional[str] = None) -> typing.List[AuthorRequestType]:
         request_filter = Q()
         if status:
             request_filter &= Q(status=status)
@@ -85,17 +83,14 @@ class TagQueries:
         tag_filter = Q()
         if category_slug is not None:
             category_posts = list(
-                Post.objects.select_related("category")
-                .prefetch_related("tags")
+                Post.objects.select_related('category')
+                .prefetch_related('tags')
                 .filter(category__slug=category_slug)
-                .values_list("id", flat=True)
+                .values_list('id', flat=True)
             )
             tag_filter &= Q(object_id__in=category_posts)
 
-        tags = [
-            obj.tag
-            for obj in TaggedItem.objects.select_related("tag").filter(tag_filter)
-        ]
+        tags = [obj.tag for obj in TaggedItem.objects.select_related('tag').filter(tag_filter)]
         return list(set(tags))
 
 
@@ -111,7 +106,7 @@ class PostQueries:
 
         post_filter = Q()
         if tag_slugs is not None:
-            tag_slugs_list = tag_slugs.split(",")
+            tag_slugs_list = tag_slugs.split(',')
 
             # or
             for tag in tag_slugs_list:
@@ -135,16 +130,16 @@ class PostQueries:
             post_filter &= Q(category__slug=category_slug)
 
         posts = (
-            Post.objects.select_related("category", "owner")
+            Post.objects.select_related('category', 'owner')
             .prefetch_related(
-                "tags",
-                "comments",
-                "comments__owner",
-                "post_likes",
-                "post_likes__user",
-                "owner__posts",
-                "owner__posts__tags",
-                "owner__posts__category",
+                'tags',
+                'comments',
+                'comments__owner',
+                'post_likes',
+                'post_likes__user',
+                'owner__posts',
+                'owner__posts__tags',
+                'owner__posts__category',
             )
             .filter(post_filter)
         )
