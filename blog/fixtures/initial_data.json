@@ -159,8 +159,8 @@
     "model": "blog.post",
     "pk": 2,
     "fields": {
-        "title": "Suspendisse varius",
-        "slug": "suspendisse-varius",
+        "title": "Fortes Fortuna Adiuvat",
+        "slug": "fortes-fortuna-adiuvat",
         "text": "Vivamus aliquam lacus in sem bibendum ultricies nec nec justo. Aenean luctus velit blandit nulla pharetra, non pellentesque quam accumsan. Suspendisse varius nunc in massa convallis tempor.",
         "image": "images/Landscape-Color.jpg",
         "category": 6,
