@@ -89,6 +89,13 @@ Ignore a certain rule for a line
     ...code...  # noqa: W503 (or whatever rule you want to ignore)
 
 
+## Black
+
+Format entire project
+    
+    black . --skip-string-normalization --line-length 120
+
+
 ## Test data
 
 Returning a lot of "fake" posts for testing:
