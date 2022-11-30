@@ -8,33 +8,33 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("blog", "0002_category_comment_post_commentlike_comment_post_and_more"),
+        ('blog', '0002_category_comment_post_commentlike_comment_post_and_more'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name="UserStatus",
+            name='UserStatus',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("verified", models.BooleanField(default=False)),
-                ("archived", models.BooleanField(default=False)),
+                ('verified', models.BooleanField(default=False)),
+                ('archived', models.BooleanField(default=False)),
                 (
-                    "secondary_email",
+                    'secondary_email',
                     models.EmailField(blank=True, max_length=254, null=True),
                 ),
                 (
-                    "user",
+                    'user',
                     models.OneToOneField(
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="status",
+                        related_name='status',
                         to=settings.AUTH_USER_MODEL,
                     ),
                 ),

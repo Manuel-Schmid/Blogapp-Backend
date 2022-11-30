@@ -67,7 +67,7 @@ class UpdateAccountType(BaseGraphQLType):
 @strawberry.type
 class EmailChangeType(BaseGraphQLType):
     success: bool
-    user: typing.Optional["User"]
+    user: typing.Optional['User']
 
 
 @strawberry.type
@@ -105,13 +105,13 @@ class Post:
     slug: str
     text: str
     image: auto
-    category: "Category"
-    comments: typing.List["Comment"]
-    owner: "User"
+    category: 'Category'
+    comments: typing.List['Comment']
+    owner: 'User'
     date_created: auto
 
     @strawberry.field
-    def tags(self) -> typing.List["Tag"]:
+    def tags(self) -> typing.List['Tag']:
         return TagModel.objects.filter(taggit_taggeditem_items__object_id__exact=self.id)
 
     @strawberry.field
@@ -147,7 +147,7 @@ class CreatePostType(BaseGraphQLType):
 @gql.django.type(UserStatusModel)
 class UserStatus:
     id: strawberry.ID
-    user: "User"
+    user: 'User'
     verified: bool
     archived: bool
     secondary_email: typing.Optional[str]
@@ -157,18 +157,18 @@ class UserStatus:
 @gql.django.type(UserModel)
 class User:
     id: strawberry.ID
-    posts: typing.List["Post"]
+    posts: typing.List['Post']
     email: str
     password: str
     username: str
     first_name: str
     last_name: str
-    user_status: "UserStatus"
+    user_status: 'UserStatus'
 
 
 @gql.django.type(PostModel)
 class PaginationPosts:
-    posts: typing.List["Post"]
+    posts: typing.List['Post']
     num_post_pages: int
 
 
@@ -177,19 +177,19 @@ class Comment:
     id: strawberry.ID
     title: str
     text: str
-    post: "Post"
-    owner: "User"
+    post: 'Post'
+    owner: 'User'
 
 
 @gql.django.type(PostLikeModel)
 class PostLike:
     id: strawberry.ID
-    post: "Post"
-    user: "User"
+    post: 'Post'
+    user: 'User'
 
 
 @gql.django.type(CommentLikeModel)
 class CommentLike:
     id: strawberry.ID
-    comment: "Comment"
-    user: "User"
+    comment: 'Comment'
+    user: 'User'

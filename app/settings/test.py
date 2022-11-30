@@ -4,10 +4,10 @@ except ImportError:
     pass
 
 LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": True,
+    'version': 1,
+    'disable_existing_loggers': True,
 }
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "blog/tests/media/uploaded_test_files")
+MEDIA_ROOT = os.path.join(BASE_DIR, 'blog/tests/media/uploaded_test_files')
 
 TEST = True

@@ -18,33 +18,33 @@ def test_create_comment(
     auth()
     create_posts()
     comment_input = {
-        "commentInput": {
-            "title": "test_comment",
-            "text": "test_comment_text",
-            "post": 1,
+        'commentInput': {
+            'title': 'test_comment',
+            'text': 'test_comment_text',
+            'post': 1,
         }
     }
 
-    query: str = import_query("createComment.graphql")
+    query: str = import_query('createComment.graphql')
     response: Response = client_query(query, comment_input)
 
     assert response is not None
     assert response.errors is None
 
-    create_comment: Dict = response.data.get("createComment", None)
+    create_comment: Dict = response.data.get('createComment', None)
     assert create_comment is not None
 
-    comment_title: Dict = create_comment.get("title", None)
+    comment_title: Dict = create_comment.get('title', None)
     assert comment_title is not None
-    assert comment_title == "test_comment"
+    assert comment_title == 'test_comment'
 
-    comment_owner: Dict = create_comment.get("owner", None)
+    comment_owner: Dict = create_comment.get('owner', None)
     assert comment_owner is not None
-    assert comment_owner.get("username", None) == "jane.doe@blogapp.lo"
+    assert comment_owner.get('username', None) == 'jane.doe@blogapp.lo'
 
-    comment_post: Dict = create_comment.get("post", None)
+    comment_post: Dict = create_comment.get('post', None)
     assert comment_post is not None
-    assert comment_post.get("slug", None) == "test_post-1"
+    assert comment_post.get('slug', None) == 'test_post-1'
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
@@ -57,20 +57,20 @@ def test_create_comment_too_long_fields(
     auth()
     create_posts()
     comment_input = {
-        "commentInput": {
-            "title": "e" * 201,
-            "text": "test_comment_text",
-            "post": 1,
+        'commentInput': {
+            'title': 'e' * 201,
+            'text': 'test_comment_text',
+            'post': 1,
         }
     }
 
-    query: str = import_query("createComment.graphql")
+    query: str = import_query('createComment.graphql')
     response: Response = client_query(query, comment_input)
 
     assert response is not None
     assert response.errors is None
 
-    create_comment: Dict = response.data.get("createComment", None)
+    create_comment: Dict = response.data.get('createComment', None)
     assert create_comment is None
 
 
@@ -82,20 +82,20 @@ def test_create_comment_invalid_post_id(
 ) -> None:
     auth()
     comment_input = {
-        "commentInput": {
-            "title": "test_comment",
-            "text": "test_comment_text",
-            "post": 1,
+        'commentInput': {
+            'title': 'test_comment',
+            'text': 'test_comment_text',
+            'post': 1,
         }
     }
 
-    query: str = import_query("createComment.graphql")
+    query: str = import_query('createComment.graphql')
     response: Response = client_query(query, comment_input)
 
     assert response is not None
     assert response.errors is None
 
-    create_comment: Dict = response.data.get("createComment", None)
+    create_comment: Dict = response.data.get('createComment', None)
     assert create_comment is None
 
 
@@ -107,14 +107,14 @@ def test_create_comment_invalid_owner_id(
 ) -> None:
     create_posts()
     comment_input = {
-        "commentInput": {
-            "title": "test_comment",
-            "text": "test_comment_text",
-            "post": 1,
+        'commentInput': {
+            'title': 'test_comment',
+            'text': 'test_comment_text',
+            'post': 1,
         }
     }
 
-    query: str = import_query("createComment.graphql")
+    query: str = import_query('createComment.graphql')
     response: Response = client_query(query, comment_input)
 
     assert response is not None
@@ -122,8 +122,8 @@ def test_create_comment_invalid_owner_id(
 
     assert len(response.errors) > 0
     errors: Dict = response.errors[0]
-    error_msg = errors.get("message", None)
-    assert error_msg == "You do not have permission to perform this action"
+    error_msg = errors.get('message', None)
+    assert error_msg == 'You do not have permission to perform this action'
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
@@ -136,25 +136,25 @@ def test_update_comment(
     auth()
     create_comments()
     comment_input = {
-        "commentInput": {
-            "id": 1,
-            "title": "test_comment3",
-            "text": "test_comment_text3",
+        'commentInput': {
+            'id': 1,
+            'title': 'test_comment3',
+            'text': 'test_comment_text3',
         }
     }
 
-    query: str = import_query("updateComment.graphql")
+    query: str = import_query('updateComment.graphql')
     response: Response = client_query(query, comment_input)
 
     assert response is not None
     assert response.errors is None
 
-    update_comment: Dict = response.data.get("updateComment", None)
+    update_comment: Dict = response.data.get('updateComment', None)
     assert update_comment is not None
 
-    comment_title: Dict = update_comment.get("title", None)
+    comment_title: Dict = update_comment.get('title', None)
     assert comment_title is not None
-    assert comment_title == "test_comment3"
+    assert comment_title == 'test_comment3'
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
@@ -167,20 +167,20 @@ def test_update_comment_not_owner(
     auth()
     create_comments()
     comment_input = {
-        "commentInput": {
-            "id": 2,
-            "title": "test_comment3",
-            "text": "test_comment_text3",
+        'commentInput': {
+            'id': 2,
+            'title': 'test_comment3',
+            'text': 'test_comment_text3',
         }
     }
 
-    query: str = import_query("updateComment.graphql")
+    query: str = import_query('updateComment.graphql')
     response: Response = client_query(query, comment_input)
 
     assert response is not None
     assert response.errors is None
 
-    update_comment: Dict = response.data.get("updateComment", None)
+    update_comment: Dict = response.data.get('updateComment', None)
     assert update_comment is None
 
 
@@ -193,13 +193,13 @@ def test_delete_comment(
 ) -> None:
     auth()
     create_comments()
-    comment_input = {"commentId": 2}
+    comment_input = {'commentId': 2}
 
-    query: str = import_query("deleteComment.graphql")
+    query: str = import_query('deleteComment.graphql')
     response: Response = client_query(query, comment_input)
 
     assert response is not None
     assert response.errors is None
 
-    delete_comment: Dict = response.data.get("deleteComment", None)
+    delete_comment: Dict = response.data.get('deleteComment', None)
     assert delete_comment is True

@@ -52,9 +52,9 @@ class PostInput:
 
 @strawberry.enum
 class Status(Enum):
-    PENDING = "PENDING"
-    REJECTED = "REJECTED"
-    ACCEPTED = "ACCEPTED"
+    PENDING = 'PENDING'
+    REJECTED = 'REJECTED'
+    ACCEPTED = 'ACCEPTED'
 
 
 @strawberry.input

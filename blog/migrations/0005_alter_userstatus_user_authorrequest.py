@@ -16,7 +16,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='userstatus',
             name='user',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='user_status', to=settings.AUTH_USER_MODEL),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE, related_name='user_status', to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.CreateModel(
             name='AuthorRequest',
@@ -24,8 +26,22 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_opened', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date opened')),
                 ('date_closed', models.DateTimeField(blank=True, default=None, null=True, verbose_name='date closed')),
-                ('status', models.CharField(choices=[('PENDING', 'Pending'), ('REJECTED', 'Rejected'), ('ACCEPTED', 'Accepted')], default='PENDING', max_length=20)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='author_request', to=settings.AUTH_USER_MODEL)),
+                (
+                    'status',
+                    models.CharField(
+                        choices=[('PENDING', 'Pending'), ('REJECTED', 'Rejected'), ('ACCEPTED', 'Accepted')],
+                        default='PENDING',
+                        max_length=20,
+                    ),
+                ),
+                (
+                    'user',
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='author_request',
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]
