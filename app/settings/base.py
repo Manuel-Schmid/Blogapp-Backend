@@ -164,8 +164,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS
 
 CORS_ORIGIN_REGEX_WHITELIST = [
-    r"^http(s?)://localhost(:?)\d{0,5}$",
-    r"^http(s?)://api.blogapp.com(:?)\d{0,5}$",
+    r'^http(s?)://localhost(:?)\d{0,5}$',
+    r'^http(s?)://api.blogapp.com(:?)\d{0,5}$',
 ]
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 CORS_ALLOW_CREDENTIALS = True

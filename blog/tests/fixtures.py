@@ -180,7 +180,7 @@ def fixture_auth(
 @pytest.fixture(name='get_token_from_mail')
 def fixture_get_token_from_mail() -> Callable:
     def func(mail_body: any, path: str) -> str:
-        regex = r"{}://{}:{}/{}/(.+)\"".format(
+        regex = r'{}://{}:{}/{}/(.+)\"'.format(
             re.escape(settings.FRONTEND_PROTOCOL),
             re.escape(settings.FRONTEND_DOMAIN),
             re.escape(settings.FRONTEND_PORT),
