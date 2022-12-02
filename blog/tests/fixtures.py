@@ -162,7 +162,7 @@ def fixture_auth(
     def func(is_author: bool = True) -> None:
         username: str = 'jane.doe@blogapp.lo'
         password: str = 'admin_password_155'
-        user: User = create_user(username=username)
+        user: User = create_user(username=username, is_superuser=True)
         user.set_password(password)
         user.save()
         UserStatus.objects.create(
