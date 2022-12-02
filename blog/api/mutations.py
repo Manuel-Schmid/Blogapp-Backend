@@ -4,7 +4,7 @@ from typing import Union
 import strawberry
 import strawberry_django_jwt.mutations as jwt_mutations
 from strawberry.types import Info
-from strawberry_django_jwt.decorators import login_required, dispose_extra_kwargs
+from strawberry_django_jwt.decorators import login_required, dispose_extra_kwargs, superuser_required
 from strawberry_django_jwt.object_types import TokenDataType, TokenPayloadType
 
 from blog.api.auth_mutations import AuthMutations
@@ -96,6 +96,7 @@ class AuthorRequestMutations:
             return AuthorRequestWrapperType(author_request=author_request, success=True, errors=None)
         return AuthorRequestWrapperType(author_request=None, success=False, errors=form.errors.get_json_data())
 
+    @superuser_required
     @strawberry.mutation
     def update_author_request(self, author_request_input: AuthorRequestInput) -> AuthorRequestWrapperType:
         author_request = AuthorRequest.objects.get(user=author_request_input.user)

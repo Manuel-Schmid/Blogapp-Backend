@@ -85,6 +85,12 @@ class AuthorRequest:
     user: 'User'
 
 
+@gql.django.type(AuthorRequestModel)
+class PaginationAuthorRequests:
+    author_requests: typing.List['AuthorRequest']
+    num_pages: int
+
+
 @gql.django.type(CategoryModel)
 class Category:
     id: strawberry.ID
@@ -163,6 +169,9 @@ class User:
     username: str
     first_name: str
     last_name: str
+    is_superuser: bool
+    is_staff: bool
+    is_active: bool
     user_status: 'UserStatus'
 
 
