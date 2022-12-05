@@ -303,11 +303,11 @@ def fixture_create_author_requests(create_users: Callable, client_query: Callabl
         AuthorRequest.objects.create(
             date_opened=make_aware(datetime(2022, 12, 1, 12, 00, 00, 000000)),
             date_closed=make_aware(datetime(2022, 12, 1, 14, 30, 00, 000000)),
-            status="REJECTED",
+            status='REJECTED',
             user_id=users[0].id,
         )
         AuthorRequest.objects.create(
-            date_opened=make_aware(datetime(2022, 12, 1, 13, 00, 00, 000000)), status="PENDING", user_id=users[1].id
+            date_opened=make_aware(datetime(2022, 12, 1, 13, 00, 00, 000000)), status='PENDING', user_id=users[1].id
         )
         return AuthorRequest.objects.all()
 
