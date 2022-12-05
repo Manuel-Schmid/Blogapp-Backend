@@ -5,7 +5,7 @@ import strawberry
 from django.core.paginator import Paginator
 from django.db.models import Q
 from strawberry.types import Info
-from strawberry_django_jwt.decorators import login_required
+from strawberry_django_jwt.decorators import login_required, superuser_required
 
 from blog.api.types import (
     Category as CategoryType,
@@ -81,6 +81,7 @@ class TagQueries:
 
 @strawberry.type
 class AuthorRequestQueries:
+    @superuser_required
     @strawberry.field
     def paginated_author_requests(
         self, status: Optional[str] = None, active_page: Optional[int] = 1
