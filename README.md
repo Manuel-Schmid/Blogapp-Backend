@@ -47,11 +47,17 @@ Set `black` as formatting provider
 
 Set `Format on save` to true
 
-## Django Admin GUI
+## Django Testuser Credentials 
 [http://api.blogapp.com:8080/admin/](http://api.blogapp.com:8080/admin/)
     
     Username: admin
-    Password: admin
+    Password: 8[D+ko71(%Z7-5(7Pfe7+?_2jd
+
+    Username: Richard
+    Password: helloWorld++
+
+    Username: John
+    Password: helloWorld++
 
 ## GraphiQL Browser
 [http://api.blogapp.com:8080/graphql/](http://api.blogapp.com:8080/graphql/)
