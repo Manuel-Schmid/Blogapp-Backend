@@ -71,3 +71,39 @@ def test_create_update_and_query_author_request(
 
     user_status = UserStatus.objects.get(user=user)
     assert user_status.is_author is True
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_query_author_requests(
+    auth: Callable,
+    create_author_requests: Callable,
+    import_query: Callable,
+    client_query: Callable,
+) -> None:
+    auth(is_author=False)
+    create_author_requests()
+
+    author_requests_input = {
+        'status': 'ACCEPTED',
+        'activePage': 1,
+    }
+
+    query: str = import_query('getAuthorRequests.graphql')
+    response: Response = client_query(query)
+    assert response is not None
+    paginated_author_requests: Dict = response.data.get('paginatedAuthorRequests', author_requests_input)
+    assert paginated_author_requests is not None
+
+    num_pages: Dict = paginated_author_requests.get('numPages', None)
+    assert num_pages is not None
+    assert num_pages == 1
+
+    author_requests: Dict = paginated_author_requests.get('authorRequests', None)
+    assert author_requests is not None
+    assert len(author_requests) == 2
+    author_request_status1 = author_requests[0].get('status', None)
+    assert author_request_status1 is not None
+    assert author_request_status1 == 'REJECTED'
+    author_request_status2 = author_requests[1].get('status', None)
+    assert author_request_status2 is not None
+    assert author_request_status2 == 'PENDING'

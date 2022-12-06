@@ -2,6 +2,7 @@ import json
 import os.path
 import re
 import typing
+from datetime import datetime
 from typing import Dict, Optional, Callable, Union, Coroutine, Any
 
 import pytest
@@ -11,6 +12,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
 from django.http import JsonResponse
 from django.test import Client
+from django.utils.timezone import make_aware
 from strawberry.test import BaseGraphQLTestClient, Response
 from strawberry_django_jwt.settings import jwt_settings
 from taggit.models import Tag, TaggedItem
@@ -22,8 +24,9 @@ from blog.api.types import (
     Post as PostType,
     Comment as CommentType,
     PostLike as PostLikeType,
+    AuthorRequest as AuthorRequestType,
 )
-from blog.models import Category, User, Post, Comment, PostLike, UserStatus
+from blog.models import Category, User, Post, Comment, PostLike, UserStatus, AuthorRequest
 
 
 class GraphqlTestClient(BaseGraphQLTestClient):
@@ -162,7 +165,7 @@ def fixture_auth(
     def func(is_author: bool = True) -> None:
         username: str = 'jane.doe@blogapp.lo'
         password: str = 'admin_password_155'
-        user: User = create_user(username=username)
+        user: User = create_user(username=username, is_superuser=True)
         user.set_password(password)
         user.save()
         UserStatus.objects.create(
@@ -289,6 +292,24 @@ def fixture_create_categories(client_query: Callable, import_query: Callable) ->
         Category.objects.create(name='test_category1', slug='test_category1')
         Category.objects.create(name='test_category2', slug='test_category2')
         return Category.objects.all()
+
+    return func
+
+
+@pytest.fixture(name='create_author_requests')
+def fixture_create_author_requests(create_users: Callable, client_query: Callable, import_query: Callable) -> Callable:
+    def func() -> typing.List[AuthorRequestType]:
+        users = create_users()
+        AuthorRequest.objects.create(
+            date_opened=make_aware(datetime(2022, 12, 1, 12, 00, 00, 000000)),
+            date_closed=make_aware(datetime(2022, 12, 1, 14, 30, 00, 000000)),
+            status='REJECTED',
+            user_id=users[0].id,
+        )
+        AuthorRequest.objects.create(
+            date_opened=make_aware(datetime(2022, 12, 1, 13, 00, 00, 000000)), status='PENDING', user_id=users[1].id
+        )
+        return AuthorRequest.objects.all()
 
     return func
 

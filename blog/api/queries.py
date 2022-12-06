@@ -5,7 +5,7 @@ import strawberry
 from django.core.paginator import Paginator
 from django.db.models import Q
 from strawberry.types import Info
-from strawberry_django_jwt.decorators import login_required
+from strawberry_django_jwt.decorators import login_required, superuser_required
 
 from blog.api.types import (
     Category as CategoryType,
@@ -14,6 +14,7 @@ from blog.api.types import (
     Post as PostType,
     PaginationPosts as PaginationPostsType,
     AuthorRequest as AuthorRequestType,
+    PaginationAuthorRequests as PaginationAuthorRequestsType,
 )
 
 from taggit.models import Tag, TaggedItem
@@ -40,22 +41,6 @@ class UserQueries:
         if user.is_authenticated:
             return User.objects.select_related('user_status').get(pk=user.id)
         return None
-
-
-@strawberry.type
-class AuthorRequestQueries:
-    @strawberry.field
-    def author_requests(self, status: Optional[str] = None) -> typing.List[AuthorRequestType]:
-        request_filter = Q()
-        if status:
-            request_filter &= Q(status=status)
-        return AuthorRequest.objects.filter(request_filter)
-
-    @login_required
-    @strawberry.field
-    def author_request_by_user(self, info: Info) -> Optional[AuthorRequestType]:
-        user = info.context.request.user
-        return AuthorRequest.objects.get(user=user)
 
 
 @strawberry.type
@@ -92,6 +77,30 @@ class TagQueries:
 
         tags = [obj.tag for obj in TaggedItem.objects.select_related('tag').filter(tag_filter)]
         return list(set(tags))
+
+
+@strawberry.type
+class AuthorRequestQueries:
+    @superuser_required
+    @strawberry.field
+    def paginated_author_requests(
+        self, status: Optional[str] = None, active_page: Optional[int] = 1
+    ) -> PaginationAuthorRequestsType:
+        request_filter = Q()
+        if status:
+            request_filter &= Q(status=status)
+
+        author_requests = AuthorRequest.objects.filter(request_filter)
+        author_requests = list(set([obj for obj in author_requests]))
+
+        paginator = Paginator(author_requests, 8)
+        return PaginationAuthorRequestsType(author_requests=paginator.page(active_page), num_pages=paginator.num_pages)
+
+    @login_required
+    @strawberry.field
+    def author_request_by_user(self, info: Info) -> Optional[AuthorRequestType]:
+        user = info.context.request.user
+        return AuthorRequest.objects.get(user=user)
 
 
 @strawberry.type
