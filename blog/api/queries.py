@@ -96,10 +96,7 @@ class AuthorRequestQueries:
         author_requests = list([obj for obj in author_requests])
 
         paginator = Paginator(author_requests, 8)
-        pagination_author_requests = PaginationAuthorRequestsType()
-        pagination_author_requests.author_requests = paginator.page(active_page)
-        pagination_author_requests.num_pages = paginator.num_pages
-        return pagination_author_requests
+        return PaginationAuthorRequestsType(author_requests=paginator.page(active_page), num_pages=paginator.num_pages)
 
     @login_required
     @strawberry.field
