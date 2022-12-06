@@ -84,14 +84,16 @@ class AuthorRequestQueries:
     @superuser_required
     @strawberry.field
     def paginated_author_requests(
-        self, status: Optional[str] = None, active_page: Optional[int] = 1
+        self, status: Optional[str] = None, sort: Optional[str] = None, active_page: Optional[int] = 1
     ) -> PaginationAuthorRequestsType:
         request_filter = Q()
         if status:
             request_filter &= Q(status=status)
 
         author_requests = AuthorRequest.objects.filter(request_filter)
-        author_requests = list(set([obj for obj in author_requests]))
+        if sort:
+            author_requests = author_requests.order_by(sort)
+        author_requests = list([obj for obj in author_requests])
 
         paginator = Paginator(author_requests, 8)
         pagination_author_requests = PaginationAuthorRequestsType()
