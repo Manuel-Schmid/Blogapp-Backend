@@ -21,7 +21,7 @@
     "model": "blog.user",
     "pk": 2,
     "fields": {
-        "password": "pbkdf2_sha256$390000$Jb8s9SqG4upFI3FFNvOHhc$KHneaQaIZJ9CFIQa7hxAdij6Nk90nWx93BlSclHlv5Q=",
+        "password": "pbkdf2_sha256$390000$mW2OirCZMXjJBqsbmYNLa9$1gYCLrgyPVgdCFf360w6KmcAC49HX00iq+vEDC18ynA=",
         "last_login": null,
         "is_superuser": false,
         "username": "John",
@@ -39,7 +39,7 @@
     "model": "blog.user",
     "pk": 3,
     "fields": {
-        "password": "pbkdf2_sha256$390000$3eKCxDNKxCOfBjz4J4kwQ5$iwyGEfwcLx6MW02CYOdlT1k9vjXwf73WP5+F3dOp9Vs=",
+        "password": "pbkdf2_sha256$390000$DciiKoQGWIkIY1lg3miPSA$EkAQpkyLB7EX4WPQwYxHLYat7+svpPV6wombf/hP+8E=",
         "last_login": null,
         "is_superuser": false,
         "username": "Richard",
