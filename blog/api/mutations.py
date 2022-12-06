@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Union
 
 import strawberry
@@ -24,7 +23,7 @@ from blog.api.types import (
     CreatePostType,
     AuthorRequestWrapperType,
 )
-from blog.models import Post, Category, Comment, PostLike, AuthorRequest, UserStatus
+from blog.models import Post, Category, Comment, PostLike, AuthorRequest
 from blog.forms import (
     CategoryForm,
     PostForm,
