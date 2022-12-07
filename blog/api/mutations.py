@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Union
 
 import strawberry
@@ -24,7 +23,7 @@ from blog.api.types import (
     CreatePostType,
     AuthorRequestWrapperType,
 )
-from blog.models import Post, Category, Comment, PostLike, AuthorRequest, UserStatus
+from blog.models import Post, Category, Comment, PostLike, AuthorRequest
 from blog.forms import (
     CategoryForm,
     PostForm,
@@ -100,14 +99,9 @@ class AuthorRequestMutations:
     @strawberry.mutation
     def update_author_request(self, author_request_input: AuthorRequestInput) -> AuthorRequestWrapperType:
         author_request = AuthorRequest.objects.get(user=author_request_input.user)
-        author_request_input.date_closed = datetime.now()
         form = UpdateAuthorRequestForm(instance=author_request, data=vars(author_request_input))
         if form.is_valid():
             author_request = form.save()
-            if author_request.status == 'ACCEPTED':
-                user_status = UserStatus.objects.get(user=author_request.user)
-                user_status.is_author = True
-                user_status.save()
             return AuthorRequestWrapperType(author_request=author_request, success=True, errors=None)
         return AuthorRequestWrapperType(author_request=None, success=False, errors=form.errors.get_json_data())
 

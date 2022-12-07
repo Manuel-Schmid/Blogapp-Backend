@@ -1,12 +1,17 @@
+from datetime import datetime
+from django.utils.timezone import make_aware
+
 from django.contrib.auth import get_user_model
 from django.core.mail import EmailMessage
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db.models.signals import post_save
 from django.template.loader import render_to_string
 from django.utils import timezone
 from taggit.managers import TaggableManager
 from autoslug import AutoSlugField
 from django.conf import settings
+from blog.api.inputs import Status
 from blog.utils import TokenAction, get_token, get_token_payload
 
 
@@ -93,6 +98,19 @@ class AuthorRequest(models.Model):
 
     def __str__(self) -> str:
         return self.status
+
+    @staticmethod
+    def post_save(instance: 'AuthorRequest', **kwargs) -> None:
+        post_save.disconnect(AuthorRequest.post_save, AuthorRequest, dispatch_uid='blog.models.AuthorRequest.post_save')
+        instance.date_closed = None if instance.status == Status.PENDING.name else make_aware(datetime.now())
+        instance.save()
+        user_status = UserStatus.objects.get(user=instance.user)
+        user_status.is_author = instance.status == Status.ACCEPTED.name
+        user_status.save()
+        post_save.connect(AuthorRequest.post_save, AuthorRequest, dispatch_uid='blog.models.AuthorRequest.post_save')
+
+
+post_save.connect(AuthorRequest.post_save, AuthorRequest, dispatch_uid='blog.models.AuthorRequest.post_save')
 
 
 def slugify(string: str) -> str:

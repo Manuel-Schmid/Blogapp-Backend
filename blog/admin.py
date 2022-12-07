@@ -24,8 +24,12 @@ class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'date_created', 'category', 'owner', 'image_tag')
 
 
+class AuthorRequestAdmin(admin.ModelAdmin):
+    list_display = ('user', 'date_opened', 'date_closed', 'status')
+
+
 admin.site.register(Post, PostAdmin)
-admin.site.register(AuthorRequest)
+admin.site.register(AuthorRequest, AuthorRequestAdmin)
 
 admin.site.register(Comment)
 admin.site.register(CommentLike)
