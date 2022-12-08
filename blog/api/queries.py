@@ -162,12 +162,14 @@ class PostQueries:
         pagination_posts.num_post_pages = paginator.num_pages
         return pagination_posts
 
+    @login_required
     @strawberry.field
     def paginated_user_posts(
         self,
-        user: int,
+        info: Info,
         active_page: Optional[int] = 1,
     ) -> PaginationPostsType:
+        user = info.context.request.user
 
         posts = PostQueries.posts().filter(owner_id=user).order_by('-date_created')
         posts = list([obj for obj in posts])
