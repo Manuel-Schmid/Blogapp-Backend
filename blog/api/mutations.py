@@ -147,7 +147,7 @@ class PostMutations:
 
         if post.owner != user:
             return UpdatePostStatusType(
-                post=None, success=False, errors={'file': 'You are only allowed to update your own posts'}
+                post=None, success=False, errors={'file': 'You are only allowed to update the status of your own posts'}
             )
 
         form = UpdatePostStatusForm(instance=post, data=vars(update_post_status_input))
