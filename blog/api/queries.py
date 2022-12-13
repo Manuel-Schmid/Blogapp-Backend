@@ -183,5 +183,9 @@ class PostQueries:
         return pagination_posts
 
     @strawberry.field
-    def post_by_slug(self, slug: str) -> PostType:
-        return Post.objects.get(slug=slug)
+    def post_by_slug(self, info: Info, slug: str) -> Optional[PostType]:
+        post = Post.objects.get(slug=slug)
+        user = info.context.request.user
+        if post.status == Post.PostStatus.PUBLISHED or user.is_authenticated and post.owner == user:
+            return post
+        return None
