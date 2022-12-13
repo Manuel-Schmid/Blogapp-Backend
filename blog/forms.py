@@ -54,6 +54,18 @@ class PostForm(ModelForm):
         fields = ['title', 'text', 'category', 'owner', 'tags']
 
 
+class UpdatePostStatusForm(ModelForm):
+    def __init__(self, *args: Any, **kwargs) -> None:
+        data = kwargs.pop('data', {})
+        data['status'] = data.get('status', {'value': None}).value
+        kwargs['data'] = data
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = Post
+        fields = ['status']
+
+
 class CreatePostForm(ModelForm):
     class Meta:
         model = Post

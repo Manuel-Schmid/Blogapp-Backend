@@ -153,6 +153,12 @@ class CreatePostType(BaseGraphQLType):
     success: bool
 
 
+@strawberry.type
+class UpdatePostStatusType(BaseGraphQLType):
+    success: bool
+    post: typing.Optional['Post']
+
+
 @gql.django.type(UserStatusModel)
 class UserStatus:
     id: strawberry.ID

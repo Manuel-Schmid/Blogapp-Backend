@@ -57,6 +57,12 @@ class PostInput:
     status: Optional[PostStatus] = PostStatus.DRAFT
 
 
+@strawberry.input
+class UpdatePostStatusInput:
+    post_slug: str
+    status: PostStatus
+
+
 @strawberry.enum
 class Status(Enum):
     PENDING = 'PENDING'
