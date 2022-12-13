@@ -153,6 +153,8 @@ class PostQueries:
         if category_slug is not None:
             post_filter &= Q(category__slug=category_slug)
 
+        post_filter &= Q(status=Post.PostStatus.PUBLISHED)
+
         posts = PostQueries.posts().filter(post_filter)
         posts = list(set([obj for obj in posts]))
 
