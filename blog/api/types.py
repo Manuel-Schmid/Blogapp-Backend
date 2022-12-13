@@ -1,5 +1,6 @@
 import typing
 from datetime import datetime
+from enum import Enum
 
 from strawberry import auto
 import strawberry
@@ -7,6 +8,8 @@ from strawberry.scalars import JSON
 from strawberry.types import Info
 from strawberry_django_plus import gql
 from taggit.models import Tag as TagModel
+
+from blog.api.inputs import PostStatus
 from blog.models import (
     Category as CategoryModel,
     User as UserModel,
@@ -115,6 +118,7 @@ class Post:
     comments: typing.List['Comment']
     owner: 'User'
     date_created: auto
+    status: PostStatus
 
     @strawberry.field
     def tags(self) -> typing.List['Tag']:
