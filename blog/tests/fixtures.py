@@ -325,16 +325,10 @@ def fixture_create_posts(
         users = create_users()
         categories = create_categories()
         Post.objects.create(
-            title='Test_Post 1',
-            text='test_text1',
-            owner=users[0],
-            category=categories[0],
+            title='Test_Post 1', text='test_text1', owner=users[0], category=categories[0], status='PUBLISHED'
         )
         Post.objects.create(
-            title='Test_Post 2',
-            text='test_text2',
-            owner=users[1],
-            category=categories[1],
+            title='Test_Post 2', text='test_text2', owner=users[1], category=categories[1], status='PUBLISHED'
         )
         return Post.objects.all()
 

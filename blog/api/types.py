@@ -1,6 +1,5 @@
 import typing
 from datetime import datetime
-from enum import Enum
 
 from strawberry import auto
 import strawberry
