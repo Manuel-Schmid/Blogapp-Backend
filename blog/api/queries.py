@@ -107,6 +107,19 @@ class AuthorRequestQueries:
 
 @strawberry.type
 class PostQueries:
+    @staticmethod
+    def posts() -> typing.List[PostType]:
+        return Post.objects.select_related('category', 'owner').prefetch_related(
+            'tags',
+            'comments',
+            'comments__owner',
+            'post_likes',
+            'post_likes__user',
+            'owner__posts',
+            'owner__posts__tags',
+            'owner__posts__category',
+        )
+
     @strawberry.field
     def paginated_posts(
         self,
@@ -140,24 +153,28 @@ class PostQueries:
         if category_slug is not None:
             post_filter &= Q(category__slug=category_slug)
 
-        posts = (
-            Post.objects.select_related('category', 'owner')
-            .prefetch_related(
-                'tags',
-                'comments',
-                'comments__owner',
-                'post_likes',
-                'post_likes__user',
-                'owner__posts',
-                'owner__posts__tags',
-                'owner__posts__category',
-            )
-            .filter(post_filter)
-        )
-
+        posts = PostQueries.posts().filter(post_filter)
         posts = list(set([obj for obj in posts]))
 
         paginator = Paginator(posts, 4)
+        pagination_posts = PaginationPostsType()
+        pagination_posts.posts = paginator.page(active_page)
+        pagination_posts.num_post_pages = paginator.num_pages
+        return pagination_posts
+
+    @login_required
+    @strawberry.field
+    def paginated_user_posts(
+        self,
+        info: Info,
+        active_page: Optional[int] = 1,
+    ) -> PaginationPostsType:
+        user = info.context.request.user
+
+        posts = PostQueries.posts().filter(owner_id=user).order_by('-date_created')
+        posts = list([obj for obj in posts])
+
+        paginator = Paginator(posts, 6)
         pagination_posts = PaginationPostsType()
         pagination_posts.posts = paginator.page(active_page)
         pagination_posts.num_post_pages = paginator.num_pages

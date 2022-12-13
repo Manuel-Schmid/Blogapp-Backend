@@ -154,3 +154,60 @@ def test_query_non_existent_post_by_tag_and_category(
     posts: Dict = paginated_posts.get('posts', None)
     assert posts is not None
     assert len(posts) == 0
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_query_user_posts(
+    create_posts: Callable,
+    login: Callable,
+    import_query: Callable,
+    client_query: Callable,
+) -> None:
+    create_posts()
+    login('test_user1', 'password1')
+    user_posts_input = {'activePage': 1}
+
+    query: str = import_query('getUserPosts.graphql')
+    response: Response = client_query(query, user_posts_input)
+
+    assert response is not None
+    assert response.errors is None
+
+    paginated_posts: Dict = response.data.get('paginatedUserPosts', None)
+    assert paginated_posts is not None
+
+    num_post_pages: Dict = paginated_posts.get('numPostPages', None)
+    assert num_post_pages is not None
+    assert num_post_pages == 1
+
+    posts: Dict = paginated_posts.get('posts', None)
+    assert posts is not None
+    assert len(posts) == 1
+    post1_title = posts[0].get('title', None)
+    assert post1_title is not None
+    assert post1_title == 'Test_Post 1'
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_query_user_posts_unauthenticated(
+    create_posts: Callable,
+    import_query: Callable,
+    client_query: Callable,
+) -> None:
+    create_posts()
+    user_posts_input = {'activePage': 1}
+
+    query: str = import_query('getUserPosts.graphql')
+    response: Dict = client_query(query, user_posts_input)
+
+    print(response)
+    assert response is not None
+    data = response.data
+    assert data is None
+    response_errors = response.errors
+    assert response_errors is not None
+
+    assert len(response_errors) > 0
+    errors: Dict = response_errors[0]
+    error_msg = errors.get('message', None)
+    assert error_msg == 'You do not have permission to perform this action'

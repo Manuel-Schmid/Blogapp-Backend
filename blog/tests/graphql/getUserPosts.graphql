@@ -1,0 +1,10 @@
+#import "./fragments/postFragment.graphql"
+
+query UserPosts($activePage: Int) {
+  paginatedUserPosts(activePage: $activePage) {
+    posts {
+      ...PostFragment
+    }
+    numPostPages
+  }
+}
