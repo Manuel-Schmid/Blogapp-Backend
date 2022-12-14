@@ -173,7 +173,7 @@ class PostQueries:
     ) -> PaginationPostsType:
         user = info.context.request.user
 
-        posts = PostQueries.posts().filter(owner_id=user).order_by('-date_created')
+        posts = PostQueries.posts().filter(owner_id=user).order_by('-id')
         posts = list([obj for obj in posts])
 
         paginator = Paginator(posts, 6)
