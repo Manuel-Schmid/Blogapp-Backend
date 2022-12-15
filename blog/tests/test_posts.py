@@ -6,7 +6,7 @@ from strawberry.test import Response
 
 @pytest.mark.django_db
 def test_create_posts(create_posts: Callable) -> None:
-    assert len(create_posts()) == 2
+    assert len(create_posts()) == 3
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)

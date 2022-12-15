@@ -200,7 +200,6 @@ def test_query_user_posts_unauthenticated(
     query: str = import_query('getUserPosts.graphql')
     response: Dict = client_query(query, user_posts_input)
 
-    print(response)
     assert response is not None
     data = response.data
     assert data is None
@@ -211,3 +210,99 @@ def test_query_user_posts_unauthenticated(
     errors: Dict = response_errors[0]
     error_msg = errors.get('message', None)
     assert error_msg == 'You do not have permission to perform this action'
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_query_published_post_by_slug(
+    create_posts: Callable,
+    import_query: Callable,
+    client_query: Callable,
+) -> None:
+    create_posts()
+    post_slug = {'slug': 'test_post-1'}
+
+    query: str = import_query('getPostBySlug.graphql')
+    response: Dict = client_query(query, post_slug)
+
+    assert response is not None
+    assert response.errors is None
+
+    post: Dict = response.data.get('postBySlug', None)
+    assert post is not None
+
+    post_title = post.get('title', None)
+    assert post_title is not None
+    assert post_title == 'Test_Post 1'
+
+    post_status = post.get('status', None)
+    assert post_status is not None
+    assert post_status == 'PUBLISHED'
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_query_draft_post_by_slug(
+    create_posts: Callable,
+    import_query: Callable,
+    client_query: Callable,
+) -> None:
+    create_posts()
+    post_slug = {'slug': 'test_post-3'}
+
+    query: str = import_query('getPostBySlug.graphql')
+    response: Dict = client_query(query, post_slug)
+
+    assert response is not None
+    assert response.errors is None
+
+    post: Dict = response.data.get('postBySlug', None)
+    assert post is None
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_query_draft_post_by_slug_not_owner(
+    create_posts: Callable,
+    login: Callable,
+    import_query: Callable,
+    client_query: Callable,
+) -> None:
+    create_posts()
+    login('test_user1', 'password1')
+    post_slug = {'slug': 'test_post-3'}
+
+    query: str = import_query('getPostBySlug.graphql')
+    response: Dict = client_query(query, post_slug)
+
+    assert response is not None
+    assert response.errors is None
+
+    post: Dict = response.data.get('postBySlug', None)
+    assert post is None
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_query_draft_post_by_slug_owner(
+    create_posts: Callable,
+    login: Callable,
+    import_query: Callable,
+    client_query: Callable,
+) -> None:
+    create_posts()
+    login('test_user2', 'password2')
+    post_slug = {'slug': 'test_post-3'}
+
+    query: str = import_query('getPostBySlug.graphql')
+    response: Dict = client_query(query, post_slug)
+
+    assert response is not None
+    assert response.errors is None
+
+    post: Dict = response.data.get('postBySlug', None)
+    assert post is not None
+
+    post_title = post.get('title', None)
+    assert post_title is not None
+    assert post_title == 'Test_Post 3'
+
+    post_status = post.get('status', None)
+    assert post_status is not None
+    assert post_status == 'DRAFT'
