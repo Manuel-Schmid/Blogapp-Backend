@@ -280,7 +280,7 @@ def fixture_create_users(client_query: Callable, import_query: Callable) -> Call
         user2 = User.objects.create(username='test_user2', email='user2@example.com')
         user2.set_password('password2')
         user2.save()
-        UserStatus.objects.create(user=user2, verified=True, archived=False, secondary_email=False)
+        UserStatus.objects.create(user=user2, verified=True, is_author=True, archived=False, secondary_email=False)
         return User.objects.all()
 
     return func

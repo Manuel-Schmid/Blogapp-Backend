@@ -1,0 +1,11 @@
+#import "./fragments/postFragment.graphql"
+
+mutation UpdatePostStatus($updatePostStatusInput: UpdatePostStatusInput!) {
+    updatePostStatus(updatePostStatusInput: $updatePostStatusInput) {
+        success
+        errors
+        post {
+            ...PostFragment
+        }
+    }
+}
