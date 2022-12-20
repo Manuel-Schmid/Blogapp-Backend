@@ -1,7 +1,7 @@
 class AuthError(Exception):
     default_message = ''
 
-    def __init__(self, message=''):
+    def __init__(self, message: str = '') -> None:
         if len(message) == 0:
             message = self.default_message
 

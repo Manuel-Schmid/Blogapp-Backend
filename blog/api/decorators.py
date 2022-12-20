@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from django.core.handlers.asgi import ASGIRequest
 from strawberry.types import Info
 from strawberry_django.utils import is_async
-from strawberry_django_jwt import exceptions, signals
+from strawberry_django_jwt import signals
 from strawberry_django_jwt.auth import authenticate
 from strawberry_django_jwt.decorators import (
     user_passes_test,
