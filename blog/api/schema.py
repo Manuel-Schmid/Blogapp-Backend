@@ -1,8 +1,12 @@
 import strawberry
+from graphql import GraphQLError
+from strawberry.types import ExecutionContext
+from strawberry_django_jwt.exceptions import PermissionDenied, JSONWebTokenExpired
 from strawberry_django_plus.directives import SchemaDirectiveExtension
 from strawberry_django_plus.optimizer import DjangoOptimizerExtension
 from strawberry_django_jwt.middleware import JSONWebTokenMiddleware
-
+from typing import List, Optional
+from .exceptions import InvalidCredentials, UnverifiedUser
 from .mutations import (
     AuthMutation,
     CategoryMutations,
@@ -33,7 +37,25 @@ class RootMutation(
     pass
 
 
-schema = strawberry.Schema(
+class Schema(strawberry.Schema):
+    def process_errors(
+        self,
+        errors: List[GraphQLError],
+        execution_context: Optional[ExecutionContext] = None,
+    ) -> None:
+        for error in errors:
+            actual_error = error.original_error or error
+            if isinstance(actual_error, InvalidCredentials):
+                error.message = 'INVALID_CREDENTIALS'
+            elif isinstance(actual_error, UnverifiedUser):
+                error.message = 'UNVERIFIED_USER'
+            elif isinstance(actual_error, PermissionDenied):
+                error.message = 'PERMISSION_DENIED'
+            elif isinstance(actual_error, JSONWebTokenExpired):
+                error.message = 'TOKEN_EXPIRED'
+
+
+schema = Schema(
     query=RootQuery,
     mutation=RootMutation,
     extensions=[
