@@ -200,7 +200,6 @@ def test_query_user_posts_unauthenticated(
     query: str = import_query('getUserPosts.graphql')
     response: Dict = client_query(query, user_posts_input)
 
-    print(response)
     assert response is not None
     data = response.data
     assert data is None
