@@ -210,4 +210,4 @@ def test_query_user_posts_unauthenticated(
     assert len(response_errors) > 0
     errors: Dict = response_errors[0]
     error_msg = errors.get('message', None)
-    assert error_msg == 'You do not have permission to perform this action'
+    assert error_msg == 'PERMISSION_DENIED'

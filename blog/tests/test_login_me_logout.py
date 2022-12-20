@@ -38,7 +38,7 @@ def test_login(
 
     msg = response.errors[0].get('message', None)
     assert msg is not None
-    assert msg == 'You do not have permission to perform this action'
+    assert msg == 'PERMISSION_DENIED'
 
     # login
     login(username, password)
@@ -65,4 +65,4 @@ def test_login(
     assert response.errors is not None
     msg = response.errors[0].get('message', None)
     assert msg is not None
-    assert msg == 'You do not have permission to perform this action'
+    assert msg == 'PERMISSION_DENIED'
