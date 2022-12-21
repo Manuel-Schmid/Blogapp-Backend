@@ -1,5 +1,6 @@
-class AuthError(Exception):
+class AuthException(Exception):
     default_message = ''
+    error_code = 'GENERIC_ERROR'
 
     def __init__(self, message: str = '') -> None:
         if len(message) == 0:
@@ -8,9 +9,11 @@ class AuthError(Exception):
         super().__init__(message)
 
 
-class InvalidCredentials(AuthError):
+class InvalidCredentials(AuthException):
     default_message = ('Please enter valid credentials',)
+    error_code = 'INVALID_CREDENTIALS'
 
 
-class UnverifiedUser(AuthError):
+class UnverifiedUser(AuthException):
     default_message = ('This user has not yet been verified',)
+    error_code = 'UNVERIFIED_USER'
