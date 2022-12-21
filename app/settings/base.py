@@ -180,8 +180,8 @@ CORS_ALLOWED_ORIGINS = [
 # GraphQL
 
 GRAPHQL_JWT = {
-    'JWT_EXPIRATION_DELTA': timedelta(seconds=10),
-    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(seconds=60),
+    'JWT_EXPIRATION_DELTA': timedelta(hours=24),
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
     'JWT_VERIFY_EXPIRATION': True,
     'JWT_COOKIE_SECURE': True,
     'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
