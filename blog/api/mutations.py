@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Union, Optional, Any
 
 import strawberry
 import strawberry_django_jwt.mutations as jwt_mutations
@@ -63,13 +63,13 @@ class RefreshToken(jwt_mutations.Refresh):
     @refresh_expiration
     @ensure_refresh_token
     def _refresh(
-        self, info: Info, refresh_token: Optional[str], _is_async: Optional[bool] = False
+        self: Any, info: Info, refresh_token: Optional[str], _is_async: Optional[bool] = False
     ) -> RefreshedTokenType:
         context = get_context(info)
         old_refresh_token = get_refresh_token(refresh_token, context)
 
         if old_refresh_token.is_expired(context):
-            raise exceptions.JSONWebTokenError(_("Refresh token is expired"))
+            raise exceptions.JSONWebTokenError(_('Refresh token is expired'))
 
         payload = jwt_settings.JWT_PAYLOAD_HANDLER(
             old_refresh_token.user,
@@ -77,7 +77,7 @@ class RefreshToken(jwt_mutations.Refresh):
         )
         token = jwt_settings.JWT_ENCODE_HANDLER(payload, context)
 
-        if hasattr(context, "jwt_cookie"):
+        if hasattr(context, 'jwt_cookie'):
             context.jwt_refresh_token = create_refresh_token(
                 old_refresh_token.user,
                 old_refresh_token,

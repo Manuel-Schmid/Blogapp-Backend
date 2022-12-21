@@ -208,6 +208,8 @@ def test_query_user_posts_unauthenticated(
     assert response_errors is not None
 
     assert len(response_errors) > 0
-    errors: Dict = response_errors[0]
-    error_msg = errors.get('message', None)
-    assert error_msg == 'PERMISSION_DENIED'
+    error: Dict = response_errors[0]
+    extensions = error.get('extensions', None)
+    code = extensions.get('code', None)
+    assert code is not None
+    assert code == 'PERMISSION_DENIED'
