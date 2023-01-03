@@ -86,3 +86,25 @@ services:
       default:
         aliases:
           - api.blogapp.com
+
+  search-index:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.5.3
+    environment:
+      - xpack.monitoring.templates.enabled=false
+      - xpack.security.enabled=false
+      - xpack.ml.enabled=false
+      - xpack.graph.enabled=false
+      - xpack.watcher.enabled=false
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - discovery.type=single-node
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.elastic.rule=Host(`search-index.blogapp.com`)"
+    ports:
+      - 9200:9200
+    networks:
+      default:
+        aliases:
+          - search-index.blogapp.com
