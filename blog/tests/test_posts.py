@@ -344,9 +344,12 @@ def test_update_post_status_unauthenticated(
     assert response is not None
     assert response.data is None
     assert response.errors is not None
-    error_msg = response.errors[0].get('message', None)
-    assert error_msg is not None
-    assert error_msg == 'You do not have permission to perform this action'
+    assert len(response.errors) > 0
+    error: Dict = response.errors[0]
+    extensions = error.get('extensions', None)
+    code = extensions.get('code', None)
+    assert code is not None
+    assert code == 'PERMISSION_DENIED'
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
@@ -372,9 +375,12 @@ def test_update_post_status_no_author(
     assert response is not None
     assert response.data is None
     assert response.errors is not None
-    error_msg = response.errors[0].get('message', None)
-    assert error_msg is not None
-    assert error_msg == 'You do not have permission to perform this action'
+    assert len(response.errors) > 0
+    error: Dict = response.errors[0]
+    extensions = error.get('extensions', None)
+    code = extensions.get('code', None)
+    assert code is not None
+    assert code == 'PERMISSION_DENIED'
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
