@@ -102,7 +102,10 @@ class AuthorRequestQueries:
     @strawberry.field
     def author_request_by_user(self, info: Info) -> Optional[AuthorRequestType]:
         user = info.context.request.user
-        return AuthorRequest.objects.get(user=user)
+        if AuthorRequest.objects.filter(user=user).exists():
+            return AuthorRequest.objects.get(user=user)
+        else:
+            return None
 
 
 @strawberry.type

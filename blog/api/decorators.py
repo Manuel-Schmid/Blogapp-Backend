@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from django.core.handlers.asgi import ASGIRequest
 from strawberry.types import Info
 from strawberry_django.utils import is_async
-from strawberry_django_jwt import exceptions, signals
+from strawberry_django_jwt import signals
 from strawberry_django_jwt.auth import authenticate
 from strawberry_django_jwt.decorators import (
     user_passes_test,
@@ -18,6 +18,8 @@ from strawberry_django_jwt.decorators import (
     on_token_auth_resolve,
 )
 from strawberry_django_jwt.utils import get_context, maybe_thenable
+
+from blog.api.exceptions import InvalidCredentials, UnverifiedUser
 from blog.api.types import User as UserType
 from blog.models import UserStatus
 
@@ -61,16 +63,12 @@ def token_auth(f: Any) -> Coroutine:
 def handle_auth(cls: Any, f: Any, info: Info, user: UserType, **kwargs) -> Any:
     context = get_context(info)
     if user is None:
-        raise exceptions.JSONWebTokenError(
-            'Please enter valid credentials',
-        )
+        raise InvalidCredentials
 
     user_status = UserStatus.objects.get(user=user)
 
     if not user_status.verified:
-        raise exceptions.JSONWebTokenError(
-            'This user has not yet been verified',
-        )
+        raise UnverifiedUser
 
     context.user = user
 
