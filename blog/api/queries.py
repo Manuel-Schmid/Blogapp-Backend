@@ -3,7 +3,7 @@ from typing import Optional
 
 import strawberry
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from strawberry.types import Info
 from strawberry_django_jwt.decorators import login_required, superuser_required
 
@@ -108,7 +108,7 @@ class AuthorRequestQueries:
 @strawberry.type
 class PostQueries:
     @staticmethod
-    def posts() -> typing.List[PostType]:
+    def posts() -> QuerySet:
         return Post.objects.select_related('category', 'owner').prefetch_related(
             'tags',
             'comments',
