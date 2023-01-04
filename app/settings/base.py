@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'blog.apps.AppConfig',
     'strawberry_django_jwt.refresh_token',
     'taggit',
+    'django_elasticsearch_dsl',
 ]
 
 MIDDLEWARE = [
@@ -91,6 +92,10 @@ TEMPLATES = [
         },
     },
 ]
+
+ELASTICSEARCH_DSL = {
+    'default': {'hosts': 'http://search-index.blogapp.com'},
+}
 
 WSGI_APPLICATION = 'app.wsgi.application'
 

@@ -27,3 +27,7 @@ codegen::
 .PHONY: test
 test::
 		pytest --cov=blog blog/tests/
+
+.PHONY: indices
+indices::
+		./manage.py search_index --rebuild
