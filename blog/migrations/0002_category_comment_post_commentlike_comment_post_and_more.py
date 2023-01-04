@@ -91,8 +91,7 @@ class Migration(migrations.Migration):
                 ),
                 ('text', models.TextField()),
                 ('image', models.ImageField(null=True, upload_to='images')),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('date_updated', models.DateTimeField(auto_now=True, null=True)),
+                ('date_created', models.DateTimeField(auto_now=True)),
                 (
                     'category',
                     models.ForeignKey(
