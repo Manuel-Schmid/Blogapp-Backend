@@ -1,11 +1,31 @@
-from typing import Union
+from typing import Union, Optional, Any
 
 import strawberry
 import strawberry_django_jwt.mutations as jwt_mutations
 from strawberry.types import Info
-from strawberry_django_jwt.decorators import login_required, dispose_extra_kwargs, superuser_required
+from strawberry_django_jwt import exceptions
+from strawberry_django_jwt.decorators import (
+    login_required,
+    dispose_extra_kwargs,
+    superuser_required,
+    setup_jwt_cookie,
+    csrf_rotation,
+    refresh_expiration,
+)
+from strawberry_django_jwt.mixins import RefreshMixin
+from strawberry_django_jwt.settings import jwt_settings
 from strawberry_django_jwt.object_types import TokenDataType, TokenPayloadType
-
+from strawberry_django_jwt.refresh_token.decorators import ensure_refresh_token
+from strawberry_django_jwt.refresh_token.object_types import RefreshedTokenType
+from strawberry_django_jwt.refresh_token.shortcuts import (
+    get_refresh_token,
+    create_refresh_token,
+    refresh_token_lazy_async,
+    refresh_token_lazy,
+)
+from django.utils.translation import gettext as _
+from strawberry_django_jwt.utils import get_context
+from strawberry_django_jwt.refresh_token import signals as refresh_signals
 from blog.api.auth_mutations import AuthMutations
 from blog.api.decorators import author_permission_required, token_auth
 from blog.api.inputs import (
@@ -39,6 +59,52 @@ from blog.forms import (
 )
 
 
+class RefreshToken(jwt_mutations.Refresh):
+    @staticmethod
+    @setup_jwt_cookie
+    @csrf_rotation
+    @refresh_expiration
+    @ensure_refresh_token
+    def _refresh(
+        self: Any, info: Info, refresh_token: Optional[str], _is_async: Optional[bool] = False
+    ) -> RefreshedTokenType:
+        context = get_context(info)
+        old_refresh_token = get_refresh_token(refresh_token, context)
+
+        if old_refresh_token.is_expired(context):
+            raise exceptions.JSONWebTokenError(_('Refresh token is expired'))
+
+        payload = jwt_settings.JWT_PAYLOAD_HANDLER(
+            old_refresh_token.user,
+            context,
+        )
+        token = jwt_settings.JWT_ENCODE_HANDLER(payload, context)
+
+        if hasattr(context, 'jwt_cookie'):
+            context.jwt_refresh_token = create_refresh_token(
+                old_refresh_token.user,
+                old_refresh_token,
+            )
+            new_refresh_token = context.jwt_refresh_token.get_token()
+        else:
+            new_refresh_token = (refresh_token_lazy_async if _is_async else refresh_token_lazy)(
+                old_refresh_token.user,
+                old_refresh_token,
+            )
+
+        refresh_signals.refresh_token_rotated.send(
+            sender=RefreshMixin,
+            request=context,
+            refresh_token=old_refresh_token,
+            refresh_token_issued=new_refresh_token,
+        )
+        return RefreshedTokenType(payload=payload, token=token, refresh_token=new_refresh_token, refresh_expires_in=0)
+
+    @strawberry.mutation
+    def refresh(self, info: Info, refresh_token: Optional[str] = None) -> RefreshedTokenType:
+        return RefreshToken._refresh(self, info=info, refresh_token=refresh_token)
+
+
 @strawberry.type
 class ObtainJSONWebToken(jwt_mutations.ObtainJSONWebToken):
     @strawberry.mutation
@@ -51,7 +117,7 @@ class ObtainJSONWebToken(jwt_mutations.ObtainJSONWebToken):
 @strawberry.type
 class AuthMutation:
     verify_token = jwt_mutations.Verify.verify
-    refresh_token = jwt_mutations.Refresh.refresh
+    refresh_token = RefreshToken.refresh
     delete_token_cookie = jwt_mutations.DeleteJSONWebTokenCookie.delete_cookie
     delete_refresh_token_cookie = jwt_mutations.DeleteRefreshTokenCookie.delete_cookie
 
