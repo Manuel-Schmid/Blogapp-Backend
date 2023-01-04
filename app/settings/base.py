@@ -93,8 +93,11 @@ TEMPLATES = [
     },
 ]
 
+SEARCH_HOST = os.getenv('SEARCH_HOST', default='search-index')
+DOMAIN_NAME = os.getenv('DOMAIN_NAME', default='blogapp.com')
+
 ELASTICSEARCH_DSL = {
-    'default': {'hosts': 'http://search-index.blogapp.com'},
+    'default': {'hosts': FRONTEND_PROTOCOL + '://' + SEARCH_HOST + '.' + DOMAIN_NAME},
 }
 
 WSGI_APPLICATION = 'app.wsgi.application'

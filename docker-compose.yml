@@ -77,11 +77,13 @@ services:
       DEBUG_TOOLBAR: '${DEBUG_TOOLBAR}'
       FRONTEND_SITE_NAME: '${FRONTEND_SITE_NAME}'
       FRONTEND_DOMAIN: '${FRONTEND_DOMAIN}'
+      DOMAIN_NAME: '${DOMAIN_NAME}'
       FRONTEND_PORT: '${FRONTEND_PORT}'
       FRONTEND_PROTOCOL: '${FRONTEND_PROTOCOL}'
       EMAIL_HOST: '${EMAIL_HOST}'
       EMAIL_PORT: '${EMAIL_PORT}'
       EMAIL_FROM: '${EMAIL_FROM}'
+      SEARCH_HOST: '${SEARCH_HOST}'
     networks:
       default:
         aliases:
