@@ -159,7 +159,7 @@ class PostQueries:
         post_filter &= Q(status=Post.PostStatus.PUBLISHED)
 
         posts = PostQueries.posts().filter(post_filter)
-        posts = list(set([obj for obj in posts]))
+        posts = list([obj for obj in posts])
 
         paginator = Paginator(posts, 4)
         pagination_posts = PaginationPostsType()
