@@ -34,6 +34,7 @@ from blog.api.inputs import (
     CommentInput,
     PostLikeInput,
     AuthorRequestInput,
+    UpdatePostStatusInput,
 )
 from blog.api.types import (
     Category as CategoryType,
@@ -42,6 +43,7 @@ from blog.api.types import (
     PostLike as PostLikeType,
     CreatePostType,
     AuthorRequestWrapperType,
+    UpdatePostStatusType,
 )
 from blog.models import Post, Category, Comment, PostLike, AuthorRequest
 from blog.forms import (
@@ -53,6 +55,7 @@ from blog.forms import (
     CreatePostForm,
     CreateAuthorRequestForm,
     UpdateAuthorRequestForm,
+    UpdatePostStatusForm,
 )
 
 
@@ -200,6 +203,26 @@ class PostMutations:
                 post = form.save()
 
         return CreatePostType(post=post, success=not has_errors, errors=errors if errors else None)
+
+    @login_required
+    @author_permission_required
+    @strawberry.mutation
+    def update_post_status(self, info: Info, update_post_status_input: UpdatePostStatusInput) -> UpdatePostStatusType:
+        post = Post.objects.get(slug=update_post_status_input.post_slug)
+        user = info.context.request.user
+
+        if post.owner != user:
+            return UpdatePostStatusType(
+                post=None,
+                success=False,
+                errors={'message': 'You are only allowed to update the status of your own posts'},
+            )
+
+        form = UpdatePostStatusForm(instance=post, data=vars(update_post_status_input))
+        if form.is_valid():
+            post = form.save()
+            return UpdatePostStatusType(post=post, success=True, errors=None)
+        return UpdatePostStatusType(post=None, success=False, errors=form.errors.get_json_data())
 
     @strawberry.mutation
     def update_post(self, post_input: PostInput) -> Union[PostType, None]:

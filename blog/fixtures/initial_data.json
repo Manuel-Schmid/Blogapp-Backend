@@ -152,7 +152,8 @@
         "owner": [
             "John"
         ],
-        "date_created": "2022-08-16T06:33:14.592Z"
+        "date_created": "2022-08-16T06:33:14.592Z",
+        "status": "PUBLISHED"
     }
 },
 {
@@ -167,7 +168,8 @@
         "owner": [
             "Richard"
         ],
-        "date_created": "2022-08-16T06:31:23.250Z"
+        "date_created": "2022-08-16T06:31:23.250Z",
+        "status": "PUBLISHED"
     }
 },
 {
@@ -182,7 +184,8 @@
         "owner": [
             "John"
         ],
-        "date_created": "2022-08-16T06:30:42.455Z"
+        "date_created": "2022-08-16T06:30:42.455Z",
+        "status": "PUBLISHED"
     }
 },
 {
@@ -197,7 +200,8 @@
         "owner": [
             "Richard"
         ],
-        "date_created": "2022-08-15T15:00:57.031Z"
+        "date_created": "2022-08-15T15:00:57.031Z",
+        "status": "PUBLISHED"
     }
 },
 {
@@ -212,7 +216,8 @@
         "owner": [
             "Richard"
         ],
-        "date_created": "2022-08-15T15:00:57.031Z"
+        "date_created": "2022-08-15T15:00:57.031Z",
+        "status": "PUBLISHED"
     }
 },
 {

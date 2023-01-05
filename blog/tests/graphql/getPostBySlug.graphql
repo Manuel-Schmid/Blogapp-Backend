@@ -1,0 +1,7 @@
+#import "./fragments/postFragment.graphql"
+
+query PostBySlug($slug: String!) {
+    postBySlug(slug: $slug) {
+        ...PostFragment
+    }
+}

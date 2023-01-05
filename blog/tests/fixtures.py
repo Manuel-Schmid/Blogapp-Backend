@@ -280,7 +280,7 @@ def fixture_create_users(client_query: Callable, import_query: Callable) -> Call
         user2 = User.objects.create(username='test_user2', email='user2@example.com')
         user2.set_password('password2')
         user2.save()
-        UserStatus.objects.create(user=user2, verified=False, archived=False, secondary_email=False)
+        UserStatus.objects.create(user=user2, verified=True, is_author=True, archived=False, secondary_email=False)
         return User.objects.all()
 
     return func
@@ -325,16 +325,13 @@ def fixture_create_posts(
         users = create_users()
         categories = create_categories()
         Post.objects.create(
-            title='Test_Post 1',
-            text='test_text1',
-            owner=users[0],
-            category=categories[0],
+            title='Test_Post 1', text='test_text1', owner=users[0], category=categories[0], status='PUBLISHED'
         )
         Post.objects.create(
-            title='Test_Post 2',
-            text='test_text2',
-            owner=users[1],
-            category=categories[1],
+            title='Test_Post 2', text='test_text2', owner=users[1], category=categories[1], status='PUBLISHED'
+        )
+        Post.objects.create(
+            title='Test_Post 3', text='test_text3', owner=users[1], category=categories[0], status='DRAFT'
         )
         return Post.objects.all()
 

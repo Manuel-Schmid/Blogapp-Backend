@@ -7,6 +7,8 @@ from strawberry.scalars import JSON
 from strawberry.types import Info
 from strawberry_django_plus import gql
 from taggit.models import Tag as TagModel
+
+from blog.api.inputs import PostStatus
 from blog.models import (
     Category as CategoryModel,
     User as UserModel,
@@ -87,7 +89,7 @@ class AuthorRequest:
 
 @gql.django.type(AuthorRequestModel)
 class PaginationAuthorRequests:
-    author_requests: typing.List['AuthorRequest']
+    author_requests: typing.List[AuthorRequest]
     num_pages: int
 
 
@@ -111,13 +113,14 @@ class Post:
     slug: str
     text: str
     image: auto
-    category: 'Category'
+    category: Category
     comments: typing.List['Comment']
     owner: 'User'
     date_created: auto
+    status: PostStatus
 
     @strawberry.field
-    def tags(self) -> typing.List['Tag']:
+    def tags(self) -> typing.List[Tag]:
         return TagModel.objects.filter(taggit_taggeditem_items__object_id__exact=self.id)
 
     @strawberry.field
@@ -150,6 +153,12 @@ class CreatePostType(BaseGraphQLType):
     success: bool
 
 
+@strawberry.type
+class UpdatePostStatusType(BaseGraphQLType):
+    success: bool
+    post: typing.Optional[Post]
+
+
 @gql.django.type(UserStatusModel)
 class UserStatus:
     id: strawberry.ID
@@ -163,7 +172,7 @@ class UserStatus:
 @gql.django.type(UserModel)
 class User:
     id: strawberry.ID
-    posts: typing.List['Post']
+    posts: typing.List[Post]
     email: str
     password: str
     username: str
@@ -172,12 +181,12 @@ class User:
     is_superuser: bool
     is_staff: bool
     is_active: bool
-    user_status: 'UserStatus'
+    user_status: UserStatus
 
 
 @gql.django.type(PostModel)
 class PaginationPosts:
-    posts: typing.List['Post']
+    posts: typing.List[Post]
     num_post_pages: int
 
 
@@ -186,19 +195,19 @@ class Comment:
     id: strawberry.ID
     title: str
     text: str
-    post: 'Post'
-    owner: 'User'
+    post: Post
+    owner: User
 
 
 @gql.django.type(PostLikeModel)
 class PostLike:
     id: strawberry.ID
-    post: 'Post'
-    user: 'User'
+    post: Post
+    user: User
 
 
 @gql.django.type(CommentLikeModel)
 class CommentLike:
     id: strawberry.ID
-    comment: 'Comment'
-    user: 'User'
+    comment: Comment
+    user: User

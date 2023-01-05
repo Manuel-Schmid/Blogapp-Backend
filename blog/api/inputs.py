@@ -39,6 +39,12 @@ class UpdateAccountInput:
     last_name: str
 
 
+@strawberry.enum
+class PostStatus(Enum):
+    PUBLISHED = 'PUBLISHED'
+    DRAFT = 'DRAFT'
+
+
 @strawberry.input
 class PostInput:
     slug: Optional[str] = None
@@ -48,6 +54,13 @@ class PostInput:
     category: strawberry.ID
     owner: Optional[strawberry.ID] = None
     tags: Optional[str] = None
+    status: Optional[PostStatus] = PostStatus.DRAFT
+
+
+@strawberry.input
+class UpdatePostStatusInput:
+    post_slug: str
+    status: PostStatus
 
 
 @strawberry.enum

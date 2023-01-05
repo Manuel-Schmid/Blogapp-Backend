@@ -6,7 +6,7 @@ from strawberry.test import Response
 
 @pytest.mark.django_db
 def test_create_posts(create_posts: Callable) -> None:
-    assert len(create_posts()) == 2
+    assert len(create_posts()) == 3
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
@@ -277,3 +277,143 @@ def test_update_post_without_image(
     post_category: Dict = update_post.get('category', None)
     assert post_category is not None
     assert post_category.get('slug', None) == 'test_category2'
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_update_post_status(
+    create_posts: Callable,
+    login: Callable,
+    import_query: Callable,
+    client_query: Callable,
+) -> None:
+    create_posts()
+    login('test_user2', 'password2')
+
+    update_post_status_input = {
+        'updatePostStatusInput': {
+            'postSlug': 'test_post-3',
+            'status': 'PUBLISHED',
+        }
+    }
+
+    query: str = import_query('updatePostStatus.graphql')
+    response: Response = client_query(query, update_post_status_input)
+
+    assert response is not None
+    assert response.errors is None
+
+    update_post_status: Dict = response.data.get('updatePostStatus', None)
+    assert update_post_status is not None
+
+    success: Dict = update_post_status.get('success', None)
+    assert success is not None
+    assert success is True
+    errors: Dict = update_post_status.get('errors', None)
+    assert errors is None
+
+    post: Dict = update_post_status.get('post', None)
+    assert post is not None
+
+    post_title = post.get('title', None)
+    assert post_title is not None
+    assert post_title == 'Test_Post 3'
+
+    post_status = post.get('status', None)
+    assert post_status is not None
+    assert post_status == 'PUBLISHED'
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_update_post_status_unauthenticated(
+    create_posts: Callable,
+    import_query: Callable,
+    client_query: Callable,
+) -> None:
+    create_posts()
+
+    update_post_status_input = {
+        'updatePostStatusInput': {
+            'postSlug': 'test_post-3',
+            'status': 'PUBLISHED',
+        }
+    }
+
+    query: str = import_query('updatePostStatus.graphql')
+    response: Response = client_query(query, update_post_status_input)
+
+    assert response is not None
+    assert response.data is None
+    assert response.errors is not None
+    assert len(response.errors) > 0
+    error: Dict = response.errors[0]
+    extensions = error.get('extensions', None)
+    code = extensions.get('code', None)
+    assert code is not None
+    assert code == 'PERMISSION_DENIED'
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_update_post_status_no_author(
+    create_posts: Callable,
+    auth: Callable,
+    import_query: Callable,
+    client_query: Callable,
+) -> None:
+    create_posts()
+    auth(is_author=False)
+
+    update_post_status_input = {
+        'updatePostStatusInput': {
+            'postSlug': 'test_post-3',
+            'status': 'PUBLISHED',
+        }
+    }
+
+    query: str = import_query('updatePostStatus.graphql')
+    response: Response = client_query(query, update_post_status_input)
+
+    assert response is not None
+    assert response.data is None
+    assert response.errors is not None
+    assert len(response.errors) > 0
+    error: Dict = response.errors[0]
+    extensions = error.get('extensions', None)
+    code = extensions.get('code', None)
+    assert code is not None
+    assert code == 'PERMISSION_DENIED'
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_update_post_status_not_post_owner(
+    create_posts: Callable,
+    auth: Callable,
+    import_query: Callable,
+    client_query: Callable,
+) -> None:
+    create_posts()
+    auth(is_author=True)
+
+    update_post_status_input = {
+        'updatePostStatusInput': {
+            'postSlug': 'test_post-3',
+            'status': 'PUBLISHED',
+        }
+    }
+
+    query: str = import_query('updatePostStatus.graphql')
+    response: Response = client_query(query, update_post_status_input)
+
+    assert response is not None
+    assert response.errors is None
+
+    update_post_status: Dict = response.data.get('updatePostStatus', None)
+    assert update_post_status is not None
+
+    success: Dict = update_post_status.get('success', None)
+    assert success is not None
+    assert success is False
+    errors: Dict = update_post_status.get('errors', None)
+    assert errors is not None
+    error_msg = errors.get('message', None)
+    assert error_msg is not None
+    assert error_msg == 'You are only allowed to update the status of your own posts'

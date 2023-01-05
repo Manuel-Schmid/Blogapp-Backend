@@ -21,7 +21,7 @@ class PostAdmin(admin.ModelAdmin):
 
     image_tag.short_description = 'Image'
 
-    list_display = ('title', 'date_created', 'category', 'owner', 'image_tag')
+    list_display = ('title', 'date_created', 'category', 'owner', 'image_tag', 'status')
 
 
 class AuthorRequestAdmin(admin.ModelAdmin):

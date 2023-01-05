@@ -3,7 +3,7 @@ from typing import Optional
 
 import strawberry
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from strawberry.types import Info
 from strawberry_django_jwt.decorators import login_required, superuser_required
 
@@ -111,7 +111,7 @@ class AuthorRequestQueries:
 @strawberry.type
 class PostQueries:
     @staticmethod
-    def posts() -> typing.List[PostType]:
+    def posts() -> QuerySet:
         return Post.objects.select_related('category', 'owner').prefetch_related(
             'tags',
             'comments',
@@ -156,6 +156,8 @@ class PostQueries:
         if category_slug is not None:
             post_filter &= Q(category__slug=category_slug)
 
+        post_filter &= Q(status=Post.PostStatus.PUBLISHED)
+
         posts = PostQueries.posts().filter(post_filter)
         posts = list(set([obj for obj in posts]))
 
@@ -174,7 +176,7 @@ class PostQueries:
     ) -> PaginationPostsType:
         user = info.context.request.user
 
-        posts = PostQueries.posts().filter(owner_id=user).order_by('-date_created')
+        posts = PostQueries.posts().filter(owner_id=user).order_by('-id')
         posts = list([obj for obj in posts])
 
         paginator = Paginator(posts, 6)
@@ -184,5 +186,9 @@ class PostQueries:
         return pagination_posts
 
     @strawberry.field
-    def post_by_slug(self, slug: str) -> PostType:
-        return Post.objects.get(slug=slug)
+    def post_by_slug(self, info: Info, slug: str) -> Optional[PostType]:
+        post = Post.objects.get(slug=slug)
+        user = info.context.request.user
+        if post.status == Post.PostStatus.PUBLISHED or user.is_authenticated and post.owner == user:
+            return post
+        return None
