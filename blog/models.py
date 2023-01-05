@@ -159,7 +159,8 @@ class Post(models.Model):
     image = models.ImageField(upload_to='images', null=True)
     category = models.ForeignKey('blog.Category', related_name='posts', on_delete=models.CASCADE)
     owner = models.ForeignKey('blog.User', related_name='posts', on_delete=models.CASCADE)
-    date_created = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True, null=True)
     status = models.CharField(max_length=20, choices=PostStatus.choices, default=PostStatus.DRAFT)
     tags = TaggableManager(blank=True)
 
