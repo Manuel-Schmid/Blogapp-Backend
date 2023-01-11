@@ -115,6 +115,8 @@ class PostQueries:
         return Post.objects.select_related('category', 'owner').prefetch_related(
             'tags',
             'comments',
+            'related_main_posts',
+            'related_sub_posts',
             'comments__owner',
             'post_likes',
             'post_likes__user',
