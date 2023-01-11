@@ -18,6 +18,8 @@ from blog.api.types import (
 )
 
 from taggit.models import Tag, TaggedItem
+
+from ..documents import PostDocument
 from ..models import Category, Post, User, AuthorRequest
 
 
@@ -119,6 +121,12 @@ class PostQueries:
             'owner__posts__tags',
             'owner__posts__category',
         )
+
+    @strawberry.field
+    def search_posts(self, search_term: str) -> typing.List[PostType]:
+        # search_term = f'*${search_term}*'
+        posts = PostDocument.search().filter("multi_match", query=search_term, fields=['title', 'text'])
+        return posts.to_queryset()
 
     @strawberry.field
     def paginated_posts(
