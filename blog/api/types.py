@@ -18,6 +18,7 @@ from blog.models import (
     PostLike as PostLikeModel,
     CommentLike as CommentLikeModel,
     AuthorRequest as AuthorRequestModel,
+    PostRelation as PostRelationModel,
 )
 
 
@@ -120,6 +121,14 @@ class Post:
     status: PostStatus
 
     @strawberry.field
+    def related_sub_posts(self) -> typing.List['Post']:
+        return PostModel.objects.filter(related_sub_posts__main_post_id__exact=self.id)
+
+    @strawberry.field
+    def related_main_posts(self) -> typing.List['Post']:
+        return PostModel.objects.filter(related_main_posts__sub_post_id__exact=self.id)
+
+    @strawberry.field
     def tags(self) -> typing.List[Tag]:
         return TagModel.objects.filter(taggit_taggeditem_items__object_id__exact=self.id)
 
@@ -204,6 +213,12 @@ class PostLike:
     id: strawberry.ID
     post: Post
     user: User
+
+
+@gql.django.type(PostRelationModel)
+class PostRelationType:
+    main_post: strawberry.ID
+    sub_post: strawberry.ID
 
 
 @gql.django.type(CommentLikeModel)

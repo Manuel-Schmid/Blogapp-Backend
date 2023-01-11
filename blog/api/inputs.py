@@ -96,3 +96,9 @@ class CommentInput:
 class PostLikeInput:
     post: strawberry.ID
     user: Optional[strawberry.ID] = None
+
+
+@strawberry.input
+class PostRelationInput:
+    main_post: strawberry.ID
+    sub_post: strawberry.ID
