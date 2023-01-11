@@ -182,7 +182,7 @@ class PostRelation(models.Model):
     class Meta:
         unique_together = ('main_post', 'sub_post')
 
-    def clean(self):
+    def clean(self) -> None:
         if self.main_post == self.sub_post:
             raise ValidationError('Main- and subpost must be different.')
 
