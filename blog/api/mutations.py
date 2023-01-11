@@ -1,3 +1,4 @@
+import typing
 from typing import Union, Optional, Any
 
 import strawberry
@@ -35,6 +36,7 @@ from blog.api.inputs import (
     PostLikeInput,
     AuthorRequestInput,
     UpdatePostStatusInput,
+    PostRelationInput,
 )
 from blog.api.types import (
     Category as CategoryType,
@@ -44,6 +46,7 @@ from blog.api.types import (
     CreatePostType,
     AuthorRequestWrapperType,
     UpdatePostStatusType,
+    PostRelationType,
 )
 from blog.models import Post, Category, Comment, PostLike, AuthorRequest
 from blog.forms import (
@@ -56,6 +59,7 @@ from blog.forms import (
     CreateAuthorRequestForm,
     UpdateAuthorRequestForm,
     UpdatePostStatusForm,
+    PostRelationForm,
 )
 
 
@@ -286,3 +290,32 @@ class PostLikeMutations:
         user = info.context.request.user
         PostLike.objects.filter(post=post_like_input.post, user=user.id).delete()
         return True
+
+
+@strawberry.type
+class PostRelationMutations:
+    @login_required
+    @author_permission_required
+    @strawberry.mutation
+    def create_post_relation(self, info: Info, post_relation_input: PostRelationInput) -> typing.List[PostRelationType]:
+        main_post = Post.objects.get(id=post_relation_input.main_post)
+        user = info.context.request.user
+
+        created_post_relations = []
+
+        form = PostRelationForm(data=vars(post_relation_input))
+        if form.is_valid():
+            post_relation = form.save()
+            created_post_relations.append(post_relation)
+
+        if main_post.owner == user:
+            tmp = post_relation_input.main_post
+            post_relation_input.main_post = post_relation_input.sub_post
+            post_relation_input.sub_post = tmp
+
+            form = PostRelationForm(data=vars(post_relation_input))
+            if form.is_valid():
+                post_relation = form.save()
+                created_post_relations.append(post_relation)
+
+        return created_post_relations
