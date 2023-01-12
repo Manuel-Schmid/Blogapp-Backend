@@ -126,6 +126,10 @@ class PostQueries:
         )
 
     @strawberry.field
+    def post_titles(self) -> typing.List[str]:
+        return Post.objects.values_list('title', flat=True)
+
+    @strawberry.field
     def paginated_posts(
         self,
         category_slug: Optional[str] = None,
