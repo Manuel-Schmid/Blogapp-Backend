@@ -15,6 +15,7 @@ from blog.api.types import (
     PaginationPosts as PaginationPostsType,
     AuthorRequest as AuthorRequestType,
     PaginationAuthorRequests as PaginationAuthorRequestsType,
+    PostTitleTuple,
 )
 
 from taggit.models import Tag, TaggedItem
@@ -126,8 +127,8 @@ class PostQueries:
         )
 
     @strawberry.field
-    def post_titles(self) -> typing.List[str]:
-        return Post.objects.values_list('title', flat=True)
+    def post_titles(self) -> typing.List[PostTitleTuple]:
+        return Post.objects.only('title')
 
     @strawberry.field
     def paginated_posts(
