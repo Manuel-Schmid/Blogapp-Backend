@@ -226,9 +226,9 @@ class PostMutations:
                                     if form.is_valid():
                                         reverse_post_relation_form.save()
 
-            except DatabaseError:
+            except DatabaseError as e:
                 has_errors = True
-                errors.update({'file': 'A database error occurred'})
+                errors.update(str(e))
 
         return CreatePostType(post=post, success=not has_errors, errors=errors if errors else None)
 
