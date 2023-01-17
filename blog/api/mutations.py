@@ -209,21 +209,22 @@ class PostMutations:
                         post = form.save()
 
                         # create post relations
-                        for related_post_id in post_input.related_posts:
-                            post_relation_form = PostRelationForm(
-                                data={'main_post': post.id, 'sub_post': related_post_id}
-                            )
-                            sub_post = Post.objects.get(id=related_post_id)
-
-                            if form.is_valid():
-                                post_relation_form.save()
-
-                            if sub_post.owner == user:
-                                reverse_post_relation_form = PostRelationForm(
-                                    data={'main_post': related_post_id, 'sub_post': post.id}
+                        if post_input.related_posts is not None:
+                            for related_post_id in post_input.related_posts:
+                                post_relation_form = PostRelationForm(
+                                    data={'main_post': post.id, 'sub_post': related_post_id}
                                 )
+                                sub_post = Post.objects.get(id=related_post_id)
+
                                 if form.is_valid():
-                                    reverse_post_relation_form.save()
+                                    post_relation_form.save()
+
+                                if sub_post.owner == user:
+                                    reverse_post_relation_form = PostRelationForm(
+                                        data={'main_post': related_post_id, 'sub_post': post.id}
+                                    )
+                                    if form.is_valid():
+                                        reverse_post_relation_form.save()
 
             except DatabaseError:
                 has_errors = True
