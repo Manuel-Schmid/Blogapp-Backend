@@ -3,6 +3,7 @@ from typing import Union, Optional, Any
 
 import strawberry
 import strawberry_django_jwt.mutations as jwt_mutations
+from django.db import DatabaseError, transaction
 from strawberry.types import Info
 from strawberry_django_jwt import exceptions
 from strawberry_django_jwt.decorators import (
@@ -197,14 +198,36 @@ class PostMutations:
             errors.update({'file': 'You must upload exactly one image file per post'})
 
         if not has_errors:
-            form = CreatePostForm(data=vars(post_input), files={'image': files['1']})
+            try:
+                with transaction.atomic():
+                    # create post
+                    form = CreatePostForm(data=vars(post_input), files={'image': files['1']})
+                    if not form.is_valid():
+                        has_errors = True
+                        errors.update(form.errors.get_json_data())
+                    if not has_errors:
+                        post = form.save()
 
-            if not form.is_valid():
+                        # create post relations
+                        for related_post_id in post_input.related_posts:
+                            post_relation_form = PostRelationForm(
+                                data={'main_post': post.id, 'sub_post': related_post_id}
+                            )
+                            sub_post = Post.objects.get(id=related_post_id)
+
+                            if form.is_valid():
+                                post_relation_form.save()
+
+                            if sub_post.owner == user:
+                                reverse_post_relation_form = PostRelationForm(
+                                    data={'main_post': related_post_id, 'sub_post': post.id}
+                                )
+                                if form.is_valid():
+                                    reverse_post_relation_form.save()
+
+            except DatabaseError:
                 has_errors = True
-                errors.update(form.errors.get_json_data())
-
-            if not has_errors:
-                post = form.save()
+                errors.update({'file': 'A database error occurred'})
 
         return CreatePostType(post=post, success=not has_errors, errors=errors if errors else None)
 
