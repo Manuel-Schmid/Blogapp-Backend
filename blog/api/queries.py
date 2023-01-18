@@ -127,8 +127,12 @@ class PostQueries:
         )
 
     @strawberry.field
-    def post_titles(self) -> typing.List[PostTitleTuple]:
-        return Post.objects.filter(status=Post.PostStatus.PUBLISHED).only('title')
+    def post_titles(self, info: Info) -> typing.List[PostTitleTuple]:
+        user = info.context.request.user
+        post_filter = Q(status=Post.PostStatus.PUBLISHED)
+        if user.is_authenticated:
+            post_filter |= Q(owner=user)
+        return Post.objects.filter(post_filter).only('title')
 
     @strawberry.field
     def paginated_posts(
