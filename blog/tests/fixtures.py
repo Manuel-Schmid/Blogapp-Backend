@@ -25,8 +25,9 @@ from blog.api.types import (
     Comment as CommentType,
     PostLike as PostLikeType,
     AuthorRequest as AuthorRequestType,
+    PostRelationType,
 )
-from blog.models import Category, User, Post, Comment, PostLike, UserStatus, AuthorRequest
+from blog.models import Category, User, Post, Comment, PostLike, UserStatus, AuthorRequest, PostRelation
 
 
 class GraphqlTestClient(BaseGraphQLTestClient):
@@ -334,6 +335,23 @@ def fixture_create_posts(
             title='Test_Post 3', text='test_text3', owner=users[1], category=categories[0], status='DRAFT'
         )
         return Post.objects.all()
+
+    return func
+
+
+@pytest.fixture(name='create_posts_with_relations')
+def fixture_create_posts_with_relations(
+    create_posts: Callable,
+    client_query: Callable,
+    import_query: Callable,
+) -> Callable:
+    def func() -> typing.List[PostRelationType]:
+        posts = create_posts()
+        users = User.objects.all()
+        PostRelation.objects.create(main_post=posts[0], sub_post=posts[1], creator=users[0])
+        PostRelation.objects.create(main_post=posts[1], sub_post=posts[2], creator=users[1])
+        PostRelation.objects.create(main_post=posts[2], sub_post=posts[1], creator=users[1])
+        return PostRelation.objects.all()
 
     return func
 
