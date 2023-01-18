@@ -1,6 +1,7 @@
 import typing
 from datetime import datetime
 
+from django.db.models import Q
 from strawberry import auto
 import strawberry
 from strawberry.scalars import JSON
@@ -126,13 +127,36 @@ class Post:
     date_created: auto
     status: PostStatus
 
-    @strawberry.field
-    def related_sub_posts(self) -> typing.List['Post']:
-        return PostModel.objects.filter(related_sub_posts__main_post_id__exact=self.id)
+    @staticmethod
+    def filter_related_posts(
+        relation_id_filter: Q, published_filter: Q, post_owner_filter: Q, user: 'User'
+    ) -> typing.List['Post']:
+        post_filter = relation_id_filter
+        if user.is_authenticated:
+            post_filter &= published_filter | post_owner_filter
+        else:
+            post_filter &= published_filter
+        return PostModel.objects.filter(post_filter)
 
     @strawberry.field
-    def related_main_posts(self) -> typing.List['Post']:
-        return PostModel.objects.filter(related_main_posts__sub_post_id__exact=self.id)
+    def related_sub_posts(self, info: Info) -> typing.List['Post']:
+        user = info.context.request.user
+        return Post.filter_related_posts(
+            Q(related_sub_posts__main_post_id__exact=self.id),
+            Q(related_sub_posts__sub_post__status=PostModel.PostStatus.PUBLISHED),
+            Q(related_sub_posts__sub_post__owner=user),
+            user,
+        )
+
+    @strawberry.field
+    def related_main_posts(self, info: Info) -> typing.List['Post']:
+        user = info.context.request.user
+        return Post.filter_related_posts(
+            Q(related_main_posts__sub_post_id__exact=self.id),
+            Q(related_main_posts__main_post__status=PostModel.PostStatus.PUBLISHED),
+            Q(related_main_posts__main_post__owner=user),
+            user,
+        )
 
     @strawberry.field
     def tags(self) -> typing.List[Tag]:
