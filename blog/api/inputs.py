@@ -55,7 +55,7 @@ class PostInput:
     category: strawberry.ID
     owner: Optional[strawberry.ID] = None
     tags: Optional[str] = None
-    related_posts: Optional[typing.List[str]] = None
+    related_posts: Optional[typing.List[int]] = None
     status: Optional[PostStatus] = PostStatus.DRAFT
 
 
