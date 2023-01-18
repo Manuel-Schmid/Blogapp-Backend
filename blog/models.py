@@ -178,6 +178,7 @@ class Post(models.Model):
 class PostRelation(models.Model):
     main_post = models.ForeignKey('blog.Post', related_name='related_main_posts', on_delete=models.CASCADE)
     sub_post = models.ForeignKey('blog.Post', related_name='related_sub_posts', on_delete=models.CASCADE)
+    creator = models.ForeignKey('blog.User', related_name='related_main_posts', on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('main_post', 'sub_post')
