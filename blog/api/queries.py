@@ -128,7 +128,7 @@ class PostQueries:
 
     @strawberry.field
     def post_titles(self) -> typing.List[PostTitleTuple]:
-        return Post.objects.only('title')
+        return Post.objects.filter(status=Post.PostStatus.PUBLISHED).only('title')
 
     @strawberry.field
     def paginated_posts(
