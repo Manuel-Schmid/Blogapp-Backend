@@ -1,4 +1,3 @@
-import typing
 from typing import Union, Optional, Any
 
 import strawberry
@@ -182,6 +181,21 @@ class AuthorRequestMutations:
 
 @strawberry.type
 class PostMutations:
+    @staticmethod
+    def create_post_relation(main_post: int, sub_post: int, user: int) -> None:
+        post_relation_form = PostRelationForm(data={'main_post': main_post, 'sub_post': sub_post, 'creator': user})
+        sub_post = Post.objects.get(id=sub_post)
+
+        if post_relation_form.is_valid():
+            post_relation_form.save()
+
+        if sub_post.owner == user:
+            reverse_post_relation_form = PostRelationForm(
+                data={'main_post': sub_post, 'sub_post': main_post, 'creator': user}
+            )
+            if reverse_post_relation_form.is_valid():
+                reverse_post_relation_form.save()
+
     @login_required
     @author_permission_required
     @strawberry.mutation
@@ -211,20 +225,7 @@ class PostMutations:
                         # create post relations
                         if post_input.related_posts is not None:
                             for related_post_id in post_input.related_posts:
-                                post_relation_form = PostRelationForm(
-                                    data={'main_post': post.id, 'sub_post': related_post_id, 'creator': user}
-                                )
-                                sub_post = Post.objects.get(id=related_post_id)
-
-                                if form.is_valid():
-                                    post_relation_form.save()
-
-                                if sub_post.owner == user:
-                                    reverse_post_relation_form = PostRelationForm(
-                                        data={'main_post': related_post_id, 'sub_post': post.id, 'creator': user}
-                                    )
-                                    if form.is_valid():
-                                        reverse_post_relation_form.save()
+                                PostMutations.create_post_relation(post.id, related_post_id, user)
 
             except DatabaseError as e:
                 has_errors = True
@@ -314,32 +315,3 @@ class PostLikeMutations:
         user = info.context.request.user
         PostLike.objects.filter(post=post_like_input.post, user=user.id).delete()
         return True
-
-
-@strawberry.type
-class PostRelationMutations:
-    @login_required
-    @author_permission_required
-    @strawberry.mutation
-    def create_post_relation(self, info: Info, post_relation_input: PostRelationInput) -> typing.List[PostRelationType]:
-        main_post = Post.objects.get(id=post_relation_input.main_post)
-        user = info.context.request.user
-
-        created_post_relations = []
-
-        form = PostRelationForm(data=vars(post_relation_input))
-        if form.is_valid():
-            post_relation = form.save()
-            created_post_relations.append(post_relation)
-
-        if main_post.owner == user:
-            tmp = post_relation_input.main_post
-            post_relation_input.main_post = post_relation_input.sub_post
-            post_relation_input.sub_post = tmp
-
-            form = PostRelationForm(data=vars(post_relation_input))
-            if form.is_valid():
-                post_relation = form.save()
-                created_post_relations.append(post_relation)
-
-        return created_post_relations
