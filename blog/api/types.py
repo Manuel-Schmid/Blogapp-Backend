@@ -169,6 +169,12 @@ class CreatePostType(BaseGraphQLType):
 
 
 @strawberry.type
+class UpdatePostType(BaseGraphQLType):
+    post: typing.Optional[Post]
+    success: bool
+
+
+@strawberry.type
 class UpdatePostStatusType(BaseGraphQLType):
     success: bool
     post: typing.Optional[Post]
