@@ -13,6 +13,7 @@ from strawberry_django_jwt.decorators import (
     csrf_rotation,
     refresh_expiration,
 )
+from strawberry_django_jwt.exceptions import PermissionDenied
 from strawberry_django_jwt.mixins import RefreshMixin
 from strawberry_django_jwt.settings import jwt_settings
 from strawberry_django_jwt.object_types import TokenDataType, TokenPayloadType
@@ -36,19 +37,17 @@ from blog.api.inputs import (
     PostLikeInput,
     AuthorRequestInput,
     UpdatePostStatusInput,
-    PostRelationInput,
 )
 from blog.api.types import (
     Category as CategoryType,
-    Post as PostType,
     Comment as CommentType,
     PostLike as PostLikeType,
     CreatePostType,
     AuthorRequestWrapperType,
     UpdatePostStatusType,
-    PostRelationType,
+    UpdatePostType,
 )
-from blog.models import Post, Category, Comment, PostLike, AuthorRequest
+from blog.models import Post, Category, Comment, PostLike, AuthorRequest, PostRelation
 from blog.forms import (
     CategoryForm,
     PostForm,
@@ -196,6 +195,10 @@ class PostMutations:
             if reverse_post_relation_form.is_valid():
                 reverse_post_relation_form.save()
 
+    @staticmethod
+    def delete_post_relation(main_post: int, sub_post: int, user: int) -> None:
+        PostRelation.objects.get(main_post=main_post, sub_post=sub_post, creator=user).delete()
+
     @login_required
     @author_permission_required
     @strawberry.mutation
@@ -236,6 +239,55 @@ class PostMutations:
     @login_required
     @author_permission_required
     @strawberry.mutation
+    def update_post(self, info: Info, post_input: PostInput) -> Union[UpdatePostType, None]:
+        errors = {}
+        has_errors = False
+        user = info.context.request.user
+        post = Post.objects.get(slug=post_input.slug)
+
+        if not post.owner == user:
+            raise PermissionDenied
+
+        try:
+            with transaction.atomic():
+                form = PostForm(instance=post, data=vars(post_input))
+
+                if not form.is_valid():
+                    has_errors = True
+                    errors.update(form.errors.get_json_data())
+
+                if not has_errors:
+                    post = form.save()
+
+                    # handle post relations
+                    if post_input.related_posts is not None:
+                        post_relations = PostRelation.objects.filter(creator=user)
+
+                        for related_post_id in post_input.related_posts:
+                            if not any(
+                                post_relation.sub_post_id == related_post_id for post_relation in post_relations
+                            ):
+                                PostMutations.create_post_relation(post.id, related_post_id, user)
+
+                        for post_relation in post_relations:
+                            if not any(
+                                post_relation.sub_post_id == related_post_id
+                                or post_relation.main_post_id == related_post_id
+                                for related_post_id in post_input.related_posts
+                            ):
+                                PostMutations.delete_post_relation(
+                                    post_relation.main_post_id, post_relation.sub_post_id, user
+                                )
+
+        except DatabaseError as e:
+            has_errors = True
+            errors.update(str(e))
+
+        return UpdatePostType(post=post, success=not has_errors, errors=errors if errors else None)
+
+    @login_required
+    @author_permission_required
+    @strawberry.mutation
     def update_post_status(self, info: Info, update_post_status_input: UpdatePostStatusInput) -> UpdatePostStatusType:
         post = Post.objects.get(slug=update_post_status_input.post_slug)
         user = info.context.request.user
@@ -252,15 +304,6 @@ class PostMutations:
             post = form.save()
             return UpdatePostStatusType(post=post, success=True, errors=None)
         return UpdatePostStatusType(post=None, success=False, errors=form.errors.get_json_data())
-
-    @strawberry.mutation
-    def update_post(self, post_input: PostInput) -> Union[PostType, None]:
-        post = Post.objects.get(slug=post_input.slug)
-        form = PostForm(instance=post, data=vars(post_input))
-        if form.is_valid():
-            post = form.save()
-            return post
-        return None
 
 
 @strawberry.type
