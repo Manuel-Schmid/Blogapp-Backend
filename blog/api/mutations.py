@@ -212,7 +212,7 @@ class PostMutations:
                         if post_input.related_posts is not None:
                             for related_post_id in post_input.related_posts:
                                 post_relation_form = PostRelationForm(
-                                    data={'main_post': post.id, 'sub_post': related_post_id}
+                                    data={'main_post': post.id, 'sub_post': related_post_id, 'creator': user}
                                 )
                                 sub_post = Post.objects.get(id=related_post_id)
 
@@ -221,7 +221,7 @@ class PostMutations:
 
                                 if sub_post.owner == user:
                                     reverse_post_relation_form = PostRelationForm(
-                                        data={'main_post': related_post_id, 'sub_post': post.id}
+                                        data={'main_post': related_post_id, 'sub_post': post.id, 'creator': user}
                                     )
                                     if form.is_valid():
                                         reverse_post_relation_form.save()

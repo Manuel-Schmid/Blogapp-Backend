@@ -81,7 +81,7 @@ class PostLikeForm(ModelForm):
 class PostRelationForm(ModelForm):
     class Meta:
         model = PostRelation
-        fields = ['main_post', 'sub_post']
+        fields = ['main_post', 'sub_post', 'creator']
 
 
 class CreateCommentForm(ModelForm):
