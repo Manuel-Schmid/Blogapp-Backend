@@ -30,6 +30,7 @@ from strawberry_django_jwt.utils import get_context
 from strawberry_django_jwt.refresh_token import signals as refresh_signals
 from blog.api.auth_mutations import AuthMutations
 from blog.api.decorators import author_permission_required, token_auth
+from blog.api.exceptions import SelfReferenceRelation
 from blog.api.inputs import (
     PostInput,
     CategoryInput,
@@ -228,6 +229,8 @@ class PostMutations:
                         # create post relations
                         if post_input.related_posts is not None:
                             for related_post_id in post_input.related_posts:
+                                if related_post_id == post.id:
+                                    raise SelfReferenceRelation
                                 PostMutations.create_post_relation(post.id, related_post_id, user)
 
             except DatabaseError as e:
@@ -264,6 +267,8 @@ class PostMutations:
                         post_relations = PostRelation.objects.filter(creator=user)
 
                         for related_post_id in post_input.related_posts:
+                            if related_post_id == post.id:
+                                raise SelfReferenceRelation
                             if not any(
                                 post_relation.sub_post_id == related_post_id for post_relation in post_relations
                             ):
