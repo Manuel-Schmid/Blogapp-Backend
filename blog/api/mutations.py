@@ -182,7 +182,7 @@ class AuthorRequestMutations:
 @strawberry.type
 class PostMutations:
     @staticmethod
-    def create_post_relation(main_post: int, sub_post: int, user: int) -> None:
+    def create_post_relation(main_post: strawberry.ID, sub_post: strawberry.ID, user: strawberry.ID) -> None:
         post_relation_form = PostRelationForm(data={'main_post': main_post, 'sub_post': sub_post, 'creator': user})
         sub_post = Post.objects.get(id=sub_post)
 
@@ -197,7 +197,7 @@ class PostMutations:
                 reverse_post_relation_form.save()
 
     @staticmethod
-    def delete_post_relation(main_post: int, sub_post: int, user: int) -> None:
+    def delete_post_relation(main_post: strawberry.ID, sub_post: strawberry.ID, user: strawberry.ID) -> None:
         PostRelation.objects.get(main_post=main_post, sub_post=sub_post, creator=user).delete()
 
     @login_required
@@ -277,7 +277,7 @@ class PostMutations:
                         for post_relation in post_relations:
                             if not any(
                                 post_relation.sub_post_id == related_post_id
-                                or post_relation.main_post_id == related_post_id
+                                or post_relation.main_post_id == related_post_id  # noqa: W503
                                 for related_post_id in post_input.related_posts
                             ):
                                 PostMutations.delete_post_relation(

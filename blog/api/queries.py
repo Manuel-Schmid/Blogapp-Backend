@@ -15,7 +15,7 @@ from blog.api.types import (
     PaginationPosts as PaginationPostsType,
     AuthorRequest as AuthorRequestType,
     PaginationAuthorRequests as PaginationAuthorRequestsType,
-    PostTitleTuple,
+    PostTitleType,
 )
 
 from taggit.models import Tag, TaggedItem
@@ -127,7 +127,7 @@ class PostQueries:
         )
 
     @strawberry.field
-    def post_titles(self, info: Info) -> typing.List[PostTitleTuple]:
+    def post_titles(self, info: Info) -> typing.List[PostTitleType]:
         user = info.context.request.user
         post_filter = Q(status=Post.PostStatus.PUBLISHED)
         if user.is_authenticated:

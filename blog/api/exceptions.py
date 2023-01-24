@@ -1,4 +1,4 @@
-class CustomException(Exception):
+class BlogAppException(Exception):
     default_message = ''
     error_code = 'GENERIC_ERROR'
 
@@ -9,16 +9,16 @@ class CustomException(Exception):
         super().__init__(message)
 
 
-class InvalidCredentials(CustomException):
+class InvalidCredentials(BlogAppException):
     default_message = ('Please enter valid credentials',)
     error_code = 'INVALID_CREDENTIALS'
 
 
-class UnverifiedUser(CustomException):
+class UnverifiedUser(BlogAppException):
     default_message = ('This user has not yet been verified',)
     error_code = 'UNVERIFIED_USER'
 
 
-class SelfReferenceRelation(CustomException):
+class SelfReferenceRelation(BlogAppException):
     default_message = ('A post cannot be related to itself',)
     error_code = 'SELF_REFERENCE_RELATION'

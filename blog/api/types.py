@@ -81,7 +81,7 @@ class AuthorRequestWrapperType(BaseGraphQLType):
 
 
 @gql.django.type(PostModel)
-class PostTitleTuple:
+class PostTitleType:
     id: strawberry.ID
     title: str
 
