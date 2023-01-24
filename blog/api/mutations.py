@@ -246,9 +246,10 @@ class PostMutations:
         errors = {}
         has_errors = False
         user = info.context.request.user
+        post_input.owner = user
         post = Post.objects.get(slug=post_input.slug)
 
-        if not post.owner == user:
+        if not post.owner == post_input.owner:
             raise PermissionDenied
 
         try:
