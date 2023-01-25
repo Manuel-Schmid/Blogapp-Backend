@@ -51,7 +51,7 @@ class UpdateAuthorRequestForm(ModelForm):
 class PostForm(ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'text', 'category', 'owner', 'tags']
+        fields = ['title', 'text', 'image', 'category', 'owner', 'tags']
 
 
 class UpdatePostStatusForm(ModelForm):
@@ -64,12 +64,6 @@ class UpdatePostStatusForm(ModelForm):
     class Meta:
         model = Post
         fields = ['status']
-
-
-class CreatePostForm(ModelForm):
-    class Meta:
-        model = Post
-        fields = ['title', 'text', 'image', 'category', 'owner', 'tags']
 
 
 class PostLikeForm(ModelForm):
