@@ -265,6 +265,7 @@ def test_update_post_without_image(
         'postInput': {
             'slug': 'test_post-2',
             'title': 'Test_post3',
+            'image': '',
             'text': 'New Text',
             'category': 1,
             'relatedPosts': [1, 3],

@@ -51,10 +51,11 @@ from blog.api.types import (
 from blog.models import Post, Category, Comment, PostLike, AuthorRequest, PostRelation
 from blog.forms import (
     CategoryForm,
-    PostForm,
+    UpdatePostForm,
     PostLikeForm,
     CreateCommentForm,
     UpdateCommentForm,
+    CreatePostForm,
     CreateAuthorRequestForm,
     UpdateAuthorRequestForm,
     UpdatePostStatusForm,
@@ -218,7 +219,7 @@ class PostMutations:
             try:
                 with transaction.atomic():
                     # create post
-                    form = PostForm(data=vars(post_input), files={'image': files['1']})
+                    form = CreatePostForm(data=vars(post_input), files={'image': files['1']})
                     if not form.is_valid():
                         has_errors = True
                         errors.update(form.errors.get_json_data())
@@ -254,7 +255,7 @@ class PostMutations:
 
         try:
             with transaction.atomic():
-                form = PostForm(
+                form = UpdatePostForm(
                     instance=post, data=vars(post_input), files={'image': files['1']} if len(files) == 1 else None
                 )
 
