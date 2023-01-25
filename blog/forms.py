@@ -53,7 +53,7 @@ class UpdatePostForm(ModelForm):
         model = Post
         fields = ['title', 'text', 'image', 'category', 'owner', 'tags']
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs) -> None:
         super(UpdatePostForm, self).__init__(*args, **kwargs)
         self.fields['image'].required = False
 
