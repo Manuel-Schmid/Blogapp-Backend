@@ -3,7 +3,7 @@ from typing import Any
 from django.forms import ModelForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
-from blog.models import Category, Post, Comment, PostLike, AuthorRequest, PostRelation
+from blog.models import Category, Post, Comment, PostLike, AuthorRequest, PostRelation, UserProfile
 
 
 class UserForm(UserCreationForm):
@@ -98,3 +98,15 @@ class UpdateCommentForm(ModelForm):
     class Meta:
         model = Comment
         fields = ['title', 'text']
+
+
+class UserProfileForm(ModelForm):
+    def __init__(self, *args: Any, **kwargs) -> None:
+        data = kwargs.pop('data', {})
+        data['language'] = data.get('language', {'value': None}).value
+        kwargs['data'] = data
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = UserProfile
+        fields = ['dark_theme_active', 'comment_section_collapsed', 'related_posts_collapsed', 'language']

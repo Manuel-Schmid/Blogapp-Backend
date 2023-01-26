@@ -21,6 +21,18 @@ class User(AbstractUser):
     email = models.EmailField(unique=True, verbose_name='email address')
 
 
+class UserProfile(models.Model):
+    class Language(models.TextChoices):
+        EN = 'ENGLISH'
+        DE = 'GERMAN'
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+    dark_theme_active = models.BooleanField(default=False)
+    comment_section_collapsed = models.BooleanField(default=False)
+    related_posts_collapsed = models.BooleanField(default=False)
+    language = models.CharField(max_length=20, choices=Language.choices, default=Language.EN)
+
+
 class UserStatus(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_status')
     verified = models.BooleanField(default=False)

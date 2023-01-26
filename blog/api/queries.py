@@ -40,7 +40,7 @@ class UserQueries:
     def user(self, info: Info) -> Optional[UserType]:
         user = info.context.request.user
         if user.is_authenticated:
-            return User.objects.select_related('user_status').get(pk=user.id)
+            return User.objects.select_related('user_status', 'profile').get(pk=user.id)
         return None
 
 
