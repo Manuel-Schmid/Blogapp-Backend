@@ -93,6 +93,45 @@
     }
 },
 {
+    "model": "blog.userprofile",
+    "pk": 1,
+    "fields": {
+        "user": [
+            "admin"
+        ],
+        "dark_theme_active": true,
+        "comment_section_collapsed": false,
+        "related_posts_collapsed": false,
+        "language": "GERMAN"
+    }
+},
+{
+    "model": "blog.userprofile",
+    "pk": 2,
+    "fields": {
+        "user": [
+            "John"
+        ],
+        "dark_theme_active": false,
+        "comment_section_collapsed": false,
+        "related_posts_collapsed": false,
+        "language": "ENGLISH"
+    }
+},
+{
+    "model": "blog.userprofile",
+    "pk": 3,
+    "fields": {
+        "user": [
+            "Richard"
+        ],
+        "dark_theme_active": false,
+        "comment_section_collapsed": false,
+        "related_posts_collapsed": false,
+        "language": "ENGLISH"
+    }
+},
+{
     "model": "blog.category",
     "pk": 1,
     "fields": {
@@ -166,7 +205,7 @@
         "image": "images/Landscape-Color.jpg",
         "category": 6,
         "owner": [
-            "Richard"
+            "admin"
         ],
         "date_created": "2022-08-16T06:31:23.250Z",
         "status": "PUBLISHED"
@@ -198,7 +237,7 @@
         "image": "images/central_park.jpg",
         "category": 3,
         "owner": [
-            "Richard"
+            "admin"
         ],
         "date_created": "2022-08-15T15:00:57.031Z",
         "status": "PUBLISHED"
@@ -352,6 +391,50 @@
     "fields": {
         "post": 2,
         "user": [
+            "Richard"
+        ]
+    }
+},
+{
+    "model": "blog.postrelation",
+    "pk": 1,
+    "fields": {
+        "main_post": 2,
+        "sub_post": 4,
+        "creator": [
+            "admin"
+        ]
+    }
+},
+{
+    "model": "blog.postrelation",
+    "pk": 2,
+    "fields": {
+        "main_post": 4,
+        "sub_post": 2,
+        "creator": [
+            "admin"
+        ]
+    }
+},
+{
+    "model": "blog.postrelation",
+    "pk": 3,
+    "fields": {
+        "main_post": 2,
+        "sub_post": 1,
+        "creator": [
+            "admin"
+        ]
+    }
+},
+{
+    "model": "blog.postrelation",
+    "pk": 4,
+    "fields": {
+        "main_post": 5,
+        "sub_post": 1,
+        "creator": [
             "Richard"
         ]
     }
