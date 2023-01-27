@@ -10,18 +10,16 @@ def test_create_posts(create_posts: Callable) -> None:
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
-def test_create_post(
+def test_create_post_with_relations(
     auth: Callable,
+    create_posts_with_relations: Callable,
     import_query: Callable,
     query_post: Callable,
     file_image_jpg: SimpleUploadedFile,
 ) -> None:
     auth()
-    post_input = {
-        'title': 'test_post',
-        'text': 'this a test',
-        'category': 2,
-    }
+    create_posts_with_relations()
+    post_input = {'title': 'test_post', 'text': 'this a test', 'category': 2, 'relatedPosts': [1, 2]}
 
     query: str = import_query('createPost.graphql')
     response: Dict = query_post(query, post_input, file_image_jpg)
@@ -60,6 +58,12 @@ def test_create_post(
     post_category: Dict = post.get('category', None)
     assert post_category is not None
     assert post_category.get('slug', None) == 'test_category2'
+
+    related_sub_posts: Dict = post.get('relatedSubPosts', None)
+    assert related_sub_posts is not None
+    assert len(related_sub_posts) > 0
+    assert related_sub_posts[0].get('id', None) == '1'
+    assert related_sub_posts[1].get('id', None) == '2'
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
@@ -188,20 +192,21 @@ def test_create_post_invalid_category_id(
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_update_post_with_image(
-    create_posts: Callable,
-    auth: Callable,
+    create_posts_with_relations: Callable,
+    login: Callable,
     import_query: Callable,
     query_post: Callable,
     file_image_png: SimpleUploadedFile,
 ) -> None:
-    create_posts()
-    auth()
+    create_posts_with_relations()
+    login('test_user2', 'password2')
     post_input = {
-        'slug': 'test_post-1',
+        'slug': 'test_post-2',
         'title': 'Test_post3',
         'text': 'New Text',
-        'category': 2,
-        'owner': 2,
+        'category': 1,
+        'owner': 1,
+        'relatedPosts': [1],
     }
 
     query: str = import_query('updatePost.graphql')
@@ -216,40 +221,55 @@ def test_update_post_with_image(
     update_post: Dict = data.get('updatePost', None)
     assert update_post is not None
 
-    post_title: Dict = update_post.get('title', None)
+    success: Dict = update_post.get('success', None)
+    assert success is True
+    errors: Dict = update_post.get('errors', None)
+    assert errors is None
+    post: Dict = update_post.get('post', None)
+    assert post is not None
+
+    post_title: Dict = post.get('title', None)
     assert post_title is not None
     assert post_title == 'Test_post3'
 
-    post_slug: Dict = update_post.get('slug', None)
+    post_slug: Dict = post.get('slug', None)
     assert post_slug is not None
-    assert post_slug == 'test_post-1'
+    assert post_slug == 'test_post-2'
 
-    post_image: Dict = update_post.get('image', None)
+    post_image: Dict = post.get('image', None)
     assert post_image is not None
 
-    post_owner: Dict = update_post.get('owner', None)
+    post_owner: Dict = post.get('owner', None)
     assert post_owner is not None
-    assert post_owner.get('username', None) == 'test_user2'
+    assert post_owner.get('username', None) == 'test_user1'
 
-    post_category: Dict = update_post.get('category', None)
+    post_category: Dict = post.get('category', None)
     assert post_category is not None
-    assert post_category.get('slug', None) == 'test_category2'
+    assert post_category.get('slug', None) == 'test_category1'
+
+    related_sub_posts: Dict = post.get('relatedSubPosts', None)
+    assert related_sub_posts is not None
+    assert len(related_sub_posts) > 0
+    assert related_sub_posts[0].get('id', None) == '1'
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_update_post_without_image(
-    create_posts: Callable,
+    create_posts_with_relations: Callable,
+    login: Callable,
     import_query: Callable,
     client_query: Callable,
 ) -> None:
-    create_posts()
+    create_posts_with_relations()
+    login('test_user2', 'password2')
     post_input = {
         'postInput': {
-            'slug': 'test_post-1',
+            'slug': 'test_post-2',
             'title': 'Test_post3',
             'text': 'New Text',
-            'category': 2,
-            'owner': 2,
+            'category': 1,
+            'owner': 1,
+            'relatedPosts': [1, 3],
         }
     }
 
@@ -262,21 +282,34 @@ def test_update_post_without_image(
     update_post: Dict = response.data.get('updatePost', None)
     assert update_post is not None
 
-    post_title: Dict = update_post.get('title', None)
+    success: Dict = update_post.get('success', None)
+    assert success is True
+    errors: Dict = update_post.get('errors', None)
+    assert errors is None
+    post: Dict = update_post.get('post', None)
+    assert post is not None
+
+    post_title: Dict = post.get('title', None)
     assert post_title is not None
     assert post_title == 'Test_post3'
 
-    post_slug: Dict = update_post.get('slug', None)
+    post_slug: Dict = post.get('slug', None)
     assert post_slug is not None
-    assert post_slug == 'test_post-1'
+    assert post_slug == 'test_post-2'
 
-    post_owner: Dict = update_post.get('owner', None)
+    post_owner: Dict = post.get('owner', None)
     assert post_owner is not None
-    assert post_owner.get('username', None) == 'test_user2'
+    assert post_owner.get('username', None) == 'test_user1'
 
-    post_category: Dict = update_post.get('category', None)
+    post_category: Dict = post.get('category', None)
     assert post_category is not None
-    assert post_category.get('slug', None) == 'test_category2'
+    assert post_category.get('slug', None) == 'test_category1'
+
+    related_sub_posts: Dict = post.get('relatedSubPosts', None)
+    assert related_sub_posts is not None
+    assert len(related_sub_posts) > 0
+    assert related_sub_posts[0].get('id', None) == '1'
+    assert related_sub_posts[1].get('id', None) == '3'
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)

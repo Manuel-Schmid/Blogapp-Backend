@@ -2,6 +2,10 @@
 
 mutation updatePost($postInput: PostInput!) {
     updatePost(postInput: $postInput) {
-        ...PostFragment
+        success
+        errors
+        post {
+            ...PostFragment
+        }
     }
 }

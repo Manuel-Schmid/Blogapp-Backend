@@ -15,6 +15,7 @@ from blog.api.types import (
     PaginationPosts as PaginationPostsType,
     AuthorRequest as AuthorRequestType,
     PaginationAuthorRequests as PaginationAuthorRequestsType,
+    PostTitleType,
 )
 
 from taggit.models import Tag, TaggedItem
@@ -115,6 +116,8 @@ class PostQueries:
         return Post.objects.select_related('category', 'owner').prefetch_related(
             'tags',
             'comments',
+            'related_main_posts',
+            'related_sub_posts',
             'comments__owner',
             'post_likes',
             'post_likes__user',
@@ -122,6 +125,14 @@ class PostQueries:
             'owner__posts__tags',
             'owner__posts__category',
         )
+
+    @strawberry.field
+    def post_titles(self, info: Info) -> typing.List[PostTitleType]:
+        user = info.context.request.user
+        post_filter = Q(status=Post.PostStatus.PUBLISHED)
+        if user.is_authenticated:
+            post_filter |= Q(owner=user)
+        return Post.objects.filter(post_filter).only('title')
 
     @strawberry.field
     def paginated_posts(

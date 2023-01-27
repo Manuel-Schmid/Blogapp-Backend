@@ -1,3 +1,4 @@
+import typing
 from enum import Enum
 from typing import Optional
 import strawberry
@@ -54,6 +55,7 @@ class PostInput:
     category: strawberry.ID
     owner: Optional[strawberry.ID] = None
     tags: Optional[str] = None
+    related_posts: Optional[typing.List[int]] = None
     status: Optional[PostStatus] = PostStatus.DRAFT
 
 
@@ -96,3 +98,9 @@ class CommentInput:
 class PostLikeInput:
     post: strawberry.ID
     user: Optional[strawberry.ID] = None
+
+
+@strawberry.input
+class PostRelationInput:
+    main_post: strawberry.ID
+    sub_post: strawberry.ID

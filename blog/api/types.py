@@ -1,6 +1,7 @@
 import typing
 from datetime import datetime
 
+from django.db.models import Q
 from strawberry import auto
 import strawberry
 from strawberry.scalars import JSON
@@ -18,6 +19,7 @@ from blog.models import (
     PostLike as PostLikeModel,
     CommentLike as CommentLikeModel,
     AuthorRequest as AuthorRequestModel,
+    PostRelation as PostRelationModel,
 )
 
 
@@ -78,6 +80,12 @@ class AuthorRequestWrapperType(BaseGraphQLType):
     author_request: typing.Optional['AuthorRequest']
 
 
+@gql.django.type(PostModel)
+class PostTitleType:
+    id: strawberry.ID
+    title: str
+
+
 @gql.django.type(AuthorRequestModel)
 class AuthorRequest:
     id: strawberry.ID
@@ -119,6 +127,37 @@ class Post:
     date_created: auto
     status: PostStatus
 
+    @staticmethod
+    def filter_related_posts(
+        relation_id_filter: Q, published_filter: Q, post_owner_filter: Q, user: 'User'
+    ) -> typing.List['Post']:
+        post_filter = relation_id_filter
+        if user.is_authenticated:
+            post_filter &= published_filter | post_owner_filter
+        else:
+            post_filter &= published_filter
+        return PostModel.objects.filter(post_filter)
+
+    @strawberry.field
+    def related_sub_posts(self, info: Info) -> typing.List['Post']:
+        user = info.context.request.user
+        return Post.filter_related_posts(
+            Q(related_sub_posts__main_post_id__exact=self.id),
+            Q(related_sub_posts__sub_post__status=PostModel.PostStatus.PUBLISHED),
+            Q(related_sub_posts__sub_post__owner=user),
+            user,
+        )
+
+    @strawberry.field
+    def related_main_posts(self, info: Info) -> typing.List['Post']:
+        user = info.context.request.user
+        return Post.filter_related_posts(
+            Q(related_main_posts__sub_post_id__exact=self.id),
+            Q(related_main_posts__main_post__status=PostModel.PostStatus.PUBLISHED),
+            Q(related_main_posts__main_post__owner=user),
+            user,
+        )
+
     @strawberry.field
     def tags(self) -> typing.List[Tag]:
         return TagModel.objects.filter(taggit_taggeditem_items__object_id__exact=self.id)
@@ -149,6 +188,12 @@ class Post:
 
 @strawberry.type
 class CreatePostType(BaseGraphQLType):
+    post: typing.Optional[Post]
+    success: bool
+
+
+@strawberry.type
+class UpdatePostType(BaseGraphQLType):
     post: typing.Optional[Post]
     success: bool
 
@@ -204,6 +249,12 @@ class PostLike:
     id: strawberry.ID
     post: Post
     user: User
+
+
+@gql.django.type(PostRelationModel)
+class PostRelationType:
+    main_post: strawberry.ID
+    sub_post: strawberry.ID
 
 
 @gql.django.type(CommentLikeModel)

@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from django.core.exceptions import ValidationError
 from django.utils.timezone import make_aware
 
 from django.contrib.auth import get_user_model
@@ -171,6 +173,19 @@ class Post(models.Model):
 
     def __str__(self) -> str:
         return self.title
+
+
+class PostRelation(models.Model):
+    main_post = models.ForeignKey('blog.Post', related_name='related_main_posts', on_delete=models.CASCADE)
+    sub_post = models.ForeignKey('blog.Post', related_name='related_sub_posts', on_delete=models.CASCADE)
+    creator = models.ForeignKey('blog.User', related_name='related_main_posts', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('main_post', 'sub_post')
+
+    def clean(self) -> None:
+        if self.main_post == self.sub_post:
+            raise ValidationError('Main- and subpost must be different.')
 
 
 class Comment(models.Model):
