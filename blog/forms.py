@@ -48,10 +48,14 @@ class UpdateAuthorRequestForm(ModelForm):
         fields = ['date_closed', 'status']
 
 
-class PostForm(ModelForm):
+class UpdatePostForm(ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'text', 'category', 'owner', 'tags']
+        fields = ['title', 'text', 'image', 'category', 'owner', 'tags']
+
+    def __init__(self, *args: Any, **kwargs) -> None:
+        super(UpdatePostForm, self).__init__(*args, **kwargs)
+        self.fields['image'].required = False
 
 
 class UpdatePostStatusForm(ModelForm):

@@ -205,7 +205,6 @@ def test_update_post_with_image(
         'title': 'Test_post3',
         'text': 'New Text',
         'category': 1,
-        'owner': 1,
         'relatedPosts': [1],
     }
 
@@ -241,7 +240,7 @@ def test_update_post_with_image(
 
     post_owner: Dict = post.get('owner', None)
     assert post_owner is not None
-    assert post_owner.get('username', None) == 'test_user1'
+    assert post_owner.get('username', None) == 'test_user2'
 
     post_category: Dict = post.get('category', None)
     assert post_category is not None
@@ -266,9 +265,9 @@ def test_update_post_without_image(
         'postInput': {
             'slug': 'test_post-2',
             'title': 'Test_post3',
+            'image': '',
             'text': 'New Text',
             'category': 1,
-            'owner': 1,
             'relatedPosts': [1, 3],
         }
     }
@@ -299,7 +298,7 @@ def test_update_post_without_image(
 
     post_owner: Dict = post.get('owner', None)
     assert post_owner is not None
-    assert post_owner.get('username', None) == 'test_user1'
+    assert post_owner.get('username', None) == 'test_user2'
 
     post_category: Dict = post.get('category', None)
     assert post_category is not None

@@ -51,7 +51,7 @@ from blog.api.types import (
 from blog.models import Post, Category, Comment, PostLike, AuthorRequest, PostRelation
 from blog.forms import (
     CategoryForm,
-    PostForm,
+    UpdatePostForm,
     PostLikeForm,
     CreateCommentForm,
     UpdateCommentForm,
@@ -246,14 +246,18 @@ class PostMutations:
         errors = {}
         has_errors = False
         user = info.context.request.user
+        post_input.owner = user
         post = Post.objects.get(slug=post_input.slug)
+        files = info.context.request.FILES
 
-        if not post.owner == user:
+        if not post.owner == post_input.owner:
             raise PermissionDenied
 
         try:
             with transaction.atomic():
-                form = PostForm(instance=post, data=vars(post_input))
+                form = UpdatePostForm(
+                    instance=post, data=vars(post_input), files={'image': files['1']} if len(files) == 1 else None
+                )
 
                 if not form.is_valid():
                     has_errors = True
