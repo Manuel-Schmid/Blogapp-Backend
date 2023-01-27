@@ -9,7 +9,7 @@ from strawberry.types import Info
 from strawberry_django_plus import gql
 from taggit.models import Tag as TagModel
 
-from blog.api.inputs import PostStatus
+from blog.api.inputs import PostStatus, Language
 from blog.models import (
     Category as CategoryModel,
     User as UserModel,
@@ -20,6 +20,7 @@ from blog.models import (
     CommentLike as CommentLikeModel,
     AuthorRequest as AuthorRequestModel,
     PostRelation as PostRelationModel,
+    UserProfile as UserProfileModel,
 )
 
 
@@ -214,6 +215,22 @@ class UserStatus:
     is_author: bool
 
 
+@gql.django.type(UserProfileModel)
+class UserProfile:
+    id: strawberry.ID
+    user: 'User'
+    dark_theme_active: bool
+    comment_section_collapsed: bool
+    related_posts_collapsed: bool
+    language: Language
+
+
+@strawberry.type
+class UpdateUserProfileType(BaseGraphQLType):
+    success: bool
+    profile: typing.Optional[UserProfile]
+
+
 @gql.django.type(UserModel)
 class User:
     id: strawberry.ID
@@ -227,6 +244,7 @@ class User:
     is_staff: bool
     is_active: bool
     user_status: UserStatus
+    profile: UserProfile
 
 
 @gql.django.type(PostModel)

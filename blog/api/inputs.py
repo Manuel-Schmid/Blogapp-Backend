@@ -104,3 +104,17 @@ class PostLikeInput:
 class PostRelationInput:
     main_post: strawberry.ID
     sub_post: strawberry.ID
+
+
+@strawberry.enum
+class Language(Enum):
+    EN = 'ENGLISH'
+    DE = 'GERMAN'
+
+
+@strawberry.input
+class UserProfileInput:
+    dark_theme_active: bool
+    comment_section_collapsed: bool
+    related_posts_collapsed: bool
+    language: Language

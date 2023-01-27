@@ -38,6 +38,7 @@ from blog.api.inputs import (
     PostLikeInput,
     AuthorRequestInput,
     UpdatePostStatusInput,
+    UserProfileInput,
 )
 from blog.api.types import (
     Category as CategoryType,
@@ -47,8 +48,9 @@ from blog.api.types import (
     AuthorRequestWrapperType,
     UpdatePostStatusType,
     UpdatePostType,
+    UpdateUserProfileType,
 )
-from blog.models import Post, Category, Comment, PostLike, AuthorRequest, PostRelation
+from blog.models import Post, Category, Comment, PostLike, AuthorRequest, PostRelation, UserProfile
 from blog.forms import (
     CategoryForm,
     UpdatePostForm,
@@ -60,6 +62,7 @@ from blog.forms import (
     UpdateAuthorRequestForm,
     UpdatePostStatusForm,
     PostRelationForm,
+    UserProfileForm,
 )
 
 
@@ -367,3 +370,17 @@ class PostLikeMutations:
         user = info.context.request.user
         PostLike.objects.filter(post=post_like_input.post, user=user.id).delete()
         return True
+
+
+@strawberry.type
+class UserProfileMutations:
+    @login_required
+    @strawberry.mutation
+    def update_user_profile(self, info: Info, user_profile_input: UserProfileInput) -> UpdateUserProfileType:
+        user = info.context.request.user
+        user_profile = UserProfile.objects.get(user=user)
+        form = UserProfileForm(instance=user_profile, data=vars(user_profile_input))
+        if form.is_valid():
+            user_profile = form.save()
+            return UpdateUserProfileType(profile=user_profile, success=True, errors=None)
+        return UpdateUserProfileType(profile=None, success=False, errors=form.errors.get_json_data())

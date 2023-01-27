@@ -22,7 +22,7 @@ from blog.api.types import (
     ResendActivationEmailType,
     UpdateAccountType,
 )
-from blog.models import User, UserStatus
+from blog.models import User, UserStatus, UserProfile
 from blog.utils import TokenAction, get_token_payload
 
 
@@ -40,6 +40,7 @@ class AuthMutations:
         if not has_errors:
             user = form.save()
             user_status = UserStatus.objects.create(user=user, verified=False, archived=False, secondary_email=None)
+            UserProfile.objects.create(user=user)
             user_status.send_activation_email()
 
         return RegisterAccountType(success=not has_errors, errors=errors if errors else None)
