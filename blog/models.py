@@ -19,6 +19,12 @@ from blog.utils import TokenAction, get_token, get_token_payload
 
 class User(AbstractUser):
     email = models.EmailField(unique=True, verbose_name='email address')
+    avatar = models.ImageField(upload_to='avatars', null=True)
+
+    @property
+    def image_url(self) -> str:
+        if self.avatar and hasattr(self.avatar, 'url'):
+            return self.avatar.url
 
 
 class UserProfile(models.Model):
