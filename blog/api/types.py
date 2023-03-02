@@ -243,6 +243,7 @@ class User:
     is_superuser: bool
     is_staff: bool
     is_active: bool
+    avatar: auto
     user_status: UserStatus
     profile: UserProfile
 
