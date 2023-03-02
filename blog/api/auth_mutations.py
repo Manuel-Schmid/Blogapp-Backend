@@ -28,20 +28,26 @@ from blog.utils import TokenAction, get_token_payload
 
 class AuthMutations:
     @strawberry.mutation
-    def register(self, user_registration_input: UserRegistrationInput) -> RegisterAccountType:
+    def register(self, info: Info, user_registration_input: UserRegistrationInput) -> RegisterAccountType:
         errors = {}
         has_errors = False
+        files = info.context.request.FILES
 
-        form = UserForm(data=vars(user_registration_input))
-        if not form.is_valid():
+        if len(files) != 1:
             has_errors = True
-            errors.update(form.errors.get_json_data())
+            errors.update({'file': 'You must upload exactly one image file as avatar'})
 
         if not has_errors:
-            user = form.save()
-            user_status = UserStatus.objects.create(user=user, verified=False, archived=False, secondary_email=None)
-            UserProfile.objects.create(user=user)
-            user_status.send_activation_email()
+            form = UserForm(data=vars(user_registration_input), files={'avatar': files['1']})
+            if not form.is_valid():
+                has_errors = True
+                errors.update(form.errors.get_json_data())
+
+            if not has_errors:
+                user = form.save()
+                user_status = UserStatus.objects.create(user=user, verified=False, archived=False, secondary_email=None)
+                UserProfile.objects.create(user=user)
+                user_status.send_activation_email()
 
         return RegisterAccountType(success=not has_errors, errors=errors if errors else None)
 
