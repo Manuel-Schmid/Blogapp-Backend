@@ -1,6 +1,7 @@
 from typing import Callable, Dict
 import pytest
 from django.core import mail
+from django.core.files.uploadedfile import SimpleUploadedFile
 from strawberry.test import Response
 from django.conf import settings
 
@@ -12,21 +13,26 @@ def test_register_and_verify(
     get_token_from_mail: Callable,
     import_query: Callable,
     client_query: Callable,
+    query_user_registration: Callable,
+    file_image_png: SimpleUploadedFile,
 ) -> None:
     user_registration_input = {
-        'userRegistrationInput': {
-            'email': 'admin@admin.com',
-            'username': 'abc',
-            'password1': 'helloWorld++x',
-            'password2': 'helloWorld++x',
-        }
+        'email': 'admin@admin.com',
+        'username': 'abc',
+        'password1': 'helloWorld++x',
+        'password2': 'helloWorld++x',
     }
 
     query: str = import_query('register.graphql')
-    response: Response = client_query(query, user_registration_input)
+    response: Response = query_user_registration(query, user_registration_input, file_image_png)
 
     assert response is not None
-    register: Dict = response.data.get('register', None)
+    response_errors = response.get('errors', None)
+    assert response_errors is None
+    data = response.get('data', None)
+    assert data is not None
+
+    register: Dict = data.get('register', None)
     assert register is not None
 
     success: Dict = register.get('success', None)
@@ -67,22 +73,28 @@ def test_register_and_verify(
 def test_register_duplicate_email(
     import_query: Callable,
     client_query: Callable,
+    query_user_registration: Callable,
+    create_users: Callable,
+    file_image_png: SimpleUploadedFile,
 ) -> None:
+    create_users()
     user_registration_input = {
-        'userRegistrationInput': {
-            'email': 'admin@admin.com',
-            'username': 'abc',
-            'password1': 'helloWorld++x',
-            'password2': 'helloWorld++x',
-        }
+        'email': 'user1@example.com',
+        'username': 'abc',
+        'password1': 'helloWorld++x',
+        'password2': 'helloWorld++x',
     }
 
     query: str = import_query('register.graphql')
-    client_query(query, user_registration_input)
-    response: Response = client_query(query, user_registration_input)
+    response: Response = query_user_registration(query, user_registration_input, file_image_png)
 
     assert response is not None
-    register: Dict = response.data.get('register', None)
+    response_errors = response.get('errors', None)
+    assert response_errors is None
+    data = response.get('data', None)
+    assert data is not None
+
+    register: Dict = data.get('register', None)
     assert register is not None
 
     success: Dict = register.get('success', None)
@@ -91,10 +103,9 @@ def test_register_duplicate_email(
 
     errors: Dict = register.get('errors', None)
     assert errors is not None
-    assert 'username' in errors
+    assert 'email' in errors
 
-    assert len(mail.outbox) == 1
-    assert mail.outbox[0].to == ['admin@admin.com']
+    assert len(mail.outbox) == 0
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)

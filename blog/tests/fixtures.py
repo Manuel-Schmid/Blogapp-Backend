@@ -148,6 +148,35 @@ def fixture_query_post(
     return func
 
 
+@pytest.fixture(name='query_user_registration')
+def fixture_query_user_registration() -> Callable:
+    def func(query: str, user_registration_input: Dict, avatar: Union[SimpleUploadedFile]) -> Dict:
+
+        query = query
+        data = {
+            'operations': json.dumps(
+                {
+                    'query': query,
+                    'variables': {
+                        'userRegistrationInput': user_registration_input,
+                    },
+                }
+            ),
+            '1': avatar,
+            'map': json.dumps(
+                {
+                    '1': ['variables.userRegistrationInput.avatar'],
+                }
+            ),
+        }
+
+        response = graphql_client.client.post('/graphql/', data=data)
+        json_data: Dict = json.loads(response.content)
+        return json_data
+
+    return func
+
+
 @pytest.fixture(name='create_user')
 def fixture_create_user(django_user_model: models.Model) -> Callable:
     def func(**kwargs) -> models.Model:
