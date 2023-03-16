@@ -20,7 +20,7 @@ from blog.api.types import (
 )
 
 from taggit.models import Tag, TaggedItem
-from ..models import Category, Post, User, AuthorRequest, Subscription
+from ..models import Category, Post, User, AuthorRequest, Subscription, Notification
 
 
 @strawberry.type
@@ -202,6 +202,21 @@ class PostQueries:
         posts = list([obj for obj in posts])
 
         return PostQueries.paginate_posts(posts, 6, active_page)
+
+    @login_required
+    @strawberry.field
+    def paginated_notification_posts(
+        self,
+        info: Info,
+        active_page: Optional[int] = 1,
+    ) -> PaginationPostsType:
+        user = info.context.request.user
+
+        notification_post_ids = Notification.objects.filter(user=user).values_list('id', flat=True)
+        post_filter = Q(id__in=notification_post_ids)
+        posts = PostQueries.posts().filter(post_filter).order_by('-date_created')
+
+        return PostQueries.paginate_posts(posts, 4, active_page)
 
     @strawberry.field
     def post_by_slug(self, info: Info, slug: str) -> Optional[PostType]:
