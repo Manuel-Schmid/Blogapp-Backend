@@ -136,6 +136,11 @@ class PostQueries:
             'owner__posts__category',
         )
 
+    @staticmethod
+    def paginate_posts(posts: QuerySet, per_page: int, active_page: int) -> PaginationPostsType:
+        paginator = Paginator(posts, per_page)
+        return PaginationPostsType(posts=paginator.page(active_page), num_post_pages=paginator.num_pages)
+
     @strawberry.field
     def post_titles(self, info: Info) -> typing.List[PostTitleType]:
         user = info.context.request.user
@@ -182,11 +187,7 @@ class PostQueries:
         posts = PostQueries.posts().filter(post_filter)
         posts = list(set([obj for obj in posts]))
 
-        paginator = Paginator(posts, 4)
-        pagination_posts = PaginationPostsType()
-        pagination_posts.posts = paginator.page(active_page)
-        pagination_posts.num_post_pages = paginator.num_pages
-        return pagination_posts
+        return PostQueries.paginate_posts(posts, 4, active_page)
 
     @login_required
     @strawberry.field
@@ -200,11 +201,7 @@ class PostQueries:
         posts = PostQueries.posts().filter(owner_id=user).order_by('-id')
         posts = list([obj for obj in posts])
 
-        paginator = Paginator(posts, 6)
-        pagination_posts = PaginationPostsType()
-        pagination_posts.posts = paginator.page(active_page)
-        pagination_posts.num_post_pages = paginator.num_pages
-        return pagination_posts
+        return PostQueries.paginate_posts(posts, 6, active_page)
 
     @strawberry.field
     def post_by_slug(self, info: Info, slug: str) -> Optional[PostType]:
