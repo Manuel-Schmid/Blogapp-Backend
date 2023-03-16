@@ -16,10 +16,11 @@ from blog.api.types import (
     AuthorRequest as AuthorRequestType,
     PaginationAuthorRequests as PaginationAuthorRequestsType,
     PostTitleType,
+    Subscription as SubscriptionType,
 )
 
 from taggit.models import Tag, TaggedItem
-from ..models import Category, Post, User, AuthorRequest
+from ..models import Category, Post, User, AuthorRequest, Subscription
 
 
 @strawberry.type
@@ -107,6 +108,15 @@ class AuthorRequestQueries:
             return AuthorRequest.objects.get(user=user)
         else:
             return None
+
+
+@strawberry.type
+class SubscriptionQueries:
+    @login_required
+    @strawberry.field
+    def user_subscriptions(self, info: Info) -> typing.List[SubscriptionType]:
+        user = info.context.request.user
+        return Subscription.objects.filter(subscriber=user).order_by('-date_created')
 
 
 @strawberry.type

@@ -16,11 +16,11 @@ from .mutations import (
     ObtainJSONWebToken,
     UserProfileMutations,
 )
-from .queries import UserQueries, PostQueries, CategoryQueries, TagQueries, AuthorRequestQueries
+from .queries import UserQueries, PostQueries, CategoryQueries, TagQueries, AuthorRequestQueries, SubscriptionQueries
 
 
 @strawberry.type
-class RootQuery(UserQueries, PostQueries, CategoryQueries, TagQueries, AuthorRequestQueries):
+class RootQuery(UserQueries, PostQueries, CategoryQueries, TagQueries, AuthorRequestQueries, SubscriptionQueries):
     pass
 
 
