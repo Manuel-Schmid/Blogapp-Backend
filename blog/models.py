@@ -208,6 +208,10 @@ class Subscription(models.Model):
     class Meta:
         unique_together = ('subscriber', 'author')
 
+    def clean(self) -> None:
+        if self.subscriber == self.author:
+            raise ValidationError('Subscriber- and Author must be different.')
+
 
 class Notification(models.Model):
     post = models.ForeignKey('blog.Post', related_name='notifications', on_delete=models.CASCADE)
