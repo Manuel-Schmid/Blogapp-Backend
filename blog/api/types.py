@@ -21,6 +21,8 @@ from blog.models import (
     AuthorRequest as AuthorRequestModel,
     PostRelation as PostRelationModel,
     UserProfile as UserProfileModel,
+    Subscription as SubscriptionModel,
+    Notification as NotificationModel,
 )
 
 
@@ -187,6 +189,12 @@ class Post:
         return self.comments.count()
 
 
+class DetailPost(BaseGraphQLType):
+    post: typing.Optional[Post]
+    success: bool
+    notification_removed: bool
+
+
 @strawberry.type
 class CreatePostType(BaseGraphQLType):
     post: typing.Optional[Post]
@@ -246,6 +254,10 @@ class User:
     user_status: UserStatus
     profile: UserProfile
 
+    @strawberry.field
+    def notification_count(self) -> int:
+        return self.notifications.count()
+
 
 @gql.django.type(PostModel)
 class PaginationPosts:
@@ -279,4 +291,19 @@ class PostRelationType:
 class CommentLike:
     id: strawberry.ID
     comment: Comment
+    user: User
+
+
+@gql.django.type(SubscriptionModel)
+class Subscription:
+    id: strawberry.ID
+    subscriber: User
+    author: User
+    date_created: datetime
+
+
+@gql.django.type(NotificationModel)
+class Notification:
+    id: strawberry.ID
+    post: Post
     user: User
