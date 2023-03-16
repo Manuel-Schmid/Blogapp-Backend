@@ -106,6 +106,18 @@ class PostRelationInput:
     sub_post: strawberry.ID
 
 
+@strawberry.input
+class SubscriptionInput:
+    subscriber: strawberry.ID
+    author: strawberry.ID
+
+
+@strawberry.input
+class NotificationInput:
+    post: strawberry.ID
+    user: strawberry.ID
+
+
 @strawberry.enum
 class Language(Enum):
     EN = 'ENGLISH'
