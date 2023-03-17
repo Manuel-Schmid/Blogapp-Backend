@@ -212,7 +212,7 @@ class PostQueries:
     ) -> PaginationPostsType:
         user = info.context.request.user
 
-        notification_post_ids = Notification.objects.filter(user=user).values_list('id', flat=True)
+        notification_post_ids = Notification.objects.filter(user=user).values_list('post_id', flat=True)
         post_filter = Q(id__in=notification_post_ids)
         post_filter &= Q(status=Post.PostStatus.PUBLISHED)
         posts = PostQueries.posts().filter(post_filter).order_by('-date_created')
