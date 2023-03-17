@@ -302,6 +302,12 @@ class Subscription:
     date_created: datetime
 
 
+@strawberry.type
+class CreateSubscriptionType(BaseGraphQLType):
+    success: bool
+    subscription: typing.Optional[Subscription]
+
+
 @gql.django.type(NotificationModel)
 class Notification:
     id: strawberry.ID

@@ -15,6 +15,7 @@ from .mutations import (
     AuthorRequestMutations,
     ObtainJSONWebToken,
     UserProfileMutations,
+    SubscriptionMutations,
 )
 from .queries import UserQueries, PostQueries, CategoryQueries, TagQueries, AuthorRequestQueries, SubscriptionQueries
 
@@ -34,6 +35,7 @@ class RootMutation(
     PostLikeMutations,
     AuthorRequestMutations,
     UserProfileMutations,
+    SubscriptionMutations,
 ):
     pass
 
