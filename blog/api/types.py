@@ -181,6 +181,14 @@ class Post:
         return False
 
     @strawberry.field
+    def is_subscribed(self, info: Info) -> bool:
+        user = info.context.request.user
+        if user.is_authenticated:
+            return user.id in self.owner.subscribers.values_list('subscriber', flat=True)
+
+        return False
+
+    @strawberry.field
     def like_count(self) -> int:
         return self.post_likes.count()
 
