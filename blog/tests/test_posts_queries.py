@@ -229,7 +229,9 @@ def test_query_published_post_by_slug(
     assert response is not None
     assert response.errors is None
 
-    post: Dict = response.data.get('postBySlug', None)
+    post_by_slug: Dict = response.data.get('postBySlug', None)
+    assert post_by_slug is not None
+    post: Dict = post_by_slug.get('post', None)
     assert post is not None
 
     post_title = post.get('title', None)
@@ -256,8 +258,13 @@ def test_query_draft_post_by_slug(
     assert response is not None
     assert response.errors is None
 
-    post: Dict = response.data.get('postBySlug', None)
-    assert post is None
+    postBySlug: Dict = response.data.get('postBySlug', None)
+    assert postBySlug is not None
+    success: Dict = postBySlug.get('success', None)
+    assert success is False
+    errors: Dict = postBySlug.get('errors', None)
+    assert errors is not None
+    assert 'post' in errors
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
@@ -277,8 +284,13 @@ def test_query_draft_post_by_slug_not_owner(
     assert response is not None
     assert response.errors is None
 
-    post: Dict = response.data.get('postBySlug', None)
-    assert post is None
+    postBySlug: Dict = response.data.get('postBySlug', None)
+    assert postBySlug is not None
+    success: Dict = postBySlug.get('success', None)
+    assert success is False
+    errors: Dict = postBySlug.get('errors', None)
+    assert errors is not None
+    assert 'post' in errors
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
@@ -298,7 +310,9 @@ def test_query_draft_post_by_slug_owner(
     assert response is not None
     assert response.errors is None
 
-    post: Dict = response.data.get('postBySlug', None)
+    post_by_slug: Dict = response.data.get('postBySlug', None)
+    assert post_by_slug is not None
+    post: Dict = post_by_slug.get('post', None)
     assert post is not None
 
     post_title = post.get('title', None)

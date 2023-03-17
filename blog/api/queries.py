@@ -11,12 +11,12 @@ from blog.api.types import (
     Category as CategoryType,
     User as UserType,
     Tag as TagType,
-    Post as PostType,
     PaginationPosts as PaginationPostsType,
     AuthorRequest as AuthorRequestType,
     PaginationAuthorRequests as PaginationAuthorRequestsType,
     PostTitleType,
     Subscription as SubscriptionType,
+    DetailPost as DetailPostType,
 )
 
 from taggit.models import Tag, TaggedItem
@@ -214,14 +214,31 @@ class PostQueries:
 
         notification_post_ids = Notification.objects.filter(user=user).values_list('id', flat=True)
         post_filter = Q(id__in=notification_post_ids)
+        post_filter &= Q(status=Post.PostStatus.PUBLISHED)
         posts = PostQueries.posts().filter(post_filter).order_by('-date_created')
 
         return PostQueries.paginate_posts(posts, 4, active_page)
 
     @strawberry.field
-    def post_by_slug(self, info: Info, slug: str) -> Optional[PostType]:
-        post = Post.objects.get(slug=slug)
+    def post_by_slug(self, info: Info, slug: str) -> Optional[DetailPostType]:
+        errors = {}
+        has_errors = False
+        notification_removed = False
         user = info.context.request.user
-        if post.status == Post.PostStatus.PUBLISHED or user.is_authenticated and post.owner == user:
-            return post
-        return None
+        post = Post.objects.get(slug=slug)
+
+        if not (post.status == Post.PostStatus.PUBLISHED or user.is_authenticated and post.owner == user):
+            has_errors = True
+            errors.update({'post': 'This post is not publicly available'})
+
+        if not has_errors and user.is_authenticated:
+            deleted_notifications = Notification.objects.filter(post=post, user=user).delete()[0]
+            if deleted_notifications > 0:
+                notification_removed = True
+
+        return DetailPostType(
+            post=post if not has_errors else None,
+            success=not has_errors,
+            errors=errors if errors else None,
+            notification_removed=notification_removed,
+        )

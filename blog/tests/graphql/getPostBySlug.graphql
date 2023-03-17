@@ -2,6 +2,11 @@
 
 query PostBySlug($slug: String!) {
     postBySlug(slug: $slug) {
-        ...PostFragment
+        post {
+            ...PostFragment
+        }
+        success
+        errors
+        notificationRemoved
     }
 }
