@@ -189,6 +189,7 @@ class Post:
         return self.comments.count()
 
 
+@strawberry.type
 class DetailPost(BaseGraphQLType):
     post: typing.Optional[Post]
     success: bool
