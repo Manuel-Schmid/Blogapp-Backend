@@ -112,12 +112,6 @@ class SubscriptionInput:
     author: strawberry.ID
 
 
-@strawberry.input
-class NotificationInput:
-    post: strawberry.ID
-    user: strawberry.ID
-
-
 @strawberry.enum
 class Language(Enum):
     EN = 'ENGLISH'
