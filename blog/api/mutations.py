@@ -232,6 +232,10 @@ class PostMutations:
                     if not has_errors:
                         post = form.save()
 
+                        # Anpassung für IPA: Status automatisch auf Published setzen
+                        post.status = Post.PostStatus.PUBLISHED
+                        post.save()
+
                         # create post relations
                         if post_input.related_posts is not None:
                             for related_post_id in post_input.related_posts:
