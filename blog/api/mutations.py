@@ -66,6 +66,7 @@ from blog.forms import (
     PostRelationForm,
     UserProfileForm,
     SubscriptionForm,
+    NotificationForm,
 )
 
 
@@ -242,6 +243,16 @@ class PostMutations:
                                 if related_post_id == post.id:
                                     raise SelfReferenceRelation
                                 PostMutations.create_post_relation(post.id, related_post_id, user)
+
+                        # create notifications
+                        subscriber_ids = Subscription.objects.filter(author=user).values_list('subscriber', flat=True)
+                        for subscriber_id in subscriber_ids:
+                            notification_form = NotificationForm(data={'post': post.id, 'user': subscriber_id})
+                            if not notification_form.is_valid():
+                                has_errors = True
+                                errors.update(notification_form.errors.get_json_data())
+                            if not has_errors:
+                                notification_form.save()
 
             except DatabaseError as e:
                 has_errors = True
