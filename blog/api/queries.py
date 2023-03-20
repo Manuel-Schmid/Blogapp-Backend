@@ -114,9 +114,12 @@ class AuthorRequestQueries:
 class SubscriptionQueries:
     @login_required
     @strawberry.field
-    def user_subscriptions(self, info: Info) -> typing.List[SubscriptionType]:
+    def user_subscriptions(self, info: Info, sort: Optional[str] = None) -> typing.List[SubscriptionType]:
         user = info.context.request.user
-        return Subscription.objects.filter(subscriber=user).order_by('-date_created')
+        subscriptions = Subscription.objects.filter(subscriber=user)
+        if sort:
+            subscriptions = subscriptions.order_by(sort)
+        return subscriptions
 
 
 @strawberry.type
