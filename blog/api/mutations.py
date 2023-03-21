@@ -52,7 +52,17 @@ from blog.api.types import (
     UpdateUserProfileType,
     CreateSubscriptionType,
 )
-from blog.models import Post, Category, Comment, PostLike, AuthorRequest, PostRelation, UserProfile, Subscription
+from blog.models import (
+    Post,
+    Category,
+    Comment,
+    PostLike,
+    AuthorRequest,
+    PostRelation,
+    UserProfile,
+    Subscription,
+    Notification,
+)
 from blog.forms import (
     CategoryForm,
     UpdatePostForm,
@@ -417,6 +427,7 @@ class SubscriptionMutations:
     def delete_subscription(self, info: Info, subscription_input: SubscriptionInput) -> bool:
         user = info.context.request.user
         Subscription.objects.filter(author=subscription_input.author, subscriber=user.id).delete()
+        Notification.objects.filter(post__owner_id=subscription_input.author, user_id=user.id).delete()
         return True
 
 
