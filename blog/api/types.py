@@ -265,7 +265,7 @@ class User:
 
     @strawberry.field
     def notification_count(self) -> int:
-        return self.notifications.count()
+        return self.notifications.filter(post__status=PostModel.PostStatus.PUBLISHED).count()
 
 
 @gql.django.type(PostModel)
