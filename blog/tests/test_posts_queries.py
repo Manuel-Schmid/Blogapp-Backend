@@ -1,3 +1,4 @@
+from blog.models import Notification
 from typing import Callable, Dict
 import pytest
 from strawberry.test import Response
@@ -154,6 +155,60 @@ def test_query_non_existent_post_by_tag_and_category(
     posts: Dict = paginated_posts.get('posts', None)
     assert posts is not None
     assert len(posts) == 0
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_query_notification_posts(
+    create_posts: Callable,
+    login: Callable,
+    import_query: Callable,
+    client_query: Callable,
+) -> None:
+    posts = create_posts()
+    Notification.objects.create(user_id=1, post=posts[1])
+    Notification.objects.create(user_id=1, post=posts[2])
+
+    login('test_user1', 'password1')
+
+    notification_posts_input = {'activePage': 1}
+    query: str = import_query('getNotificationPosts.graphql')
+    response: Response = client_query(query, notification_posts_input)
+
+    assert response is not None
+    assert response.errors is None
+
+    paginated_posts: Dict = response.data.get('paginatedNotificationPosts', None)
+    assert paginated_posts is not None
+
+    num_post_pages: Dict = paginated_posts.get('numPostPages', None)
+    assert num_post_pages is not None
+    assert num_post_pages == 1
+
+    posts: Dict = paginated_posts.get('posts', None)
+    assert posts is not None
+    assert len(posts) == 1
+    assert posts[0].get('slug', None) == 'test_post-2'
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_query_notification_posts_empty_page(
+    auth: Callable,
+    import_query: Callable,
+    client_query: Callable,
+) -> None:
+    auth()
+
+    notification_posts_input = {'activePage': 5}
+    query: str = import_query('getNotificationPosts.graphql')
+    response: Response = client_query(query, notification_posts_input)
+
+    assert response is not None
+    assert response.data is None
+    assert response.errors is not None
+
+    assert len(response.errors) > 0
+    error: Dict = response.errors[0]
+    assert error.get('message', None) == 'That page contains no results'
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
