@@ -25,9 +25,10 @@ from blog.api.types import (
     Comment as CommentType,
     PostLike as PostLikeType,
     AuthorRequest as AuthorRequestType,
+    Subscription as SubscriptionType,
     PostRelationType,
 )
-from blog.models import Category, User, Post, Comment, PostLike, UserStatus, AuthorRequest, PostRelation
+from blog.models import Category, User, Post, Comment, PostLike, UserStatus, AuthorRequest, PostRelation, Subscription
 
 
 class GraphqlTestClient(BaseGraphQLTestClient):
@@ -384,6 +385,22 @@ def fixture_create_post_likes(
         PostLike.objects.create(user=users[0], post=posts[1])
         PostLike.objects.create(user=users[1], post=posts[1])
         return PostLike.objects.all()
+
+    return func
+
+
+@pytest.fixture(name='create_subscription')
+def fixture_create_subscription(
+    create_users: Callable,
+    client_query: Callable,
+    import_query: Callable,
+) -> Callable:
+    def func() -> typing.List[SubscriptionType]:
+        users = create_users()
+        Subscription.objects.create(
+            subscriber=users[0], author=users[1], date_created=datetime(2023, 3, 22, 00, 00, 00, 000000)
+        )
+        return Subscription.objects.all()
 
     return func
 
