@@ -1,0 +1,3 @@
+mutation DeleteSubscription($subscriptionInput: SubscriptionInput!) {
+    deleteSubscription(subscriptionInput: $subscriptionInput)
+}
