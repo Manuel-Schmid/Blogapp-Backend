@@ -1,0 +1,10 @@
+#import "./fragments/postFragment.graphql"
+
+query NotificationPosts($activePage: Int) {
+  paginatedNotificationPosts(activePage:$activePage) {
+    posts {
+      ...PostFragment
+    }
+    numPostPages
+  }
+}

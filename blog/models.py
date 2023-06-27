@@ -200,6 +200,27 @@ class PostRelation(models.Model):
             raise ValidationError('Main- and subpost must be different.')
 
 
+class Subscription(models.Model):
+    subscriber = models.ForeignKey('blog.User', related_name='subscriptions', on_delete=models.CASCADE)
+    author = models.ForeignKey('blog.User', related_name='subscribers', on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('subscriber', 'author')
+
+    def clean(self) -> None:
+        if self.subscriber == self.author:
+            raise ValidationError('Subscriber- and Author must be different.')
+
+
+class Notification(models.Model):
+    post = models.ForeignKey('blog.Post', related_name='notifications', on_delete=models.CASCADE)
+    user = models.ForeignKey('blog.User', related_name='notifications', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('post', 'user')
+
+
 class Comment(models.Model):
     title = models.CharField(max_length=200)
     text = models.TextField()

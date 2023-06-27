@@ -1,0 +1,7 @@
+#import "./fragments/subscriptionFragment.graphql"
+
+query UserSubscriptions {
+    userSubscriptions {
+        ...SubscriptionFragment
+    }
+}

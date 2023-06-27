@@ -11,15 +11,16 @@ from blog.api.types import (
     Category as CategoryType,
     User as UserType,
     Tag as TagType,
-    Post as PostType,
     PaginationPosts as PaginationPostsType,
     AuthorRequest as AuthorRequestType,
     PaginationAuthorRequests as PaginationAuthorRequestsType,
     PostTitleType,
+    Subscription as SubscriptionType,
+    DetailPost as DetailPostType,
 )
 
 from taggit.models import Tag, TaggedItem
-from ..models import Category, Post, User, AuthorRequest
+from ..models import Category, Post, User, AuthorRequest, Subscription, Notification
 
 
 @strawberry.type
@@ -110,6 +111,18 @@ class AuthorRequestQueries:
 
 
 @strawberry.type
+class SubscriptionQueries:
+    @login_required
+    @strawberry.field
+    def user_subscriptions(self, info: Info, sort: Optional[str] = None) -> typing.List[SubscriptionType]:
+        user = info.context.request.user
+        subscriptions = Subscription.objects.filter(subscriber=user)
+        if sort:
+            subscriptions = subscriptions.order_by(sort)
+        return subscriptions
+
+
+@strawberry.type
 class PostQueries:
     @staticmethod
     def posts() -> QuerySet:
@@ -125,6 +138,11 @@ class PostQueries:
             'owner__posts__tags',
             'owner__posts__category',
         )
+
+    @staticmethod
+    def paginate_posts(posts: QuerySet, per_page: int, active_page: int) -> PaginationPostsType:
+        paginator = Paginator(posts, per_page)
+        return PaginationPostsType(posts=paginator.page(active_page), num_post_pages=paginator.num_pages)
 
     @strawberry.field
     def post_titles(self, info: Info) -> typing.List[PostTitleType]:
@@ -172,11 +190,7 @@ class PostQueries:
         posts = PostQueries.posts().filter(post_filter)
         posts = list(set([obj for obj in posts]))
 
-        paginator = Paginator(posts, 4)
-        pagination_posts = PaginationPostsType()
-        pagination_posts.posts = paginator.page(active_page)
-        pagination_posts.num_post_pages = paginator.num_pages
-        return pagination_posts
+        return PostQueries.paginate_posts(posts, 4, active_page)
 
     @login_required
     @strawberry.field
@@ -190,16 +204,44 @@ class PostQueries:
         posts = PostQueries.posts().filter(owner_id=user).order_by('-id')
         posts = list([obj for obj in posts])
 
-        paginator = Paginator(posts, 6)
-        pagination_posts = PaginationPostsType()
-        pagination_posts.posts = paginator.page(active_page)
-        pagination_posts.num_post_pages = paginator.num_pages
-        return pagination_posts
+        return PostQueries.paginate_posts(posts, 6, active_page)
+
+    @login_required
+    @strawberry.field
+    def paginated_notification_posts(
+        self,
+        info: Info,
+        active_page: Optional[int] = 1,
+    ) -> PaginationPostsType:
+        user = info.context.request.user
+
+        notification_post_ids = Notification.objects.filter(user=user).values_list('post_id', flat=True)
+        post_filter = Q(id__in=notification_post_ids)
+        post_filter &= Q(status=Post.PostStatus.PUBLISHED)
+        posts = PostQueries.posts().filter(post_filter).order_by('-date_created')
+
+        return PostQueries.paginate_posts(posts, 4, active_page)
 
     @strawberry.field
-    def post_by_slug(self, info: Info, slug: str) -> Optional[PostType]:
-        post = Post.objects.get(slug=slug)
+    def post_by_slug(self, info: Info, slug: str) -> Optional[DetailPostType]:
+        errors = {}
+        has_errors = False
+        notification_removed = False
         user = info.context.request.user
-        if post.status == Post.PostStatus.PUBLISHED or user.is_authenticated and post.owner == user:
-            return post
-        return None
+        post = Post.objects.get(slug=slug)
+
+        if not (post.status == Post.PostStatus.PUBLISHED or user.is_authenticated and post.owner == user):
+            has_errors = True
+            errors.update({'post': 'This post is not publicly available'})
+
+        if not has_errors and user.is_authenticated:
+            deleted_notifications = Notification.objects.filter(post=post, user=user).delete()[0]
+            if deleted_notifications > 0:
+                notification_removed = True
+
+        return DetailPostType(
+            post=post if not has_errors else None,
+            success=not has_errors,
+            errors=errors if errors else None,
+            notification_removed=notification_removed,
+        )

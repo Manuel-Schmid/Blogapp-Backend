@@ -1,0 +1,11 @@
+#import "./fragments/subscriptionFragment.graphql"
+
+mutation CreateSubscription($subscriptionInput: SubscriptionInput!) {
+    createSubscription(subscriptionInput: $subscriptionInput) {
+        subscription {
+            ...SubscriptionFragment
+        }
+        success
+        errors
+    }
+}

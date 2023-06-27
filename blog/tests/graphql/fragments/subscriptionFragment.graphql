@@ -1,0 +1,15 @@
+fragment SubscriptionFragment on Subscription {
+    author {
+        id
+        username
+        posts {
+            id
+            slug
+        }
+    }
+    subscriber {
+        id
+        username
+    }
+    dateCreated
+}
