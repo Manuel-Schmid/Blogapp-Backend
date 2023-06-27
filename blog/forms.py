@@ -3,7 +3,17 @@ from typing import Any
 from django.forms import ModelForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
-from blog.models import Category, Post, Comment, PostLike, AuthorRequest, PostRelation, UserProfile
+from blog.models import (
+    Category,
+    Post,
+    Comment,
+    PostLike,
+    AuthorRequest,
+    PostRelation,
+    UserProfile,
+    Subscription,
+    Notification,
+)
 
 
 class UserForm(UserCreationForm):
@@ -86,6 +96,18 @@ class PostRelationForm(ModelForm):
     class Meta:
         model = PostRelation
         fields = ['main_post', 'sub_post', 'creator']
+
+
+class SubscriptionForm(ModelForm):
+    class Meta:
+        model = Subscription
+        fields = ['subscriber', 'author']
+
+
+class NotificationForm(ModelForm):
+    class Meta:
+        model = Notification
+        fields = ['post', 'user']
 
 
 class CreateCommentForm(ModelForm):

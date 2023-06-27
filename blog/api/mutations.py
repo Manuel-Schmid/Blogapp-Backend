@@ -39,6 +39,7 @@ from blog.api.inputs import (
     AuthorRequestInput,
     UpdatePostStatusInput,
     UserProfileInput,
+    SubscriptionInput,
 )
 from blog.api.types import (
     Category as CategoryType,
@@ -49,8 +50,19 @@ from blog.api.types import (
     UpdatePostStatusType,
     UpdatePostType,
     UpdateUserProfileType,
+    CreateSubscriptionType,
 )
-from blog.models import Post, Category, Comment, PostLike, AuthorRequest, PostRelation, UserProfile
+from blog.models import (
+    Post,
+    Category,
+    Comment,
+    PostLike,
+    AuthorRequest,
+    PostRelation,
+    UserProfile,
+    Subscription,
+    Notification,
+)
 from blog.forms import (
     CategoryForm,
     UpdatePostForm,
@@ -63,6 +75,8 @@ from blog.forms import (
     UpdatePostStatusForm,
     PostRelationForm,
     UserProfileForm,
+    SubscriptionForm,
+    NotificationForm,
 )
 
 
@@ -229,12 +243,26 @@ class PostMutations:
                     if not has_errors:
                         post = form.save()
 
+                        # Anpassung für IPA: Status automatisch auf Published setzen
+                        post.status = Post.PostStatus.PUBLISHED
+                        post.save()
+
                         # create post relations
                         if post_input.related_posts is not None:
                             for related_post_id in post_input.related_posts:
                                 if related_post_id == post.id:
                                     raise SelfReferenceRelation
                                 PostMutations.create_post_relation(post.id, related_post_id, user)
+
+                        # create notifications
+                        subscriber_ids = Subscription.objects.filter(author=user).values_list('subscriber', flat=True)
+                        for subscriber_id in subscriber_ids:
+                            notification_form = NotificationForm(data={'post': post.id, 'user': subscriber_id})
+                            if not notification_form.is_valid():
+                                has_errors = True
+                                errors.update(notification_form.errors.get_json_data())
+                            if not has_errors:
+                                notification_form.save()
 
             except DatabaseError as e:
                 has_errors = True
@@ -369,6 +397,37 @@ class PostLikeMutations:
     def delete_post_like(self, info: Info, post_like_input: PostLikeInput) -> bool:
         user = info.context.request.user
         PostLike.objects.filter(post=post_like_input.post, user=user.id).delete()
+        return True
+
+
+@strawberry.type
+class SubscriptionMutations:
+    @login_required
+    @strawberry.mutation
+    def create_subscription(self, info: Info, subscription_input: SubscriptionInput) -> CreateSubscriptionType:
+        errors = {}
+        has_errors = False
+        subscription = None
+        user = info.context.request.user
+        subscription_input.subscriber = user.id
+        form = SubscriptionForm(data=vars(subscription_input))
+
+        if not form.is_valid():
+            has_errors = True
+            errors.update(form.errors.get_json_data())
+        if not has_errors:
+            subscription = form.save()
+
+        return CreateSubscriptionType(
+            subscription=subscription, success=not has_errors, errors=errors if errors else None
+        )
+
+    @strawberry.mutation
+    @login_required
+    def delete_subscription(self, info: Info, subscription_input: SubscriptionInput) -> bool:
+        user = info.context.request.user
+        Subscription.objects.filter(author=subscription_input.author, subscriber=user.id).delete()
+        Notification.objects.filter(post__owner_id=subscription_input.author, user_id=user.id).delete()
         return True
 
 
