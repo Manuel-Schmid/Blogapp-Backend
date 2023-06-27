@@ -17,6 +17,7 @@ from blog.api.types import (
     PostTitleType,
     Subscription as SubscriptionType,
     DetailPost as DetailPostType,
+    UserDetail as UserDetailType,
 )
 
 from taggit.models import Tag, TaggedItem
@@ -45,7 +46,7 @@ class UserQueries:
         return None
 
     @strawberry.field
-    def user_by_username(self, username: str) -> Optional[UserType]:
+    def user_by_username(self, username: str) -> Optional[UserDetailType]:
         return User.objects.get(username=username)
 
 
