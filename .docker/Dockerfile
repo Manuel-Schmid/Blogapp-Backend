@@ -12,7 +12,7 @@ USER root
 
 # Add netcat
 RUN apt-get update && apt-get install -y \
-        netcat
+        netcat-traditional
 
 # Add Watchman
 RUN wget "https://github.com/facebook/watchman/releases/download/$WATCHMAN_VERSION/watchman-$WATCHMAN_VERSION-linux.zip" \
