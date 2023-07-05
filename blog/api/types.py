@@ -268,6 +268,14 @@ class User:
     def notification_count(self) -> int:
         return self.notifications.filter(post__status=PostModel.PostStatus.PUBLISHED).count()
 
+    @strawberry.field
+    def is_subscribed(self, info: Info) -> bool:
+        user = info.context.request.user
+        if user.is_authenticated:
+            return user.id in self.subscribers.values_list('subscriber', flat=True)
+
+        return False
+
 
 @gql.django.type(PostModel)
 class PaginationPosts:
