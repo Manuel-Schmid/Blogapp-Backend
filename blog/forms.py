@@ -19,7 +19,7 @@ from blog.models import (
 class UserForm(UserCreationForm):
     class Meta:
         model = get_user_model()
-        fields = ['email', 'password1', 'password2', 'username']
+        fields = ['email', 'password1', 'password2', 'username', 'avatar']
 
 
 class UpdateAccountForm(ModelForm):

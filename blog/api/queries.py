@@ -44,6 +44,10 @@ class UserQueries:
             return User.objects.select_related('user_status', 'profile').get(pk=user.id)
         return None
 
+    @strawberry.field
+    def user_by_username(self, username: str) -> Optional[UserType]:
+        return User.objects.get(username=username)
+
 
 @strawberry.type
 class CategoryQueries:

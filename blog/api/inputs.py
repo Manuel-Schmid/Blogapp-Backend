@@ -11,6 +11,7 @@ class UserRegistrationInput:
     username: str
     password1: str
     password2: str
+    avatar: Optional[Upload] = None
 
 
 @strawberry.input
